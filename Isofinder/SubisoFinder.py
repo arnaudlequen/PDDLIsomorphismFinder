@@ -71,7 +71,7 @@ class SubisoFinder():
                                      (operator2.eff_pos, operator1.eff_pos),
                                      (operator2.eff_neg, operator1.eff_neg)]
 
-                for op1_list, op2_list in required_mappings:
+                for op2_list, op1_list in required_mappings:
                     for k in op2_list:
                         clause = [-1*oToOId(i, j)]
                         clause.extend([fToFId(k, l) for l in op1_list])
@@ -109,6 +109,10 @@ class SubisoFinder():
         return satInstance
 
     def interpretAssignment(self, problem1, problem2, assignment, outFile=sys.stdout):
+        """
+        Interpret a model of the formula that is built in convertToSAT, and write it in a legible
+        format.
+        """
         filler = ''.join(['=']*30)
 
         outFile.write(filler)
@@ -125,7 +129,10 @@ class SubisoFinder():
         for k in range(1, n1 * n2 + 1):
             if assignment[k]:
                 i, j = fIdToF(k)
-                outFile.write(f"{problem2.getPredicateByVarId(j)} => {problem1.getPredicateByVarId(i)}\n")
+                if self.verboseActionNames:
+                    outFile.write(f"{problem2.getPredicateByVarId(i)} => {problem1.getPredicateByVarId(j)}\n")
+                else:
+                    outFile.write(f"{i} => {j}\n")
 
         outFile.write("\n")
         outFile.write(filler)
@@ -133,26 +140,30 @@ class SubisoFinder():
         outFile.write(filler)
         outFile.write("\n")
 
-        for k in range(n1 * n2 + 1, n1 * n2 + m1*m2 + 1):
+        for k in range(n1*n2 + 1, n1*n2 + m1*m2 + 1):
             if assignment[k]:
                 i, j = oIdToO(k)
                 if self.verboseActionNames:
-                    outFile.write(f"{problem2.prettyPrintActionByOpId(j)} => {problem1.prettyPrintActionByOpId(i)}\n")
+                    outFile.write(f"{problem2.prettyPrintActionByOpId(i)} => {problem1.prettyPrintActionByOpId(j)}\n")
                 else:
-                    outFile.write(f"{problem2.getActionByOpId(j)} => {problem1.getActionByOpId(i)}\n")
+                    outFile.write(f"{problem2.getActionByOpId(i)} => {problem1.getActionByOpId(j)}\n")
 
 
 
     def getObjectsToIdFunctions(self, problem1, problem2):
+        """
+        Return bijections between variables of the form o_ij or f_ij, and the appropriate
+        subsets of [1, n]. Useful for interfacing with SAT solvers
+        """
         n1, m1 = problem1.getFluentCount(), problem1.getOperatorCount()
         n2, m2 = problem2.getFluentCount(), problem2.getOperatorCount()
 
         # Functions that help with the conversion from the problem's data to variables of the SAT formula
         # Fluents / FluentsId
-        fToFId = lambda i, j: (j * n1 + i) + 1
+        fToFId = lambda i, j: (i * n1 + j) + 1
         fIdToF = lambda k: ((k - 1) // n1, (k - 1) % n1)
         # Operators / OperatorsId
-        oToOId = lambda i, j: (j * m1 + i) + (n1 * n2 + 1)
+        oToOId = lambda i, j: (i * m1 + j) + (n1 * n2 + 1)
         oIdToO = lambda k: ((k - n1 * n2 - 1) // m1, (k - n1 * n2 - 1) % m1)
 
         return fToFId, fIdToF, oToOId, oIdToO

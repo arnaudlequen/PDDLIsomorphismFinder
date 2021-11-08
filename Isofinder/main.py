@@ -60,7 +60,8 @@ def main(argv):
     print(f"Calling the SAT solver in a subprocess...")
     print(filler)
     solverPath = argv[5]
-    process = subprocess.run([solverPath, satFormulaPath], capture_output=True, text=True)
+    # Added option -model for Glucose
+    process = subprocess.run([solverPath, '-model', satFormulaPath], capture_output=True, text=True)
     print("SAT solving done. Processing the output...")
 
     outcome = None
@@ -68,6 +69,8 @@ def main(argv):
 
     # I'm copying the output and transforming it, so it's not super efficient
     for line in process.stdout.split('\n'):
+        if len(line) == 0:
+            continue
         line_elements = line.split()
 
         if 's' in line_elements:
@@ -86,25 +89,24 @@ def main(argv):
                 break
 
     print(f"Isomorphism: {'FOUND' if outcome else 'NOT FOUND'}")
-    print("Building the isomorphism...")
-    isoPath = argv[6]
-    isoFile = open(isoPath, 'w+')
+    if outcome:
+        print("Building the isomorphism...")
+        isoPath = argv[6]
+        isoFile = open(isoPath, 'w+')
 
-    #
-    # Utiliser une fonction de la classe StripsSubIsoFinder
-    # Passer le stream dans lequel écrire l'isomorphisme
-    #
+        #
+        # Utiliser une fonction de la classe StripsSubIsoFinder
+        # Passer le stream dans lequel écrire l'isomorphisme
+        #
 
+        subisoFinder.interpretAssignment(problem1, problem2, assignment, isoFile)
 
-    subisoFinder.interpretAssignment(problem1, problem2, assignment, isoFile)
-
-
-    isoFile.close()
-    print("Isomorphism built")
-    print(f"Saved the result in file {isoPath}\n")
+        isoFile.close()
+        print("Isomorphism built")
+        print(f"Saved the result in file {isoPath}\n")
 
     print(filler)
-    print(f"Total time: {time() - global_start_time:.1f}")
+    print(f"Total time: {time() - global_start_time:.1f}s")
     print()
 
 
