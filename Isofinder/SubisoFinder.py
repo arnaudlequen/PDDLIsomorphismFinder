@@ -8,6 +8,16 @@ class SubisoFinder():
     def __init__(self):
         self.verboseActionNames = True
 
+        self.steps = [
+        'FluentsImages',
+        'OperatorsImages',
+        'MorphismProperty',
+        'BijectionProperty',
+        'OperatorsInjectivity',
+        #'InitialStateConservation',
+        #'GoalStateConservation',
+        ]
+
     def convertToSAT(self, problem1, problem2):
         """
         Consider the problem STRIPS-subproblem-isomorphism(problem1, problem2), where one tries to find a subproblem of
@@ -28,84 +38,145 @@ class SubisoFinder():
         fToFId, fIdToF, oToOId, oIdToO = self.getObjectsToIdFunctions(problem1, problem2)
 
         # Definition of the formula
-        expectedClauseCount = n2 + n2*(n1**2) + m2 + m2*(m1**2) + 4*m2*m1*n2 + m1*(m2**2)
+        expectedClauseCount = n2 + n2*(n1**2) + m2 + m2*(m1**2) + 4*m2*m1*n2 + m1*(m2**2) + 2*n1 + 2*n2
         expectedVariablesCount = n1*n2 + m1*m2
-        print(f"Expected number of variables: {expectedVariablesCount}")
-        print(f"Expected number of clauses: {expectedClauseCount}")
+        #print(f"Expected number of variables: {expectedVariablesCount}")
+        #print(f"Expected number of clauses: < {expectedClauseCount}")
         satInstance = SatInstance(expectedVariablesCount, expectedClauseCount)
 
+        currentStep = 1
+        stepCounter = f"{{step}}/{len(self.steps)}"
+
         # (1) Make sure that we have a proper image for each fluent of P2
-        for i in range(n2):
-            print(f"Step 1/5: {progressBar(i/n2, 24)}", sep='', end='\r', flush=True)
-            satInstance.addClause([fToFId(i, j) for j in range(n1)])
-            # Now with the unicity of the image (not the injectivity)
-            for j in range(n1):
-                for k in range(n1):
-                    if k != j:
-                        clause = [-1*fToFId(i, j), -1*fToFId(i, k)]
-                        satInstance.addClause(clause)
-        print(f"{'Step 1/5: Done':<45}")
+        if 'FluentsImages' in self.steps:
+            for i in range(n2):
+                print(f"Step {stepCounter.format(step=currentStep)}: {progressBar(i/n2, 24)}", sep='', end='\r', flush=True)
+                clause = [fToFId(i, j) for j in range(n1)]
+                satInstance.addClause(clause)
+                # Now with the unicity of the image (not the injectivity)
+                for j in range(n1):
+                    for k in range(n1):
+                        if k != j:
+                            clause = [-1*fToFId(i, j), -1*fToFId(i, k)]
+                            satInstance.addClause(clause)
+
+            print(f"{f'Step {stepCounter.format(step=currentStep)}: Done':<45}")
+            currentStep += 1
 
         # (2) Image of operators, same as above
-        for i in range(m2):
-            print(f"Step 2/5: {progressBar(i/m2, 24)}", sep='', end='\r', flush=True)
-            satInstance.addClause([oToOId(i, j) for j in range(m1)])
-            for j in range(m1):
-                for k in range(m1):
-                    if k != j:
-                        clause = [-1*oToOId(i, j), -1*oToOId(i, k)]
-                        satInstance.addClause(clause)
-        print(f"{'Step 2/5: Done':<45}")
+        if 'OperatorsImages' in self.steps:
+            for i in range(m2):
+                print(f"Step {stepCounter.format(step=currentStep)}: {progressBar(i/m2, 24)}", sep='', end='\r', flush=True)
+                clause = [oToOId(i, j) for j in range(m1)]
+                satInstance.addClause(clause)
+
+                for j in range(m1):
+                    for k in range(m1):
+                        if k != j:
+                            clause = [-1*oToOId(i, j), -1*oToOId(i, k)]
+                            satInstance.addClause(clause)
+
+            print(f"{f'Step {stepCounter.format(step=currentStep)}: Done':<45}")
+            currentStep += 1
 
         # (3) Enforcing the morphism property
-        for i in range(m2):
-            print(f"Step 3/5: {progressBar(i/m2, 24)}", sep='', end='\r', flush=True)
-            for j in range(m1):
-                # If we map o'_j to o_i, then for each fluent in the pre (eff) of o'_j, there should be its image in
-                # the pre (eff) of o_i
-                operator1 = problem1.getOperatorById(j)
-                operator2 = problem2.getOperatorById(i)
+        if 'MorphismProperty' in self.steps:
+            for i in range(m2):
+                print(f"Step {stepCounter.format(step=currentStep)}: {progressBar(i/m2, 24)}", sep='', end='\r', flush=True)
+                for j in range(m1):
+                    # If we map o'_j to o_i, then for each fluent in the pre (eff) of o'_j, there should be its image in
+                    # the pre (eff) of o_i
+                    operator1 = problem1.getOperatorById(j)
+                    operator2 = problem2.getOperatorById(i)
 
-                required_mappings = [(operator2.pre_pos, operator1.pre_pos),
-                                     (operator2.pre_neg, operator1.pre_neg),
-                                     (operator2.eff_pos, operator1.eff_pos),
-                                     (operator2.eff_neg, operator1.eff_neg)]
+                    required_mappings = [(operator2.pre_pos, operator1.pre_pos),
+                                         (operator2.pre_neg, operator1.pre_neg),
+                                         (operator2.eff_pos, operator1.eff_pos),
+                                         (operator2.eff_neg, operator1.eff_neg)]
 
-                for op2_list, op1_list in required_mappings:
-                    for k in op2_list:
-                        clause = [-1*oToOId(i, j)]
-                        clause.extend([fToFId(k, l) for l in op1_list])
-                        satInstance.addClause(clause)
-        print(f"{'Step 3/5: Done':<45}")
+                    for op2_list, op1_list in required_mappings:
+                        for k in op2_list:
+                            clause = [-1*oToOId(i, j)]
+                            clause.extend([fToFId(k, l) for l in op1_list])
+                            satInstance.addClause(clause)
+
+            print(f"{f'Step {stepCounter.format(step=currentStep)}: Done':<45}")
+            currentStep += 1
 
 
         # Make sure there is no superfluous fluents in the images
-        for i in range(m2):
-            print(f"Step 4/5: {progressBar(i/m2, 24)}", sep='', end='\r', flush=True)
-            for j in range(m1):
-                operator1 = problem1.getOperatorById(j)
-                operator2 = problem2.getOperatorById(i)
+        if 'BijectionProperty' in self.steps:
+            for i in range(m2):
+                print(f"Step {stepCounter.format(step=currentStep)}: {progressBar(i/m2, 24)}", sep='', end='\r', flush=True)
+                for j in range(m1):
+                    operator1 = problem1.getOperatorById(j)
+                    operator2 = problem2.getOperatorById(i)
 
-                operator1_lists = [operator1.pre_pos, operator1.pre_neg,
-                                  operator1.eff_pos, operator1.eff_neg]
+                    operator1_lists = [operator1.pre_pos, operator1.pre_neg,
+                                      operator1.eff_pos, operator1.eff_neg]
 
-                for op1_list in operator1_lists:
-                    for l in op1_list:
-                        clause = [-1*oToOId(i, j)]
-                        clause.extend([fToFId(k, l) for k in range(n2)])
-                        satInstance.addClause(clause)
-        print(f"{'Step 4/5: Done':<45}")
+                    for op1_list in operator1_lists:
+                        for l in op1_list:
+                            clause = [-1*oToOId(i, j)]
+                            clause.extend([fToFId(k, l) for k in range(n2)])
+                            satInstance.addClause(clause)
+            print(f"{f'Step {stepCounter.format(step=currentStep)}: Done':<45}")
+            currentStep += 1
 
         # Enforce the injectivity of the morphism between operators
-        for i in range(m1):
-            print(f"Step 5/5: {progressBar(i/m1, 24)}", sep='', end='\r', flush=True)
-            for j in range(m2):
-                for k in range(m2):
-                    if k != j:
-                        clause = [-1*oToOId(j, i), -1*oToOId(k, i)]
-                        satInstance.addClause(clause)
-        print(f"{'Step 5/5: Done':<45}")
+        if 'OperatorsInjectivity' in self.steps:
+            for i in range(m1):
+                print(f"Step {stepCounter.format(step=currentStep)}: {progressBar(i/m1, 24)}", sep='', end='\r', flush=True)
 
+                for j in range(m2):
+                    for k in range(m2):
+                        if k != j:
+                            clause = [-1*oToOId(j, i), -1*oToOId(k, i)]
+                            satInstance.addClause(clause)
+
+            print(f"{f'Step {stepCounter.format(step=currentStep)}: Done':<45}")
+            currentStep += 1
+
+        # Initial and goal states
+        compareLists = []
+        if 'InitialStateConservation' in self.steps:
+            compareListsAux = []
+            for i in range(0, 2):
+                compareListsAux.append((problem1.getInitialState()[i], problem2.getInitialState()[i]))
+            compareLists.append(compareListsAux)
+
+        if 'GoalStateConservation' in self.steps:
+            compareListsAux = []
+            for i in range(0, 2):
+                compareListsAux.append((problem1.getGoalState()[i], problem2.getGoalState()[i]))
+            compareLists.append(compareListsAux)
+
+        for compareList in compareLists:
+            progress = 0
+            totalLength = sum([len(l1) + len(l2) for l1, l2 in compareList])
+            for varList1, varList2 in compareList:
+                varListLength1 = len(varList1)
+                varListLength2 = len(varList2)
+
+                for index in range(varListLength2):
+                    i = varList2[index]
+                    print(f"Step {stepCounter.format(step=currentStep)}: {progressBar(progress/totalLength, 24)}", sep='', end='\r', flush=True)
+                    clause = [fToFId(i, j) for j in varList1]
+                    satInstance.addClause(clause)
+                    progress += 1
+
+                for index in range(varListLength1):
+                    i = varList1[index]
+                    print(f"Step {stepCounter.format(step=currentStep)}: {progressBar(progress/totalLength, 24)}", sep='', end='\r', flush=True)
+                    clause = [fToFId(i, j) for j in varList2]
+                    satInstance.addClause(clause)
+                    progress += 1
+
+            print(f"{f'Step {stepCounter.format(step=currentStep)}: Done':<45}")
+            currentStep += 1
+
+        print(f"Number of variables: {satInstance.getVariablesCount()}")
+        print(f"Number of clauses: {satInstance.getClausesCount()}")
         return satInstance
 
     def interpretAssignment(self, problem1, problem2, assignment, outFile=sys.stdout):

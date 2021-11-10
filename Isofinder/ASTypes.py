@@ -26,6 +26,17 @@ Args:
 """
 Literal = namedtuple('Literal', ['sign', 'predicate']) # sign should be + or -
 
+"""
+HashedLiteral
+
+A hashed, grounded predicate that can be either positive or negative
+
+Args:
+    sign: The string value '+' or '-', which represents whether the predicate is positive or negative
+    predicate: A string that represents a predicate
+"""
+HashedLiteral = namedtuple('HashedPredicate', ['sign', 'predicate'])
+
 #
 # PDDL types
 #
@@ -43,9 +54,9 @@ PDDLDomain = namedtuple('PDDLDomain', ['name', 'predicates', 'actions'])
 """
 PDDLInstance
 
-A structure that represents a PDDL instance that has been extrcted from a problem file
+A structure that represents a PDDL instance that has been extracted from a problem file
 """
-PDDLInstance = namedtuple('PDDLInstance', ['name', 'objects'])
+PDDLInstance = namedtuple('PDDLInstance', ['name', 'objects', 'init', 'goal'])
 
 
 """

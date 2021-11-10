@@ -19,6 +19,12 @@ class Grounder():
         self.opId_to_action = {}
         self.opId_to_operator = {}
 
+        # Convention: fluents encoded in varId
+        self.init_pos = []
+        self.init_neg = []
+        self.goal_pos = []
+        self.goal_neg = []
+
     def groundInstance(self, pddlDomain, pddlInstance):
         print(f"Grounding instance {pddlInstance.name} of domain {pddlDomain.name}")
 
@@ -46,11 +52,19 @@ class Grounder():
         stop_time = time()
         print(f"DONE. Found {self.getOperatorsCount()} operators in {stop_time - start_time:.4f}s")
 
+        print("Encoding initial and goal states...")
+        start_time = time()
+        self.build_initial_and_goal_states()
+        stop_time = time()
+        print(f"DONE. Conversion done in {stop_time - start_time:.4f}s")
+
         print(f"=> Gounding completed in {time()-start_time:.4f}s")
 
         return StripsProblem(self.predicate_to_varId, self.varId_to_predicate, \
                              self.action_to_opId, self.opId_to_action, \
-                             self.opId_to_operator)
+                             self.opId_to_operator, \
+                             self.init_pos, self.init_neg, \
+                             self.goal_pos, self.goal_neg)
 
     def ground_predicates(self):
         """
@@ -195,6 +209,23 @@ class Grounder():
         self.action_to_opId[hashed_ground_action] = operator_id
         self.opId_to_action[operator_id] = hashed_ground_action
         self.opId_to_operator[operator_id] = operator
+
+    def build_initial_and_goal_states(self):
+        """
+        Convert the grounded predicates found in the initial and goal states of an instance file to the variable id
+        that is assigned to them in the grounding previously done
+        """
+        convert_lists = [(self.pddlInstance.init, self.init_pos, self.init_neg),
+                        (self.pddlInstance.goal, self.goal_pos, self.goal_neg)]
+
+        for literals_list, varIds_pos, varIds_neg in convert_lists:
+            for hashed_literal in literals_list:
+                if hashed_literal.predicate in self.predicate_to_varId:
+                    predicate_id = self.predicate_to_varId[hashed_literal.predicate]
+                    if hashed_literal.sign == '+':
+                        varIds_pos.append(predicate_id)
+                    else:
+                        varIds_neg.append(predicate_id)
 
     def hash_ground_action(self, action_name, pre_pos, pre_neg, eff_pos, eff_neg):
         flat_fluents = [' '.join(map(str, l)) for l in [pre_pos, pre_neg, eff_pos, eff_neg]]

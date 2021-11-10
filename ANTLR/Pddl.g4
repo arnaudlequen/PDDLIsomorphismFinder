@@ -126,7 +126,7 @@ actionDefBody
 //	| goalDesc
 //	;
 goalDesc
-   : atomicTermFormula | '(' 'and' goalDesc* ')' | '(' 'or' goalDesc* ')' | '(' 'not' goalDesc ')' | '(' 'imply' goalDesc goalDesc ')' | '(' 'exists' '(' typedVariableList ')' goalDesc ')' | '(' 'forall' '(' typedVariableList ')' goalDesc ')' | fComp
+   : atomicTermFormula | '(' 'and' goalDesc* ')' | '(' 'AND' goalDesc* ')' | '(' 'or' goalDesc* ')' | '(' 'not' goalDesc ')' | '(' 'imply' goalDesc goalDesc ')' | '(' 'exists' '(' typedVariableList ')' goalDesc ')' | '(' 'forall' '(' typedVariableList ')' goalDesc ')' | fComp
    ;
 
 fComp
