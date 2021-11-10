@@ -1,29 +1,47 @@
+import argparse
+import os
 import sys
 from SubisoFinder import *
 from StripsConverter import *
 from SatInstance import *
-from time import time
 import subprocess
+from time import time
 
 def main(argv):
 
-    if len(argv) < 7:
-        print("Usage: python main.py domain.pddl instancebig.pddl instancesmall.pddl satFormulaPath solverPath isoPath")
-        return
+    parser = argparse.ArgumentParser(description="Sub-isomorphism finder for STRIPS planning problems")
+    parser.add_argument('domainPath', metavar='domain.pddl', type=str, help="The domain file in PDDL format")
+    parser.add_argument('instance1Path', metavar='instancebig.pddl', type=str, \
+                        help="The file of the problem from which to extract a subproblem, in PDDL format")
+    parser.add_argument('instance2Path', metavar='instancesmall.pddl', type=str, \
+                        help="The file of the subproblem to extract, in PDDL format")
+    parser.add_argument('-c', '--cnfpath', type=str, default='./tmp/satencoding.cnf', \
+                        help="The file in which to save the SAT formula that is passed to the solver")
+    parser.add_argument('-s', '--satsolver', type=str, default='./Solvers/Bin/glucose-syrup_static', \
+                        help="The path to the SAT solver binary")
+    parser.add_argument('-o', '--output', type=str, default='output.isom', \
+                        help="The file in which to save the sub-isomorphism")
+    args = parser.parse_args()
 
     filler = ''.join(['=']*30)
 
+    try:
+        os.mkdir('./tmp')
+    except FileExistsError:
+        pass
+
     global_start_time = time()
     # Extract problems from file
-    domainPath, instance1Path, instance2Path = argv[1:4]
+    #domainPath, instance1Path, instance2Path = argv[1:4]
 
     step_start = time()
     print("Extracting domain and instances from file...")
     print(filler)
     converter = StripsConverter()
-    pddlDomain = converter.buildDomain(domainPath)
-    pddlInstance1 = converter.buildInstance(instance1Path)
-    pddlInstance2 = converter.buildInstance(instance2Path)
+    print(args)
+    pddlDomain = converter.buildDomain(args.domainPath)
+    pddlInstance1 = converter.buildInstance(args.instance1Path)
+    pddlInstance2 = converter.buildInstance(args.instance2Path)
     print(f"PDDL extraction done in {time() - step_start:.1f}s!\n")
 
     # Convert them to STRIPS
@@ -46,12 +64,11 @@ def main(argv):
     step_start = time()
     print("Saving the results...")
     print(filler)
-    satFormulaPath = argv[4]
+    satFormulaPath = args.cnfpath
     file = open(satFormulaPath, 'w+')
     satInstance.printInstance(file)
     file.close()
-    print(f"Saving duration: {time() - step_start:.1f}s")
-    print(filler)
+    print(f"Saving done in {time() - step_start:.1f}s!")
     print(f"Saved the result in file {satFormulaPath}\n")
 
     # Interpret the results
@@ -60,7 +77,7 @@ def main(argv):
     start_time = time()
     print(f"Calling the SAT solver in a subprocess...")
     print(filler)
-    solverPath = argv[5]
+    solverPath = args.satsolver
     # Added option -model for Glucose
     process = subprocess.run([solverPath, '-model', satFormulaPath], capture_output=True, text=True)
     print("SAT solving done. Processing the output...")
@@ -93,13 +110,9 @@ def main(argv):
     print(f"SAT solving done in {time() - step_start:.1f}s!\n")
     if outcome:
         print("Building the isomorphism...")
-        isoPath = argv[6]
+        print(filler)
+        isoPath = args.output
         isoFile = open(isoPath, 'w+')
-
-        #
-        # Utiliser une fonction de la classe StripsSubIsoFinder
-        # Passer le stream dans lequel écrire l'isomorphisme
-        #
 
         subisoFinder.interpretAssignment(problem1, problem2, assignment, isoFile)
 
