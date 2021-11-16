@@ -4,6 +4,7 @@ from collections import namedtuple
 import itertools as it
 from ASTypes import *
 
+
 class DomainListener(PddlListener):
 
     def __init__(self):
@@ -111,7 +112,7 @@ class DomainListener(PddlListener):
                 # We are in a negation. Process the "not", then go and find the underlying predicate
                 assert children[1].getText() == "not", f"Unsupported operation (non-STRIPS): {children[1].getText()}"
                 literal = self.exploreAction(children[2])
-                assert isinstance(literal, Literal), f"Unsupported effect description: {action_predicate}"
+                assert isinstance(literal, Literal), f"Unsupported effect description"
                 return Literal('-', literal.predicate)
             else:
                 #Otherwise this is a predicate that we can return directly
@@ -120,7 +121,7 @@ class DomainListener(PddlListener):
         # Base case
         elif isinstance(node, PddlParser.AtomicTermFormulaContext):
             # For some reason, there is an additional child
-            child = node #next(node.getChildren())
+            child = node
             terms = list(it.filterfalse(lambda x: self.andFilter(x.getText()), child.getChildren()))
             arguments = list(map(lambda x: x.getText(), terms[1:]))
             action_predicate = ActionPredicate(terms[0].getText(), ["UNTYPED"]*len(arguments), arguments)

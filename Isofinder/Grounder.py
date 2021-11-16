@@ -2,22 +2,23 @@ from ASTypes import *
 from DomainListener import *
 from InstanceListener import *
 from StripsProblem import StripsProblem
-from time import time
+from time import perf_counter
 import itertools as it
 
-class Grounder():
+
+class Grounder:
     def __init__(self):
         self.pddlDomain = None
         self.pddlInstance = None
 
         # Convention: predicate in PDDL, variable in STRIPS
-        self.predicate_to_varId = {}
-        self.varId_to_predicate = {}
+        self.predicate_to_var_id = {}
+        self.var_id_to_predicate = {}
 
         # Convention: action in PDDL, operator in STRIPS
-        self.action_to_opId = {}
-        self.opId_to_action = {}
-        self.opId_to_operator = {}
+        self.action_to_op_id = {}
+        self.op_id_to_action = {}
+        self.op_id_to_operator = {}
 
         # Convention: fluents encoded in varId
         self.init_pos = []
@@ -25,53 +26,51 @@ class Grounder():
         self.goal_pos = []
         self.goal_neg = []
 
-    def groundInstance(self, pddlDomain, pddlInstance):
-        print(f"Grounding instance {pddlInstance.name} of domain {pddlDomain.name}")
+    def ground_instance(self, pddl_domain, pddl_instance):
+        print(f"Grounding instance {pddl_instance.name} of domain {pddl_domain.name}")
 
-        self.pddlDomain = pddlDomain
-        self.pddlInstance = pddlInstance
+        self.pddlDomain = pddl_domain
+        self.pddlInstance = pddl_instance
 
         # Reset
-        self.predicate_to_varId = {}
-        self.varId_to_predicate = {}
+        self.predicate_to_var_id = {}
+        self.var_id_to_predicate = {}
 
-        self.action_to_opId = {}
-        self.opId_to_action = {}
-        self.opId_to_operator = {}
+        self.action_to_op_id = {}
+        self.op_id_to_action = {}
+        self.op_id_to_operator = {}
 
-        global_start_time = time()
+        global_start_time = perf_counter()
         print("Grounding predicates...")
-        start_time = time()
+        start_time = perf_counter()
         self.ground_predicates()
-        stop_time = time()
-        print(f"DONE. Found {self.getVariablesCount()} fluents in {stop_time - start_time:.4f}s")
+        stop_time = perf_counter()
+        print(f"DONE. Found {self.get_variables_count()} fluents in {stop_time - start_time:.4f}s")
 
         print("Grounding actions...")
-        start_time = time()
+        start_time = perf_counter()
         self.ground_actions()
-        stop_time = time()
-        print(f"DONE. Found {self.getOperatorsCount()} operators in {stop_time - start_time:.4f}s")
+        stop_time = perf_counter()
+        print(f"DONE. Found {self.get_operators_count()} operators in {stop_time - start_time:.4f}s")
 
         print("Encoding initial and goal states...")
-        start_time = time()
+        start_time = perf_counter()
         self.build_initial_and_goal_states()
-        stop_time = time()
+        stop_time = perf_counter()
         print(f"DONE. Conversion done in {stop_time - start_time:.4f}s")
 
-        print(f"=> Gounding completed in {time()-start_time:.4f}s")
+        print(f"=> Grounding completed in {perf_counter() - start_time:.4f}s")
 
-        return StripsProblem(self.predicate_to_varId, self.varId_to_predicate, \
-                             self.action_to_opId, self.opId_to_action, \
-                             self.opId_to_operator, \
-                             self.init_pos, self.init_neg, \
+        return StripsProblem(self.predicate_to_var_id, self.var_id_to_predicate,
+                             self.action_to_op_id, self.op_id_to_action,
+                             self.op_id_to_operator,
+                             self.init_pos, self.init_neg,
                              self.goal_pos, self.goal_neg)
 
     def ground_predicates(self):
         """
         Ground the predicates and create the variables
         """
-        objects_dictionary = self.pddlInstance.objects
-
         for predicate in self.pddlDomain.predicates:
             # One can check if the value that is returned is True or False, to determine whether the grounding was
             # successful or not
@@ -79,7 +78,7 @@ class Grounder():
 
     def ground_predicates_aux(self, predicate_name, predicate_types_list, current_arguments_list):
         """
-        Auxilliary function that explores a branch of the grounding tree
+        Auxiliary function that explores a branch of the grounding tree
 
         Args:
             predicate_name:         The name of the current predicate
@@ -101,13 +100,14 @@ class Grounder():
         curr_type = predicate_types_list[0]
         if curr_type in objects_dictionary:
             next_predicate_types_list = predicate_types_list[1:]
-            for object in objects_dictionary[curr_type]:
+            for obj in objects_dictionary[curr_type]:
                 next_arguments_list = current_arguments_list[:]
-                next_arguments_list.append(object)
-                grounding_outcome = self.ground_predicates_aux(predicate_name, next_predicate_types_list, next_arguments_list)
-                if grounding_outcome == False:
-                    # If there is an issue during the grounding of the predicate, then it means that a type has no existing
-                    # object, and the predicate will never be able to be grounded
+                next_arguments_list.append(obj)
+                grounding_outcome = self.ground_predicates_aux(predicate_name, next_predicate_types_list,
+                                                               next_arguments_list)
+                if not grounding_outcome:
+                    # If there is an issue during the grounding of the predicate, then it means that a type has no
+                    # existing object, and the predicate will never be able to be grounded
                     return False
             return True
         return False
@@ -117,9 +117,9 @@ class Grounder():
         Add a variable to the (grounded) STRIPS problem
         """
         hashed_predicate = self.hash_ground_predicate(predicate_name, arguments_list)
-        predicate_id = len(self.predicate_to_varId)
-        self.predicate_to_varId[hashed_predicate] = predicate_id
-        self.varId_to_predicate[predicate_id] = hashed_predicate
+        predicate_id = len(self.predicate_to_var_id)
+        self.predicate_to_var_id[hashed_predicate] = predicate_id
+        self.var_id_to_predicate[predicate_id] = hashed_predicate
 
     def ground_actions(self):
         """
@@ -130,11 +130,9 @@ class Grounder():
 
         for action in actions:
             # Create pairs (type, parameter_name) for each parameter in the parameters dictionary
-            parameters_type_list = list(it.chain.from_iterable([list(zip([type]*len(args), args)) for type, args in action.parameters.items()]))
+            parameters_type_list = list(it.chain.from_iterable(
+                [list(zip([param_type] * len(args), args)) for param_type, args in action.parameters.items()]))
             self.find_param_assignment(action, parameters_type_list, {})
-            #param_dic = {}
-            #for type, param_list in action.parameters.items():
-            #    for param in param_list:
 
     def find_param_assignment(self, action, parameters, assignment):
         """
@@ -156,12 +154,12 @@ class Grounder():
 
         current_param = parameters[0]
         param_type, param_name = current_param[0], current_param[1]
-        if not param_type in objects_dictionary:
+        if param_type not in objects_dictionary:
             return False
 
-        for object in objects_dictionary[param_type]:
+        for obj in objects_dictionary[param_type]:
             new_assignment = assignment.copy()
-            new_assignment[param_name] = object
+            new_assignment[param_name] = obj
             self.find_param_assignment(action, parameters[1:], new_assignment)
 
         return True
@@ -177,20 +175,20 @@ class Grounder():
 
         for relation, predicate_list in [('pre', action.precondition), ('eff', action.effects)]:
             for literal in predicate_list:
-                #sign = 1 if literal.sign == '+' else 0
-                #rel = 1 if relation == 'eff' else 0
+                # sign = 1 if literal.sign == '+' else 0
+                # rel = 1 if relation == 'eff' else 0
                 action_predicate = literal.predicate
 
                 grounded_args = []
-                for type, arg in zip(action_predicate.arguments_type_list, action_predicate.arguments_name_list):
+                for param_type, arg in zip(action_predicate.arguments_type_list, action_predicate.arguments_name_list):
                     # One can also check the type, even though we do not do it here
                     grounded_args.append(assignment[arg])
 
                 # Add the variable id to the relevant precondition list
                 hashed_ground_predicate = self.hash_ground_predicate(action_predicate.name, grounded_args)
-                variable_id = self.predicate_to_varId[hashed_ground_predicate]
+                variable_id = self.predicate_to_var_id[hashed_ground_predicate]
 
-                #[pre_neg, pre_pos, eff_neg, eff_pos][sign + 2*rel].append(variable_id)
+                # [pre_neg, pre_pos, eff_neg, eff_pos][sign + 2*rel].append(variable_id)
                 if relation == 'pre':
                     if literal.sign == '+':
                         pre_pos.append(variable_id)
@@ -202,13 +200,13 @@ class Grounder():
                     elif literal.sign == '-':
                         eff_neg.append(variable_id)
 
-        operator_id = len(self.action_to_opId)
+        operator_id = len(self.action_to_op_id)
         hashed_ground_action = self.hash_ground_action(action.name, pre_pos, pre_neg, eff_pos, eff_neg)
         operator = Operator(action.name, pre_pos, pre_neg, eff_pos, eff_neg)
 
-        self.action_to_opId[hashed_ground_action] = operator_id
-        self.opId_to_action[operator_id] = hashed_ground_action
-        self.opId_to_operator[operator_id] = operator
+        self.action_to_op_id[hashed_ground_action] = operator_id
+        self.op_id_to_action[operator_id] = hashed_ground_action
+        self.op_id_to_operator[operator_id] = operator
 
     def build_initial_and_goal_states(self):
         """
@@ -216,12 +214,12 @@ class Grounder():
         that is assigned to them in the grounding previously done
         """
         convert_lists = [(self.pddlInstance.init, self.init_pos, self.init_neg),
-                        (self.pddlInstance.goal, self.goal_pos, self.goal_neg)]
+                         (self.pddlInstance.goal, self.goal_pos, self.goal_neg)]
 
         for literals_list, varIds_pos, varIds_neg in convert_lists:
             for hashed_literal in literals_list:
-                if hashed_literal.predicate in self.predicate_to_varId:
-                    predicate_id = self.predicate_to_varId[hashed_literal.predicate]
+                if hashed_literal.predicate in self.predicate_to_var_id:
+                    predicate_id = self.predicate_to_var_id[hashed_literal.predicate]
                     if hashed_literal.sign == '+':
                         varIds_pos.append(predicate_id)
                     else:
@@ -236,18 +234,20 @@ class Grounder():
         """
         Hash a ground action (= operator) and return a pretty-printable version
         """
-        flat_fluents = [' '.join(map(lambda x: self.varId_to_predicate[x], l)) for l in [pre_pos, pre_neg, eff_pos, eff_neg]]
+        flat_fluents = [' '.join(map(lambda x: self.var_id_to_predicate[x], l)) for l in
+                        [pre_pos, pre_neg, eff_pos, eff_neg]]
         pre_eff = ' '.join([f"({fluents})" for fluents in flat_fluents])
         return f"<{action_name}: {pre_eff}>"
 
     def unhash_ground_action(self, hashed_ground_action):
         action_name, relations = hashed_ground_action[1:-1].split(": ")
-        pre_pos, pre_neg, eff_pos, eff_neg = list(map(lambda x: list(map(int, x.rstrip()[:-1].split())), relations.split('(')[1:]))
+        pre_pos, pre_neg, eff_pos, eff_neg = list(
+            map(lambda x: list(map(int, x.rstrip()[:-1].split())), relations.split('(')[1:]))
 
         return action_name, pre_pos, pre_neg, eff_pos, eff_neg
 
     def unhash_ground_action_to_operator(self, hashed_ground_action):
-        return Operator(*unhash_ground_action(self, hashed_ground_action))
+        return Operator(*self.unhash_ground_action(hashed_ground_action))
 
     def hash_ground_predicate(self, predicate_name, arguments_list):
         return f"({predicate_name} {' '.join(arguments_list)})"
@@ -264,8 +264,8 @@ class Grounder():
         elements = hashed_ground_predicate[1:-1].split(' ')
         return elements[0], elements[1:]
 
-    def getVariablesCount(self):
-        return len(self.varId_to_predicate)
+    def get_variables_count(self):
+        return len(self.var_id_to_predicate)
 
-    def getOperatorsCount(self):
-        return len(self.opId_to_action)
+    def get_operators_count(self):
+        return len(self.op_id_to_action)

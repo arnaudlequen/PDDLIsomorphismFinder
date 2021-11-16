@@ -5,81 +5,80 @@ from SubisoFinder import *
 from StripsConverter import *
 from SatInstance import *
 import subprocess
-from time import time
+from time import perf_counter
+
 
 def main(argv):
-
     parser = argparse.ArgumentParser(description="Sub-isomorphism finder for STRIPS planning problems")
     parser.add_argument('domainPath', metavar='domain.pddl', type=str, help="The domain file in PDDL format")
-    parser.add_argument('instance1Path', metavar='instancebig.pddl', type=str, \
+    parser.add_argument('instance1Path', metavar='instancebig.pddl', type=str,
                         help="The file of the problem from which to extract a subproblem, in PDDL format")
-    parser.add_argument('instance2Path', metavar='instancesmall.pddl', type=str, \
+    parser.add_argument('instance2Path', metavar='instancesmall.pddl', type=str,
                         help="The file of the subproblem to extract, in PDDL format")
-    parser.add_argument('-c', '--cnfpath', type=str, default='./tmp/satencoding.cnf', \
+    parser.add_argument('-c', '--cnfpath', type=str, default='./tmp/satencoding.cnf',
                         help="The file in which to save the SAT formula that is passed to the solver")
-    parser.add_argument('-s', '--satsolver', type=str, default='./Solvers/Bin/glucose-syrup_static', \
+    parser.add_argument('-s', '--satsolver', type=str, default='./Solvers/Bin/glucose-syrup_static',
                         help="The path to the SAT solver binary")
-    parser.add_argument('-o', '--output', type=str, default='output.isom', \
+    parser.add_argument('-o', '--output', type=str, default='output.isom',
                         help="The file in which to save the sub-isomorphism")
     args = parser.parse_args()
 
-    filler = ''.join(['=']*30)
+    filler = ''.join(['='] * 30)
 
     try:
         os.mkdir('./tmp')
     except FileExistsError:
         pass
 
-    global_start_time = time()
+    global_start_time = perf_counter()
     # Extract problems from file
-    #domainPath, instance1Path, instance2Path = argv[1:4]
 
-    step_start = time()
+    step_start = perf_counter()
     print("Extracting domain and instances from file...")
     print(filler)
     converter = StripsConverter()
     print(args)
-    pddlDomain = converter.buildDomain(args.domainPath)
-    pddlInstance1 = converter.buildInstance(args.instance1Path)
-    pddlInstance2 = converter.buildInstance(args.instance2Path)
-    print(f"PDDL extraction done in {time() - step_start:.1f}s!\n")
+    pddl_domain = converter.build_domain(args.domainPath)
+    pddl_instance1 = converter.build_instance(args.instance1Path)
+    pddl_instance2 = converter.build_instance(args.instance2Path)
+    print(f"PDDL extraction done in {perf_counter() - step_start:.1f}s!\n")
 
     # Convert them to STRIPS
-    step_start = time()
+    step_start = perf_counter()
     print("Converting problems to STRIPS...")
     print(filler)
-    problem1 = converter.buildStripsProblem(pddlDomain, pddlInstance1)
-    problem2 = converter.buildStripsProblem(pddlDomain, pddlInstance2)
-    print(f"Conversion to STRIPS done in {time() - step_start:.1f}s!\n")
+    problem1 = converter.build_strips_problem(pddl_domain, pddl_instance1)
+    problem2 = converter.build_strips_problem(pddl_domain, pddl_instance2)
+    print(f"Conversion to STRIPS done in {perf_counter() - step_start:.1f}s!\n")
 
     # Translation to SAT
-    step_start = time()
+    step_start = perf_counter()
     print("Translating the STRIPS-sub-isomorphism instance to SAT...")
     print(filler)
-    subisoFinder = SubisoFinder()
-    satInstance = subisoFinder.convertToSAT(problem1, problem2)
-    print(f"Translation done in {time() - step_start:.1f}s!\n")
+    subiso_finder = SubisoFinder()
+    sat_instance = subiso_finder.convert_to_sat(problem1, problem2)
+    print(f"Translation done in {perf_counter() - step_start:.1f}s!\n")
 
     # Save the partial results
-    step_start = time()
+    step_start = perf_counter()
     print("Saving the results...")
     print(filler)
-    satFormulaPath = args.cnfpath
-    file = open(satFormulaPath, 'w+')
-    satInstance.printInstance(file)
+    sat_formula_path = args.cnfpath
+    file = open(sat_formula_path, 'w+')
+    sat_instance.print_instance(file)
     file.close()
-    print(f"Saving done in {time() - step_start:.1f}s!")
-    print(f"Saved the result in file {satFormulaPath}\n")
+    print(f"Saving done in {perf_counter() - step_start:.1f}s!")
+    print(f"Saved the result in file {sat_formula_path}\n")
 
     # Interpret the results
     # Use a subprocess to run something as a backend (I need to pass a file, as it seems)
     # The output of the solver being in the commandline, I need to read the stdout of the process
-    start_time = time()
+    start_time = perf_counter()
     print(f"Calling the SAT solver in a subprocess...")
     print(filler)
-    solverPath = args.satsolver
+    solver_path = args.satsolver
     # Added option -model for Glucose
-    process = subprocess.run([solverPath, '-model', satFormulaPath], capture_output=True, text=True)
+    process = subprocess.run([solver_path, '-model', sat_formula_path], capture_output=True, text=True)
     print("SAT solving done. Processing the output...")
 
     outcome = None
@@ -98,7 +97,7 @@ def main(argv):
                 outcome = False
                 continue
 
-        if outcome != None:
+        if outcome is not None:
             if line_elements[0] == 'v':
                 assignment = [(False if var[0] == '-' else True) for var in line_elements]
                 # The first text character is v, which is not part of the variable assigment. Variables are however
@@ -107,21 +106,20 @@ def main(argv):
                 break
 
     print(f"Isomorphism: {'FOUND' if outcome else 'NOT FOUND'}")
-    print(f"SAT solving done in {time() - step_start:.1f}s!\n")
+    print(f"SAT solving done in {perf_counter() - step_start:.1f}s!\n")
     if outcome:
         print("Building the isomorphism...")
         print(filler)
-        isoPath = args.output
-        isoFile = open(isoPath, 'w+')
+        iso_path = args.output
 
-        subisoFinder.interpretAssignment(problem1, problem2, assignment, isoFile)
+        with open(iso_path, 'w+') as iso_file:
+            subiso_finder.interpret_assignment(problem1, problem2, assignment, iso_file)
 
-        isoFile.close()
         print("Isomorphism built")
-        print(f"Saved the result in file {isoPath}\n")
+        print(f"Saved the result in file {iso_path}\n")
 
     print(filler)
-    print(f"Total time: {time() - global_start_time:.1f}s")
+    print(f"Total time: {perf_counter() - global_start_time:.1f}s")
     print()
 
 
