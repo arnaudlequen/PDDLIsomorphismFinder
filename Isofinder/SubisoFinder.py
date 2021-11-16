@@ -2,12 +2,12 @@ from DomainListener import *
 from InstanceListener import *
 from StripsConverter import *
 from SatInstance import *
-from Utils import progressBar
+from Utils import progress_bar
 
 
 class SubisoFinder:
     def __init__(self):
-        self.verboseActionNames = True
+        self.verbose_action_names = True
 
         self.steps = [
             'FluentsImages',
@@ -53,7 +53,7 @@ class SubisoFinder:
         # (1) Make sure that we have a proper image for each fluent of P2
         if 'FluentsImages' in self.steps:
             for i in range(n2):
-                print(f"Step {step_counter.format(step=current_step)}: {progressBar(i / n2, 24)}",
+                print(f"Step {step_counter.format(step=current_step)}: {progress_bar(i / n2, 24)}",
                       sep='', end='\r', flush=True)
                 clause = [f_to_fid(i, j) for j in range(n1)]
                 sat_instance.add_clause(clause)
@@ -70,7 +70,7 @@ class SubisoFinder:
         # (2) Image of operators, same as above
         if 'OperatorsImages' in self.steps:
             for i in range(m2):
-                print(f"Step {step_counter.format(step=current_step)}: {progressBar(i / m2, 24)}",
+                print(f"Step {step_counter.format(step=current_step)}: {progress_bar(i / m2, 24)}",
                       sep='', end='\r', flush=True)
                 clause = [o_to_oid(i, j) for j in range(m1)]
                 sat_instance.add_clause(clause)
@@ -87,7 +87,7 @@ class SubisoFinder:
         # (3) Enforcing the morphism property
         if 'MorphismProperty' in self.steps:
             for i in range(m2):
-                print(f"Step {step_counter.format(step=current_step)}: {progressBar(i / m2, 24)}",
+                print(f"Step {step_counter.format(step=current_step)}: {progress_bar(i / m2, 24)}",
                       sep='', end='\r', flush=True)
                 for j in range(m1):
                     # If we map o'_j to o_i, then for each fluent in the pre (eff) of o'_j, there should be its image in
@@ -112,7 +112,7 @@ class SubisoFinder:
         # Make sure there is no superfluous fluents in the images
         if 'BijectionProperty' in self.steps:
             for i in range(m2):
-                print(f"Step {step_counter.format(step=current_step)}: {progressBar(i / m2, 24)}",
+                print(f"Step {step_counter.format(step=current_step)}: {progress_bar(i / m2, 24)}",
                       sep='', end='\r', flush=True)
                 for j in range(m1):
                     operator1 = problem1.get_operator_by_id(j)
@@ -131,7 +131,7 @@ class SubisoFinder:
         # Enforce the injectivity of the morphism between operators
         if 'OperatorsInjectivity' in self.steps:
             for i in range(m1):
-                print(f"Step {step_counter.format(step=current_step)}: {progressBar(i / m1, 24)}",
+                print(f"Step {step_counter.format(step=current_step)}: {progress_bar(i / m1, 24)}",
                       sep='', end='\r', flush=True)
 
                 for j in range(m2):
@@ -157,10 +157,10 @@ class SubisoFinder:
                 compare_lists_aux.append((problem1.get_goal_state()[i], problem2.get_goal_state()[i]))
             compare_lists.append(compare_lists_aux)
 
-        for compareList in compare_lists:
+        for compare_list in compare_lists:
             progress = 0
-            total_length = sum([len(l1) + len(l2) for l1, l2 in compareList])
-            for var_list1, var_list2 in compareList:
+            total_length = sum([len(l1) + len(l2) for l1, l2 in compare_list])
+            for var_list1, var_list2 in compare_list:
 
                 back_and_forth_lists = [(var_list1, var_list2),
                                         (var_list2, var_list1)]
@@ -168,7 +168,7 @@ class SubisoFinder:
                 for var_a, var_b in back_and_forth_lists:
                     for i in var_b:
                         print(f"Step {step_counter.format(step=current_step)}: "
-                              f"{progressBar(progress / total_length, 24)}",
+                              f"{progress_bar(progress / total_length, 24)}",
                               sep='', end='\r', flush=True)
                         clause = [f_to_fid(i, j) for j in var_a]
                         sat_instance.add_clause(clause)
@@ -202,7 +202,7 @@ class SubisoFinder:
         for k in range(1, n1 * n2 + 1):
             if assignment[k]:
                 i, j = fid_to_f(k)
-                if self.verboseActionNames:
+                if self.verbose_action_names:
                     out_file.write(f"{problem2.get_predicate_by_var_id(i)} => {problem1.get_predicate_by_var_id(j)}\n")
                 else:
                     out_file.write(f"{i} => {j}\n")
@@ -216,7 +216,7 @@ class SubisoFinder:
         for k in range(n1 * n2 + 1, n1 * n2 + m1 * m2 + 1):
             if assignment[k]:
                 i, j = oid_to_o(k)
-                if self.verboseActionNames:
+                if self.verbose_action_names:
                     out_file.write(f"{problem2.pretty_print_action_by_op_id(i)} => "
                                    f"{problem1.pretty_print_action_by_op_id(j)}\n")
                 else:

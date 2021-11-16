@@ -5,7 +5,7 @@ def measureTime(func, *args):
     func(*args)
     return time() - start_time
 
-def progressBar(percentage, width=10):
+def progress_bar(percentage, width=10):
     charLeft = int(percentage*width)
     if charLeft < percentage * width:
         s = '█'*charLeft + '▓'
