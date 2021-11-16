@@ -1,11 +1,6 @@
-import sys
-from antlr4 import *
 from antlr.PddlLexer import PddlLexer
-from antlr.PddlParser import PddlParser
-from DomainListener import *
-from InstanceListener import *
 from Grounder import *
-from time import time
+
 
 class StripsConverter:
     def __init__(self):
@@ -17,7 +12,8 @@ class StripsConverter:
 
         self.grounder = Grounder()
 
-    def buildFromFile(self, path, listener):
+    @staticmethod
+    def build_from_file(path, listener):
         """
         Read a file and extract the semantic structure from it, using the appropriate listener
         """
@@ -36,19 +32,19 @@ class StripsConverter:
 
         return listener.getPDDLStructure()
 
-    def buildDomain(self, path):
-        pddlDomain = self.buildFromFile(path, DomainListener)
-        self.domains.append(pddlDomain)
+    def build_domain(self, path) -> PDDLDomain:
+        pddl_domain = self.build_from_file(path, DomainListener)
+        self.domains.append(pddl_domain)
 
-        return pddlDomain
+        return pddl_domain
 
-    def buildInstance(self, path):
-        pddlInstance = self.buildFromFile(path, InstanceListener)
-        self.instances.append(pddlInstance)
+    def build_instance(self, path) -> PDDLInstance:
+        pddl_instance = self.build_from_file(path, InstanceListener)
+        self.instances.append(pddl_instance)
 
-        return pddlInstance
+        return pddl_instance
 
-    def buildStripsProblem(self, domain, instance):
+    def build_strips_problem(self, domain, instance) -> StripsProblem:
         """
         Ground the instance using the appropriate domain
 
@@ -59,13 +55,13 @@ class StripsConverter:
         Return:
             problem: A StripsProblem problem that corresponds to the STRIPS problem encoded in (domain, instance)
         """
-        problem = self.grounder.groundInstance(domain, instance)
+        problem = self.grounder.ground_instance(domain, instance)
         self.problems.append(problem)
 
         return problem
 
-    def getLastDomain(self):
+    def get_last_domain(self) -> PDDLDomain:
         return self.domains[-1]
 
-    def getLastInstance(self):
+    def get_last_instance(self) -> PDDLInstance:
         return self.instances[-1]
