@@ -1,91 +1,137 @@
-from collections import namedtuple
+from typing import List
+from dataclasses import dataclass
 
-"""
-Predicate
 
-A tuple that consists of the name and the types of the arguments of a predicate
-"""
-Predicate = namedtuple('Predicate', ['name', 'arguments_type_list'])
+@dataclass
+class Predicate:
+    """
+    Predicate
 
-"""
-ActionPredicate
+    A structure that consists of the name and the types of the arguments of a predicate
 
-A tuple that consists of an open predicate of the like one may find in actions. The difference with the previous
-definition of predicate is that the arguments are named, which allows for unification with other predicates
-"""
-ActionPredicate = namedtuple('ActionPredicate', ['name', 'arguments_type_list', 'arguments_name_list'])
+    Attributes:
+        name (str): The symbol that represents the predicate
+        arguments_type_list (list): The sequence of types
+    """
+    name: str
+    arguments_type_list: list
 
-"""
-Literal
 
-A predicate that can be either positive or negative
+@dataclass
+class ActionPredicate(Predicate):
+    """
+    ActionPredicate
 
-Args:
-    sign: The string value '+' or '-', which represents whether the predicate is positive or negative
-    predicate: Either a Predicate or an ActionPredicate
-"""
-Literal = namedtuple('Literal', ['sign', 'predicate']) # sign should be + or -
+    A structure that consists of an open predicate of the like one may find in actions. The difference with the previous
+    definition of predicate is that the arguments are named, which allows for unification with other predicates
 
-"""
-HashedLiteral
+    Attributes:
+        arguments_name_list (List[str]): The sequence of symbols that represent the arguments
+    """
+    arguments_name_list: List[str]
 
-A hashed, grounded predicate that can be either positive or negative
 
-Args:
-    sign: The string value '+' or '-', which represents whether the predicate is positive or negative
-    predicate: A string that represents a predicate
-"""
-HashedLiteral = namedtuple('HashedPredicate', ['sign', 'predicate'])
+@dataclass
+class Literal:
+    """
+    Literal
+
+    A predicate that can be either positive or negative
+
+    Attributes:
+        sign: The string value '+' or '-', which represents whether the predicate is positive or negative
+        predicate: Either a Predicate or an ActionPredicate
+    """
+    sign: str
+    predicate: Predicate
+
+
+@dataclass
+class HashedLiteral:
+    """
+    HashedLiteral
+
+    A hashed, grounded predicate that can be either positive or negative
+
+    Attributes:
+        sign: The string value '+' or '-', which represents whether the predicate is positive or negative
+        predicate: A string that represents a predicate
+    """
+    sign: str
+    predicate: Predicate
+
 
 #
 # PDDL types
 #
-"""
-PDDLDomain
+@dataclass
+class PDDLDomain:
+    """
+    PDDLDomain
 
-A structure that represents a PDDLDomain that has been extracted from the domain file
+    A structure that represents a PDDLDomain that has been extracted from the domain file
 
-Args:
-    name: The name of the domain
-    predicates: A list of predicates
-"""
-PDDLDomain = namedtuple('PDDLDomain', ['name', 'predicates', 'actions'])
-
-"""
-PDDLInstance
-
-A structure that represents a PDDL instance that has been extracted from a problem file
-"""
-PDDLInstance = namedtuple('PDDLInstance', ['name', 'objects', 'init', 'goal'])
+    Attributes:
+        name: The name of the domain
+        predicates: A list of predicates
+    """
+    name: str
+    predicates: List[Predicate]
+    actions: List[ActionPredicate]
 
 
-"""
-Action
+@dataclass
+class PDDLInstance:
+    """
+    PDDLInstance
 
-An action found a PDDL instance
+    A structure that represents a PDDL instance that has been extracted from a problem file
+    """
+    name: str
+    objects: List
+    init: List[HashedLiteral]
+    goal: List[HashedLiteral]
 
-Args:
-    name: The name of the action
-    parameters: A dictionary where keys are types and values are lists of symbols of a certain type
-    precondition: A list of Literals, where predicate is an ActionPredicate
-    effects: A list of Literals, where predicate is an ActionPredicate
 
-"""
-Action = namedtuple('Action', ['name', 'parameters', 'precondition', 'effects'])
+@dataclass
+class Action:
+    """
+    Action
+
+    An action found in a PDDL instance
+
+    Attributes:
+        name: The name of the action
+        parameters: A dictionary where keys are types and values are lists of symbols of a certain type
+        precondition: A list of Literals, where predicate is an ActionPredicate
+        effects: A list of Literals, where predicate is an ActionPredicate
+
+    """
+    name: str
+    parameters: dict
+    precondition: List[Literal]
+    effects: List[Literal]
+
 
 #
 # STRIPS types
 #
-"""
-Operator
+@dataclass
+class Operator:
+    """
+    Operator
 
-An operator fonud in a STRIPS instance
+    An operator found in a STRIPS instance
 
-Args:
-    name: The name of the operator
-    pre_pos: A list of int, which are the ids of the variables associated to some fluents. Represents the positive preconditions
-    pre_neg: A list of int, which are the ids of the variables associated to some fluents. Represents the negative preconditions
-    eff_pos: A list of int, which are the ids of the variables associated to some fluents. Represents the add effects
-    eff_neg: A list of int, which are the ids of the variables associated to some fluents. Represents the delete effects
-"""
-Operator = namedtuple('Operator', ['name', 'pre_pos', 'pre_neg', 'eff_pos', 'eff_neg'])
+    Attributes:
+        name: The name of the operator
+        pre_pos (List[int]): The ids of the variables associated to some fluents. Represents the positive preconditions
+        pre_neg (List[int]): The ids of the variables associated to some fluents. Represents the negative preconditions
+        eff_pos (List[int]): The ids of the variables associated to some fluents. Represents the add effects
+        eff_neg (List[int]): The ids of the variables associated to some fluents. Represents the delete effects
+    """
+    name: str
+    pre_pos: List[int]
+    pre_neg: List[int]
+    eff_pos: List[int]
+    eff_neg: List[int]
