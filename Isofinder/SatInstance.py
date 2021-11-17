@@ -1,22 +1,29 @@
 import sys
-
-from typing import List
+from typing import List, Union
 
 
 class SatInstance:
-    def __init__(self, nb_variables, nb_clauses):
-        # Fix this: variableCount is the current count, while clausesCount is just a pointer
-        self.variable_count: int = nb_variables
+    """
+    A CNF where variables are symbols of {1, ..., n} for n > 0. Also allows a partial initialization of the assignment.
 
+    Attributes:
+        nb_variables (int): The exact number of variables of the instance
+        clauses (List)
+    """
+    clauses: List[Union[type(None), bool]]
+
+    def __init__(self, nb_variables, nb_clauses):
+        self.nb_variables: int = nb_variables
+
+        self.clauses: List[List[Union[type(None), int]]] = [None] * nb_clauses
         self.clauses_count: int = 0
-        self.clauses: List = [None] * nb_clauses
 
     def add_clause(self, variables: List[int]) -> None:
         """
         Add a clause that consists of a list of variables, assumed to be non-null signed integers.
 
         Args:
-            variables: A list of integers that represents the variables of the clause
+            variables (List[int]): A list of integers that represents the variables of the clause
         """
         # assert list(it.filterfalse(lambda x: isinstance(x, int) and x != 0, variables)) == [], "Invalid clause: variables must be non-null integers"
         # self.variable_count = max(self.variable_count, max(list(map(abs, variables))))
@@ -24,7 +31,7 @@ class SatInstance:
         self.clauses_count += 1
 
     def get_variables_count(self) -> int:
-        return self.variable_count
+        return self.nb_variables
 
     def get_clauses_count(self) -> int:
         return self.clauses_count
