@@ -1,5 +1,6 @@
 import sys
 from typing import List, Union
+import itertools as it
 
 
 class SatInstance:
@@ -8,26 +9,56 @@ class SatInstance:
 
     Attributes:
         nb_variables (int): The exact number of variables of the instance
-        clauses (List)
+        clauses (List[List[int]]): A list of conjunctive clauses, where variables are either
+        clauses_count (int): An upper bound on the number of clauses
+        partial_assignment (List[Union[NoneType, bool]]): A list that represents a partial assignment of the variables
+            of the instance, where partial_assignment[i] is, if not None, the value of variable i
     """
-    clauses: List[Union[type(None), bool]]
+
+    nb_variables: int
+    partial_assignment: List[int]
+    simplified_variables_count: int
+    clauses_count: int
+    clauses: List[List[int]]
+    simplified_clauses_count: int
 
     def __init__(self, nb_variables, nb_clauses):
-        self.nb_variables: int = nb_variables
+        self.nb_variables = nb_variables
+        self.partial_assignment = [None] * (nb_variables + 1)
+        self.simplified_variables_count = 0
 
-        self.clauses: List[List[Union[type(None), int]]] = [None] * nb_clauses
-        self.clauses_count: int = 0
+        self.clauses_count = 0
+        self.clauses = [[] for _ in range(nb_clauses)]
+        self.simplified_clauses_count = 0
 
     def add_clause(self, variables: List[int]) -> None:
         """
         Add a clause that consists of a list of variables, assumed to be non-null signed integers.
 
         Args:
-            variables (List[int]): A list of integers that represents the variables of the clause
+            variables (List[int]): A list of integers that represents the variables of the clause. If variable i is
+                negated, then i should be negative
         """
-        # assert list(it.filterfalse(lambda x: isinstance(x, int) and x != 0, variables)) == [], "Invalid clause: variables must be non-null integers"
-        # self.variable_count = max(self.variable_count, max(list(map(abs, variables))))
-        self.clauses[self.clauses_count] = variables
+        clause = variables[:]  # Create a copy as we will alter the clause
+
+        # Simplify the formula : delete the clause when it is satisfied by the partial assignment, or remove the
+        # literals that are false
+        # Also assuming that no variable appears twice,
+        for i, literal in enumerate(variables):
+            if self.partial_assignment[abs(literal)] is not None:
+                if literal > 0 and self.partial_assignment[abs(literal)] or \
+                        literal < 0 and not self.partial_assignment[abs(literal)]:
+                    self.simplified_clauses_count += 1
+                    return
+                clause[i] = 0
+
+        clause = list(it.filterfalse(lambda x: x == 0, clause))
+        self.simplified_variables_count += len(variables) - len(clause)
+
+        if not clause:
+            print("ERROR: Empty clause")  # No clause should be empty, by construction
+
+        self.clauses[self.clauses_count] = clause
         self.clauses_count += 1
 
     def get_variables_count(self) -> int:
