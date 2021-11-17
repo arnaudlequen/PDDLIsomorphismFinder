@@ -1,21 +1,21 @@
+from dataclasses import dataclass
+
+
+@dataclass
 class StripsProblem:
-    def __init__(self, predicate_to_var_id, var_id_to_predicate, action_to_op_id, op_id_to_action, op_id_to_operator,
-                 initial_state_variables_pos, initial_state_variables_neg,
-                 goal_state_variables_pos, goal_state_variables_neg):
-        # All mentions to PDDL refer to grounded PDDL predicates and actions
-        # Convention: predicate in PDDL, variable in STRIPS
-        self.predicate_to_varId = predicate_to_var_id
-        self.varId_to_predicate = var_id_to_predicate
+    predicate_to_varId: dict
+    varId_to_predicate: dict
 
-        # Convention: action in PDDL, operator in STRIPS
-        self.action_to_opId = action_to_op_id
-        self.opId_to_action = op_id_to_action
-        self.opId_to_operator = op_id_to_operator
+    # All mentions to PDDL refer to grounded PDDL predicates and actions
+    # Convention: action in PDDL, operator in STRIPS
+    action_to_opId: dict
+    opId_to_action: dict
+    opId_to_operator: dict
 
-        self.init_pos = initial_state_variables_pos
-        self.init_neg = initial_state_variables_neg
-        self.goal_pos = goal_state_variables_pos
-        self.goal_neg = goal_state_variables_neg
+    init_pos: dict
+    init_neg: dict
+    goal_pos: dict
+    goal_neg: dict
 
     def pretty_print_action_by_op_id(self, op_id):
         """
