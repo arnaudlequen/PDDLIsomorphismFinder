@@ -19,7 +19,7 @@ class SubisoFinder:
             # 'GoalStateConservation',
         ]
 
-    def convert_to_sat(self, problem1, problem2):
+    def convert_to_sat(self, problem1, problem2, file_path=None):
         """
         Consider the problem STRIPS-subproblem-isomorphism(problem1, problem2), where one tries to find a subproblem of
         problem1 that is isomorphic to problem2. This function gives a SAT encoding of it.
@@ -46,6 +46,8 @@ class SubisoFinder:
         # print(f"Expected number of variables: {expected_variables_count}")
         # print(f"Expected number of clauses: < {expected_clause_count}")
         sat_instance = SatInstance(expected_variables_count, expected_clause_count)
+        if file_path is not None:
+            sat_instance.open_output_file(file_path)
 
         current_step = 1
         step_counter = f"{{step}}/{len(self.steps)}"
@@ -179,6 +181,9 @@ class SubisoFinder:
 
         print(f"Number of variables: {sat_instance.get_variables_count()}")
         print(f"Number of clauses: {sat_instance.get_clauses_count()}")
+
+        sat_instance.close_output_file()
+
         return sat_instance
 
     def interpret_assignment(self, problem1, problem2, assignment, out_file=sys.stdout):

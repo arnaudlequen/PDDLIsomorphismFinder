@@ -56,19 +56,9 @@ def main(argv):
     print("Translating the STRIPS-sub-isomorphism instance to SAT...")
     print(filler)
     subiso_finder = SubisoFinder()
-    sat_instance = subiso_finder.convert_to_sat(problem1, problem2)
+    sat_instance = subiso_finder.convert_to_sat(problem1, problem2, args.cnfpath)
     print(f"Translation done in {perf_counter() - step_start:.1f}s!\n")
-
-    # Save the partial results
-    step_start = perf_counter()
-    print("Saving the results...")
-    print(filler)
-    sat_formula_path = args.cnfpath
-    file = open(sat_formula_path, 'w+')
-    sat_instance.print_instance(file)
-    file.close()
-    print(f"Saving done in {perf_counter() - step_start:.1f}s!")
-    print(f"Saved the result in file {sat_formula_path}\n")
+    print(f"Saved result in file {args.cnfpath}\n")
 
     # Interpret the results
     # Use a subprocess to run something as a backend (I need to pass a file, as it seems)
@@ -78,7 +68,7 @@ def main(argv):
     print(filler)
     solver_path = args.satsolver
     # Added option -model for Glucose
-    process = subprocess.run([solver_path, '-model', sat_formula_path], capture_output=True, text=True)
+    process = subprocess.run([solver_path, '-model', args.cnfpath], capture_output=True, text=True)
     print("SAT solving done. Processing the output...")
 
     outcome = None
