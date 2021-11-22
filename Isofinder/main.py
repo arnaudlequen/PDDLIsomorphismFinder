@@ -63,7 +63,7 @@ def main(argv):
     # Interpret the results
     # Use a subprocess to run something as a backend (I need to pass a file, as it seems)
     # The output of the solver being in the commandline, I need to read the stdout of the process
-    start_time = perf_counter()
+    step_start = perf_counter()
     print(f"Calling the SAT solver in a subprocess...")
     print(filler)
     solver_path = args.satsolver
