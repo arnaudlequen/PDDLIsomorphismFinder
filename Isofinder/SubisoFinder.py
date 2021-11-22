@@ -66,7 +66,9 @@ class SubisoFinder:
                             clause = [-1 * f_to_fid(i, j), -1 * f_to_fid(i, k)]
                             sat_instance.add_clause(clause)
 
-            print(f"{f'Step {step_counter.format(step=current_step)}: Done':<45}")
+            step_end_str = f"Step {step_counter.format(step=current_step)}: Done " \
+                           f"({sat_instance.get_new_clauses_count()} clauses)"
+            print(f"{step_end_str:<45}")
             current_step += 1
 
         # (2) Image of operators, same as above
@@ -83,7 +85,9 @@ class SubisoFinder:
                             clause = [-1 * o_to_oid(i, j), -1 * o_to_oid(i, k)]
                             sat_instance.add_clause(clause)
 
-            print(f"{f'Step {step_counter.format(step=current_step)}: Done':<45}")
+            step_end_str = f"Step {step_counter.format(step=current_step)}: Done " \
+                           f"({sat_instance.get_new_clauses_count()} clauses)"
+            print(f"{step_end_str:<45}")
             current_step += 1
 
         # (3) Enforcing the morphism property
@@ -108,7 +112,9 @@ class SubisoFinder:
                             clause.extend([f_to_fid(k, l) for l in op1_list])
                             sat_instance.add_clause(clause)
 
-            print(f"{f'Step {step_counter.format(step=current_step)}: Done':<45}")
+            step_end_str = f"Step {step_counter.format(step=current_step)}: Done " \
+                           f"({sat_instance.get_new_clauses_count()} clauses)"
+            print(f"{step_end_str:<45}")
             current_step += 1
 
         # Make sure there is no superfluous fluents in the images
@@ -127,7 +133,9 @@ class SubisoFinder:
                             clause = [-1 * o_to_oid(i, j)]
                             clause.extend([f_to_fid(k, l) for k in range(n2)])
                             sat_instance.add_clause(clause)
-            print(f"{f'Step {step_counter.format(step=current_step)}: Done':<45}")
+            step_end_str = f"Step {step_counter.format(step=current_step)}: Done " \
+                           f"({sat_instance.get_new_clauses_count()} clauses)"
+            print(f"{step_end_str:<45}")
             current_step += 1
 
         # Enforce the injectivity of the morphism between operators
@@ -142,7 +150,9 @@ class SubisoFinder:
                             clause = [-1 * o_to_oid(j, i), -1 * o_to_oid(k, i)]
                             sat_instance.add_clause(clause)
 
-            print(f"{f'Step {step_counter.format(step=current_step)}: Done':<45}")
+            step_end_str = f"Step {step_counter.format(step=current_step)}: Done " \
+                           f"({sat_instance.get_new_clauses_count()} clauses)"
+            print(f"{step_end_str:<45}")
             current_step += 1
 
         # Initial and goal states
@@ -176,7 +186,9 @@ class SubisoFinder:
                         sat_instance.add_clause(clause)
                         progress += 1
 
-            print(f"{f'Step {step_counter.format(step=current_step)}: Done':<45}")
+            step_end_str = f"Step {step_counter.format(step=current_step)}: Done " \
+                           f"({sat_instance.get_new_clauses_count()} clauses)"
+            print(f"{step_end_str:<45}")
             current_step += 1
 
         print(f"Number of variables: {sat_instance.get_variables_count()}")

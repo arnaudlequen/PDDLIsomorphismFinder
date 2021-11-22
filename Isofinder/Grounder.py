@@ -40,26 +40,13 @@ class Grounder:
         self.op_id_to_action = {}
         self.op_id_to_operator = {}
 
-        global_start_time = perf_counter()
-        print("Grounding predicates...")
         start_time = perf_counter()
         self.ground_predicates()
-        stop_time = perf_counter()
-        print(f"DONE. Found {self.get_variables_count()} fluents in {stop_time - start_time:.4f}s")
-
-        print("Grounding actions...")
-        start_time = perf_counter()
         self.ground_actions()
-        stop_time = perf_counter()
-        print(f"DONE. Found {self.get_operators_count()} operators in {stop_time - start_time:.4f}s")
-
-        print("Encoding initial and goal states...")
-        start_time = perf_counter()
         self.build_initial_and_goal_states()
         stop_time = perf_counter()
-        print(f"DONE. Conversion done in {stop_time - start_time:.4f}s")
-
-        print(f"=> Grounding completed in {perf_counter() - start_time:.4f}s")
+        print(f"Done. Found {self.get_variables_count()} fluents and {self.get_operators_count()} operators "
+              f"in {stop_time - start_time:.4f}s")
 
         return StripsProblem(self.predicate_to_var_id, self.var_id_to_predicate,
                              self.action_to_op_id, self.op_id_to_action,

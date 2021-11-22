@@ -26,11 +26,14 @@ class SatInstance:
     def __init__(self, nb_variables, nb_clauses):
         self.nb_variables = nb_variables
         self.partial_assignment = [None] * (nb_variables + 1)
-        self.simplified_variables_count = 0
 
         self.clauses_count = 0
         self.clauses = [[] for _ in range(nb_clauses)]
+
+        # Statistics
+        self.simplified_variables_count = 0
         self.simplified_clauses_count = 0
+        self.new_clauses_count = 0
 
         self.file = None
 
@@ -66,6 +69,7 @@ class SatInstance:
         else:
             self.clauses[self.clauses_count] = clause
 
+        self.new_clauses_count += 1
         self.clauses_count += 1
 
     def open_output_file(self, file_path: str):
@@ -81,6 +85,16 @@ class SatInstance:
 
         # Bad practice but only way I found to keep the SATInstance encapsulated
         self.file.close()
+
+    def get_new_clauses_count(self) -> int:
+        """
+        Return the number of clauses that were added in the instance since the last call to this function, or the
+        creation of the instance if this function has never been called before
+        """
+        new_clauses_count = self.new_clauses_count
+        self.new_clauses_count = 0
+
+        return new_clauses_count
 
     def get_variables_count(self) -> int:
         return self.nb_variables
