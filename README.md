@@ -17,7 +17,6 @@ Positional arguments:
 Optional arguments:
 - -h, --help: Show an help message
 - -c CNFPATH, --cnfpath CNFPATH: The file in which to save the SAT formula that is passed to the solver
-
 - -s SATSOLVER, --satsolver SATSOLVER: The path to the SAT solver binary
 - -o OUTPUT, --output OUTPUT: The file in which to save the sub-isomorphism
 
@@ -25,7 +24,9 @@ Optional arguments:
 STRIPS domains with propositional preconditions and effects
 
 # Requirements
-- Python 3.9
+Works best with CPython
+
+- Python 3.10
 - Antlr 4.9.2
 - Python packages: attrs
 - Python runtime for Antlr. Download with `pip install antlr4-python3-runtime`

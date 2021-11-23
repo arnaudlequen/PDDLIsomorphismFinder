@@ -23,12 +23,13 @@ class SatInstance:
     clauses: List[List[int]]
     simplified_clauses_count: int
 
-    def __init__(self, nb_variables, nb_clauses):
+    def __init__(self, nb_variables):
         self.nb_variables = nb_variables
         self.partial_assignment = [None] * (nb_variables + 1)
 
         self.clauses_count = 0
-        self.clauses = [[] for _ in range(nb_clauses)]
+        self.clauses = []
+        # self.clauses = [[] for _ in range(nb_clauses)]
 
         # Statistics
         self.simplified_variables_count = 0
@@ -45,7 +46,12 @@ class SatInstance:
             variables (List[int]): A list of integers that represents the variables of the clause. If variable i is
                 negated, then i should be negative
         """
-        clause = variables[:]  # Create a copy as we will alter the clause
+        if not variables:
+            return
+
+        # Create a copy as we will alter the clause
+        # Maybe there is no need to?
+        clause = variables[:]
 
         # Simplify the formula : delete the clause when it is satisfied by the partial assignment, or remove the
         # literals that are false
@@ -67,7 +73,7 @@ class SatInstance:
         if self.file is not None:
             self.print_clause(clause, self.file)
         else:
-            self.clauses[self.clauses_count] = clause
+            self.clauses.append(clause)
 
         self.new_clauses_count += 1
         self.clauses_count += 1

@@ -9,7 +9,11 @@ class SubisoFinder:
     def __init__(self):
         self.verbose_action_names = True
 
-        self.steps = [
+        self.pruning_steps = [
+            'OperatorProfiling',
+        ]
+
+        self.sat_steps = [
             'FluentsImages',
             'OperatorsImages',
             'MorphismProperty',
@@ -19,7 +23,7 @@ class SubisoFinder:
             # 'GoalStateConservation',
         ]
 
-    def convert_to_sat(self, problem1, problem2, file_path=None):
+    def convert_to_sat(self, problem1: StripsProblem, problem2: StripsProblem, file_path: str = None):
         """
         Consider the problem STRIPS-subproblem-isomorphism(problem1, problem2), where one tries to find a subproblem of
         problem1 that is isomorphic to problem2. This function gives a SAT encoding of it.
@@ -28,6 +32,7 @@ class SubisoFinder:
             problem1: The problem from which to find a subproblem that is isomorphic to problem2. An instance of
                 StripsProblem
             problem2: The smaller problem
+            file_path: The path to the file to which the intermediate SAT formula should be saved
         """
         n1, m1 = problem1.get_fluent_count(), problem1.get_operator_count()
         n2, m2 = problem2.get_fluent_count(), problem2.get_operator_count()
@@ -43,17 +48,54 @@ class SubisoFinder:
         expected_clause_count = n2 + n2 * (n1 ** 2) + m2 + m2 * (m1 ** 2) \
                                 + 4 * m2 * m1 * n2 + m1 * (m2 ** 2) + 2 * n1 + 2 * n2
         expected_variables_count = n1 * n2 + m1 * m2
-        # print(f"Expected number of variables: {expected_variables_count}")
-        # print(f"Expected number of clauses: < {expected_clause_count}")
-        sat_instance = SatInstance(expected_variables_count, expected_clause_count)
+        print(f"Maximum number of variables: {expected_variables_count}")
+        print(f"Maximum number of clauses: < {expected_clause_count}")
+        print()
+
+        sat_instance = SatInstance(expected_variables_count)
         if file_path is not None:
             sat_instance.open_output_file(file_path)
 
+        if len(self.pruning_steps) > 0:
+            # First round of simplification using local consistency checks
+            current_step = 1
+            step_counter = f"{{step}}/{len(self.pruning_steps)}"
+
+            print("Performing pruning steps ...")
+            fluent_matrix = [[True] * n1 for _ in range(n2)]  # f_m[i][j]: can fluent f'_i be mapped to f_j?
+            operator_matrix = [[True] * m1 for _ in range(m2)]
+
+            simplified_fluent_count = 0
+            simplified_operator_count = 0
+
+            # (1.1) Operators local consistency
+            if 'OperatorProfiling' in self.pruning_steps:
+                for i in range(m2):
+                    oi_profile = problem2.get_operator_profile(i)
+                    print(f"Step {step_counter.format(step=current_step)}: {progress_bar(i / m2, 24)}",
+                          sep='', end='\r', flush=True)
+                    for j in range(m1):
+                        if oi_profile != problem1.get_operator_profile(j):
+
+                            operator_matrix[i][j] = False
+                            simplified_operator_count += 1
+
+                step_end_str = f"Step {step_counter.format(step=current_step)}: Done"
+                print(f"{step_end_str:<45}")
+
+            print(f"Pruning done. Associations removed:")
+            print(f"Fluents: {simplified_fluent_count} ({simplified_fluent_count / (n1 * n2) * 100:0.2f}%)")
+            print(f"Operators: {simplified_operator_count} ({simplified_operator_count/(m1 * m2) * 100:0.2f}%)")
+            print()
+
+        print("Generating SAT instance")
+
+        # SAT creation phase
         current_step = 1
-        step_counter = f"{{step}}/{len(self.steps)}"
+        step_counter = f"{{step}}/{len(self.sat_steps)}"
 
         # (1) Make sure that we have a proper image for each fluent of P2
-        if 'FluentsImages' in self.steps:
+        if 'FluentsImages' in self.sat_steps:
             for i in range(n2):
                 print(f"Step {step_counter.format(step=current_step)}: {progress_bar(i / n2, 24)}",
                       sep='', end='\r', flush=True)
@@ -72,7 +114,7 @@ class SubisoFinder:
             current_step += 1
 
         # (2) Image of operators, same as above
-        if 'OperatorsImages' in self.steps:
+        if 'OperatorsImages' in self.sat_steps:
             for i in range(m2):
                 print(f"Step {step_counter.format(step=current_step)}: {progress_bar(i / m2, 24)}",
                       sep='', end='\r', flush=True)
@@ -91,7 +133,7 @@ class SubisoFinder:
             current_step += 1
 
         # (3) Enforcing the morphism property
-        if 'MorphismProperty' in self.steps:
+        if 'MorphismProperty' in self.sat_steps:
             for i in range(m2):
                 print(f"Step {step_counter.format(step=current_step)}: {progress_bar(i / m2, 24)}",
                       sep='', end='\r', flush=True)
@@ -118,7 +160,7 @@ class SubisoFinder:
             current_step += 1
 
         # Make sure there is no superfluous fluents in the images
-        if 'BijectionProperty' in self.steps:
+        if 'BijectionProperty' in self.sat_steps:
             for i in range(m2):
                 print(f"Step {step_counter.format(step=current_step)}: {progress_bar(i / m2, 24)}",
                       sep='', end='\r', flush=True)
@@ -139,7 +181,7 @@ class SubisoFinder:
             current_step += 1
 
         # Enforce the injectivity of the morphism between operators
-        if 'OperatorsInjectivity' in self.steps:
+        if 'OperatorsInjectivity' in self.sat_steps:
             for i in range(m1):
                 print(f"Step {step_counter.format(step=current_step)}: {progress_bar(i / m1, 24)}",
                       sep='', end='\r', flush=True)
@@ -157,13 +199,13 @@ class SubisoFinder:
 
         # Initial and goal states
         compare_lists = []
-        if 'InitialStateConservation' in self.steps:
+        if 'InitialStateConservation' in self.sat_steps:
             compare_lists_aux = []
             for i in range(0, 2):
                 compare_lists_aux.append((problem1.get_initial_state()[i], problem2.get_initial_state()[i]))
             compare_lists.append(compare_lists_aux)
 
-        if 'GoalStateConservation' in self.steps:
+        if 'GoalStateConservation' in self.sat_steps:
             compare_lists_aux = []
             for i in range(0, 2):
                 compare_lists_aux.append((problem1.get_goal_state()[i], problem2.get_goal_state()[i]))
@@ -191,6 +233,7 @@ class SubisoFinder:
             print(f"{step_end_str:<45}")
             current_step += 1
 
+        print(''.join(['-'] * 30))
         print(f"Number of variables: {sat_instance.get_variables_count()}")
         print(f"Number of clauses: {sat_instance.get_clauses_count()}")
 

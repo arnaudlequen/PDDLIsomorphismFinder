@@ -37,7 +37,6 @@ def main(argv):
     print("Extracting domain and instances from file...")
     print(filler)
     converter = StripsConverter()
-    print(args)
     pddl_domain = converter.build_domain(args.domainPath)
     pddl_instance1 = converter.build_instance(args.instance1Path)
     pddl_instance2 = converter.build_instance(args.instance2Path)
