@@ -56,6 +56,8 @@ class SubisoFinder:
         if file_path is not None:
             sat_instance.open_output_file(file_path)
 
+        partial_assignment: List[bool | None] = [None] * (expected_variables_count + 1)
+
         if len(self.pruning_steps) > 0:
             # First round of simplification using local consistency checks
             current_step = 1
@@ -88,6 +90,19 @@ class SubisoFinder:
             print(f"Operators: {simplified_operator_count} ({simplified_operator_count/(m1 * m2) * 100:0.2f}%)")
             print()
 
+            index = 1
+            for i in range(n2):
+                for j in range(n1):
+                    partial_assignment[index] = False if not fluent_matrix[i][j] else None
+                    index += 1
+
+            for i in range(m2):
+                for j in range(m1):
+                    partial_assignment[index] = False if not operator_matrix[i][j] else None
+                    index += 1
+
+            sat_instance.set_partial_assignment(partial_assignment)
+
         print("Generating SAT instance")
 
         # SAT creation phase
@@ -103,10 +118,9 @@ class SubisoFinder:
                 sat_instance.add_clause(clause)
                 # Now with the unicity of the image (not the injectivity)
                 for j in range(n1):
-                    for k in range(n1):
-                        if k != j:
-                            clause = [-1 * f_to_fid(i, j), -1 * f_to_fid(i, k)]
-                            sat_instance.add_clause(clause)
+                    for k in range(j + 1, n1):
+                        clause = [-1 * f_to_fid(i, j), -1 * f_to_fid(i, k)]
+                        sat_instance.add_clause(clause)
 
             step_end_str = f"Step {step_counter.format(step=current_step)}: Done " \
                            f"({sat_instance.get_new_clauses_count()} clauses)"
@@ -122,10 +136,9 @@ class SubisoFinder:
                 sat_instance.add_clause(clause)
 
                 for j in range(m1):
-                    for k in range(m1):
-                        if k != j:
-                            clause = [-1 * o_to_oid(i, j), -1 * o_to_oid(i, k)]
-                            sat_instance.add_clause(clause)
+                    for k in range(j + 1, m1):
+                        clause = [-1 * o_to_oid(i, j), -1 * o_to_oid(i, k)]
+                        sat_instance.add_clause(clause)
 
             step_end_str = f"Step {step_counter.format(step=current_step)}: Done " \
                            f"({sat_instance.get_new_clauses_count()} clauses)"
@@ -187,10 +200,9 @@ class SubisoFinder:
                       sep='', end='\r', flush=True)
 
                 for j in range(m2):
-                    for k in range(m2):
-                        if k != j:
-                            clause = [-1 * o_to_oid(j, i), -1 * o_to_oid(k, i)]
-                            sat_instance.add_clause(clause)
+                    for k in range(j + 1, m2):
+                        clause = [-1 * o_to_oid(j, i), -1 * o_to_oid(k, i)]
+                        sat_instance.add_clause(clause)
 
             step_end_str = f"Step {step_counter.format(step=current_step)}: Done " \
                            f"({sat_instance.get_new_clauses_count()} clauses)"

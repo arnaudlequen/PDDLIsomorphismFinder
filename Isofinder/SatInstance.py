@@ -17,7 +17,7 @@ class SatInstance:
     """
 
     nb_variables: int
-    partial_assignment: List[int]
+    partial_assignment: List[bool]
     simplified_variables_count: int
     clauses_count: int
     clauses: List[List[int]]
@@ -91,6 +91,9 @@ class SatInstance:
 
         # Bad practice but only way I found to keep the SATInstance encapsulated
         self.file.close()
+
+    def set_partial_assignment(self, partial_assignment: List[bool]):
+        self.partial_assignment = partial_assignment
 
     def get_new_clauses_count(self) -> int:
         """
