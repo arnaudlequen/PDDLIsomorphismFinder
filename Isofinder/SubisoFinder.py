@@ -1,8 +1,11 @@
+import collections
+
 from DomainListener import *
 from InstanceListener import *
 from StripsConverter import *
 from SatInstance import *
 from Utils import progress_bar
+from DataStructures import FluentOccurrences
 
 
 class SubisoFinder:
@@ -11,6 +14,7 @@ class SubisoFinder:
 
         self.pruning_steps = [
             'OperatorProfiling',
+            'ConstraintPropagation',
         ]
 
         self.sat_steps = [
@@ -58,14 +62,14 @@ class SubisoFinder:
 
         partial_assignment: List[bool | None] = [None] * (expected_variables_count + 1)
 
+        # Pruning impossible mappings
         if len(self.pruning_steps) > 0:
-            # First round of simplification using local consistency checks
             current_step = 1
             step_counter = f"{{step}}/{len(self.pruning_steps)}"
 
             print("Performing pruning steps ...")
-            fluent_matrix = [[True] * n1 for _ in range(n2)]  # f_m[i][j]: can fluent f'_i be mapped to f_j?
-            operator_matrix = [[True] * m1 for _ in range(m2)]
+            fluents_domain = [set(range(n1)) for _ in range(n2)]  # f_m[i][j]: can fluent f'_i be mapped to f_j?
+            operators_domain = [set(range(m1)) for _ in range(m2)]
 
             simplified_fluent_count = 0
             simplified_operator_count = 0
@@ -79,27 +83,85 @@ class SubisoFinder:
                     for j in range(m1):
                         if oi_profile != problem1.get_operator_profile(j):
 
-                            operator_matrix[i][j] = False
+                            operators_domain[i].remove(j)
                             simplified_operator_count += 1
 
                 step_end_str = f"Step {step_counter.format(step=current_step)}: Done"
                 print(f"{step_end_str:<45}")
+                current_step += 1
 
+            # (1.2) Constraint propagation
+            if 'ConstraintPropagation' in self.pruning_steps:
+                # Build the fluent -> action association table
+                fluent1_associations = [FluentOccurrences() for _ in range(problem1.get_fluent_count())]
+                fluent2_associations = [FluentOccurrences() for _ in range(problem2.get_fluent_count())]
+
+                for problem, fluent_associations in [(problem1, fluent1_associations),
+                                                     (problem2, fluent2_associations)]:
+                    for selector in [lambda x: x.pre_pos, lambda x: x.pre_neg,
+                                     lambda x: x.eff_pos, lambda x: x.eff_neg]:
+                        for op_id, op in problem.enumerate_operators():
+                            for fluent in selector(op):
+                                selector(fluent_associations[fluent]).add(op_id)
+
+                # Main algorithm inspired by AC3 in constraint propagation
+                items_list = [(f, 0) for f in range(problem2.get_fluent_count())]
+                items_list.extend((o, 1) for o in range(problem2.get_operator_count()))
+
+                update_queue = collections.deque(items_list)
+
+                force_additional_pass = 5
+
+                while update_queue:
+                    var, var_type = update_queue.pop()
+
+                    # Can be removed: mostly for debugging purposes
+                    if force_additional_pass > 0 and not update_queue:
+                        items_list = [(f, 0) for f in range(problem2.get_fluent_count())]
+                        items_list.extend((o, 1) for o in range(problem2.get_operator_count()))
+                        update_queue = collections.deque(items_list)
+                        force_additional_pass -= 1
+
+                    # In case a fluent is up next
+                    if var_type == 0:
+                        rm_count = self.cp_revise_fluents(var, operators_domain, fluents_domain,
+                                                          fluent1_associations, fluent2_associations)
+                        if rm_count > 0:
+                            simplified_fluent_count += rm_count
+                            # Re-revise the domains of the operators that "use" the fluent
+                            for selector in [lambda x: x.pre_pos, lambda x: x.pre_neg,
+                                             lambda x: x.eff_pos, lambda x: x.eff_neg]:
+                                for op2_id in selector(fluent2_associations[var]):
+                                    # TODO: check that we are adding correctly the associations that we need
+                                    update_queue.append((op2_id, 1))
+
+                    if var_type == 1:
+                        rm_count = self.cp_revise_operators(var, operators_domain, fluents_domain, problem1, problem2)
+                        if rm_count > 0:
+                            simplified_operator_count += rm_count
+                            op2 = problem2.get_operator_by_id(var)
+                            for selector in [lambda x: x.pre_pos, lambda x: x.pre_neg,
+                                             lambda x: x.eff_pos, lambda x: x.eff_neg]:
+                                for fluent2 in selector(op2):
+                                    update_queue.append((fluent2, 0))
+
+                step_end_str = f"Step {step_counter.format(step=current_step)}: Done"
+                print(f"{step_end_str:<45}")
+                current_step += 1
+
+            # Propagating the results to the SATInstance
             print(f"Pruning done. Associations removed:")
             print(f"Fluents: {simplified_fluent_count} ({simplified_fluent_count / (n1 * n2) * 100:0.2f}%)")
             print(f"Operators: {simplified_operator_count} ({simplified_operator_count/(m1 * m2) * 100:0.2f}%)")
             print()
 
-            index = 1
             for i in range(n2):
-                for j in range(n1):
-                    partial_assignment[index] = False if not fluent_matrix[i][j] else None
-                    index += 1
+                for j in set(range(n1)) - fluents_domain[i]:
+                    partial_assignment[f_to_fid(i, j)] = False
 
             for i in range(m2):
-                for j in range(m1):
-                    partial_assignment[index] = False if not operator_matrix[i][j] else None
-                    index += 1
+                for j in set(range(m1)) - operators_domain[i]:
+                    partial_assignment[o_to_oid(i, j)] = False
 
             sat_instance.set_partial_assignment(partial_assignment)
 
@@ -252,6 +314,84 @@ class SubisoFinder:
         sat_instance.close_output_file()
 
         return sat_instance
+
+    def cp_revise_operators(self, op2_id, operators_domain, fluents_domain,
+                            problem1: StripsProblem, problem2: StripsProblem) -> int:
+        """
+        Revise the possibilities of affectations of operator `operator` of problem 2 to the operators of problem 1.
+        Modifies in place the various matrices
+
+        Update
+            operators_domain
+
+        Return
+            Whether the possible candidates to the image of the operator have changed or not
+        """
+        removed_candidates = 0
+
+        op2 = problem2.get_operator_by_id(op2_id)
+
+        for op1_id in operators_domain[op2_id]:
+            op1 = problem1.get_operator_by_id(op1_id)
+            attributes_lists = [(op1.pre_pos, op2.pre_pos),
+                                (op1.pre_neg, op2.pre_neg),
+                                (op1.eff_pos, op2.eff_pos),
+                                (op1.eff_neg, op2.eff_neg)]
+
+            # Check if there exists a fluent in op2_lst that can't be mapped to a fluent of op1_lst
+            for op1_lst, op2_lst in attributes_lists:
+                for fluent2 in op2_lst:
+                    removable = True
+
+                    for fluent1 in op1_lst:
+                        if fluent1 in fluents_domain[fluent2]:
+                            removable = False
+
+                    if removable:
+                        operators_domain[op2_id].remove(op1_id)
+                        removed_candidates += 1
+
+        return removed_candidates
+
+    def cp_revise_fluents(self, fluent2_id, operators_domain, fluents_domain,
+                          fluents1_associations: List[FluentOccurrences],
+                          fluents2_associations: List[FluentOccurrences]) -> int:
+        """
+        Revise the possibilities of affectations of the fluent of id fluent2_id of problem 2, to fluents of problem1.
+        Modifies in place the various matrices
+
+        Update
+            fluents_matrix
+
+        Return
+            Whether the possible candidates to the image of the fluent have changed or not
+        """
+        removed_candidates = 0
+
+        for fluent1_id in fluents_domain[fluent2_id].copy():
+            keep_fluent = True
+
+            for selector in [lambda x: x.pre_pos, lambda x: x.pre_neg,
+                             lambda x: x.eff_pos, lambda x: x.eff_neg]:
+                # For each operator where f2 appears in a list, there should be an equivalent operator where
+                # f1 appears in the equivalent list (eg. positive precondition, etc.), if we want to map f2 to f1
+                for operator2_id in selector(fluents2_associations[fluent2_id]):
+                    # Seek an operator in problem1 that operator2 could be mapped to
+                    removable = True
+                    for operator1_id in selector(fluents1_associations[fluent1_id]):
+                        if operator1_id in operators_domain[operator2_id]:
+                            removable = False
+                            break
+                    if removable:
+                        keep_fluent = False
+                        break
+
+                if not keep_fluent:
+                    fluents_domain[fluent2_id].remove(fluent1_id)
+                    removed_candidates += 1
+                    break
+
+        return removed_candidates
 
     def interpret_assignment(self, problem1, problem2, assignment, out_file=sys.stdout):
         """
