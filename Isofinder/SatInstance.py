@@ -33,7 +33,9 @@ class SatInstance:
 
         # Statistics
         self.simplified_variables_count = 0
+        self.last_simplified_variables_count = 0
         self.simplified_clauses_count = 0
+        self.last_simplified_clauses_count = 0
         self.new_clauses_count = 0
 
         self.file = None
@@ -104,6 +106,22 @@ class SatInstance:
         self.new_clauses_count = 0
 
         return new_clauses_count
+
+    def get_new_simplified_clauses_count(self) -> int:
+        """
+        Return the number of clauses that were simplified since the last call of this function, or the creation of the
+        instance if this function has never been called before
+        """
+        new_clauses_count = self.simplified_clauses_count - self.last_simplified_clauses_count
+        self.last_simplified_clauses_count = self.simplified_clauses_count
+
+        return new_clauses_count
+
+    def get_simplified_variables_count(self) -> int:
+        return self.simplified_variables_count
+
+    def get_simplified_clauses_count(self) -> int:
+        return self.simplified_clauses_count
 
     def get_variables_count(self) -> int:
         return self.nb_variables

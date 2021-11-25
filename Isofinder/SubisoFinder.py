@@ -107,13 +107,17 @@ class SubisoFinder:
                 # Main algorithm inspired by AC3 in constraint propagation
                 items_list = [(f, 0) for f in range(problem2.get_fluent_count())]
                 items_list.extend((o, 1) for o in range(problem2.get_operator_count()))
+                total_items_number = len(items_list)
 
                 update_queue = collections.deque(items_list)
 
-                force_additional_pass = 5
+                force_additional_pass = 1
 
                 while update_queue:
                     var, var_type = update_queue.pop()
+                    print(f"Step {step_counter.format(step=current_step)}: "
+                          f"{progress_bar(len(update_queue) / total_items_number, 24)}",
+                          sep='', end='\r', flush=True)
 
                     # Can be removed: mostly for debugging purposes
                     if force_additional_pass > 0 and not update_queue:
@@ -185,7 +189,8 @@ class SubisoFinder:
                         sat_instance.add_clause(clause)
 
             step_end_str = f"Step {step_counter.format(step=current_step)}: Done " \
-                           f"({sat_instance.get_new_clauses_count()} clauses)"
+                           f"({sat_instance.get_new_clauses_count()} clauses, " \
+                           f"{sat_instance.get_new_simplified_clauses_count()} simplified)"
             print(f"{step_end_str:<45}")
             current_step += 1
 
@@ -203,7 +208,8 @@ class SubisoFinder:
                         sat_instance.add_clause(clause)
 
             step_end_str = f"Step {step_counter.format(step=current_step)}: Done " \
-                           f"({sat_instance.get_new_clauses_count()} clauses)"
+                           f"({sat_instance.get_new_clauses_count()} clauses, " \
+                           f"{sat_instance.get_new_simplified_clauses_count()} simplified)"
             print(f"{step_end_str:<45}")
             current_step += 1
 
@@ -230,7 +236,8 @@ class SubisoFinder:
                             sat_instance.add_clause(clause)
 
             step_end_str = f"Step {step_counter.format(step=current_step)}: Done " \
-                           f"({sat_instance.get_new_clauses_count()} clauses)"
+                           f"({sat_instance.get_new_clauses_count()} clauses, " \
+                           f"{sat_instance.get_new_simplified_clauses_count()} simplified)"
             print(f"{step_end_str:<45}")
             current_step += 1
 
@@ -251,7 +258,8 @@ class SubisoFinder:
                             clause.extend([f_to_fid(k, l) for k in range(n2)])
                             sat_instance.add_clause(clause)
             step_end_str = f"Step {step_counter.format(step=current_step)}: Done " \
-                           f"({sat_instance.get_new_clauses_count()} clauses)"
+                           f"({sat_instance.get_new_clauses_count()} clauses, " \
+                           f"{sat_instance.get_new_simplified_clauses_count()} simplified)"
             print(f"{step_end_str:<45}")
             current_step += 1
 
@@ -267,7 +275,8 @@ class SubisoFinder:
                         sat_instance.add_clause(clause)
 
             step_end_str = f"Step {step_counter.format(step=current_step)}: Done " \
-                           f"({sat_instance.get_new_clauses_count()} clauses)"
+                           f"({sat_instance.get_new_clauses_count()} clauses, " \
+                           f"{sat_instance.get_new_simplified_clauses_count()} simplified)"
             print(f"{step_end_str:<45}")
             current_step += 1
 
@@ -303,13 +312,16 @@ class SubisoFinder:
                         progress += 1
 
             step_end_str = f"Step {step_counter.format(step=current_step)}: Done " \
-                           f"({sat_instance.get_new_clauses_count()} clauses)"
+                           f"({sat_instance.get_new_clauses_count()} clauses, " \
+                           f"{sat_instance.get_new_simplified_clauses_count()} simplified)"
             print(f"{step_end_str:<45}")
             current_step += 1
 
         print(''.join(['-'] * 30))
-        print(f"Number of variables: {sat_instance.get_variables_count()}")
-        print(f"Number of clauses: {sat_instance.get_clauses_count()}")
+        print(f"Number of variables: {sat_instance.get_variables_count()} "
+              f"({sat_instance.get_simplified_variables_count()} simplified)")
+        print(f"Number of clauses: {sat_instance.get_clauses_count()} "
+              f"({sat_instance.get_simplified_clauses_count()} simplified)")
 
         sat_instance.close_output_file()
 
@@ -331,7 +343,7 @@ class SubisoFinder:
 
         op2 = problem2.get_operator_by_id(op2_id)
 
-        for op1_id in operators_domain[op2_id]:
+        for op1_id in operators_domain[op2_id].copy():
             op1 = problem1.get_operator_by_id(op1_id)
             attributes_lists = [(op1.pre_pos, op2.pre_pos),
                                 (op1.pre_neg, op2.pre_neg),
