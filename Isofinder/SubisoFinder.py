@@ -358,6 +358,7 @@ class SubisoFinder:
                     for fluent1 in op1_lst:
                         if fluent1 in fluents_domain[fluent2]:
                             removable = False
+                            break
 
                     if removable:
                         operators_domain[op2_id].remove(op1_id)
