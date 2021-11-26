@@ -21,6 +21,8 @@ def main(argv):
                         help="The path to the SAT solver binary")
     parser.add_argument('-o', '--output', type=str, default='output.isom',
                         help="The file in which to save the sub-isomorphism")
+    parser.add_argument('-t', '--trace', type=str, default=None,
+                        help="Output a datafile that summarizes the main data points of the execution")
     args = parser.parse_args()
 
     filler = ''.join(['='] * 30)
@@ -30,6 +32,7 @@ def main(argv):
     except FileExistsError:
         pass
 
+    steps_duration = {}
     global_start_time = perf_counter()
     # Extract problems from file
 
@@ -40,7 +43,9 @@ def main(argv):
     pddl_domain = converter.build_domain(args.domainPath)
     pddl_instance1 = converter.build_instance(args.instance1Path)
     pddl_instance2 = converter.build_instance(args.instance2Path)
-    print(f"PDDL extraction done in {perf_counter() - step_start:.1f}s!\n")
+    step_time = perf_counter() - step_start
+    print(f"PDDL extraction done in {step_time:.1f}s!\n")
+    steps_duration["pddl_extraction"] = step_time
 
     # Convert them to STRIPS
     step_start = perf_counter()
@@ -48,7 +53,9 @@ def main(argv):
     print(filler)
     problem1 = converter.build_strips_problem(pddl_domain, pddl_instance1)
     problem2 = converter.build_strips_problem(pddl_domain, pddl_instance2)
-    print(f"Conversion to STRIPS done in {perf_counter() - step_start:.1f}s!\n")
+    step_time = perf_counter() - step_start
+    print(f"Conversion to STRIPS done in {step_time:.1f}s!\n")
+    steps_duration["grounding"] = step_time
 
     # Translation to SAT
     step_start = perf_counter()
@@ -56,12 +63,14 @@ def main(argv):
     print(filler)
     subiso_finder = SubisoFinder()
     sat_instance = subiso_finder.convert_to_sat(problem1, problem2, args.cnfpath)
-    print(f"Translation done in {perf_counter() - step_start:.1f}s!\n")
+    if sat_instance is None:
+        return
+    step_time = perf_counter() - step_start
+    print(f"Translation done in {step_time:.1f}s!\n")
     print(f"Saved result in file {args.cnfpath}\n")
+    steps_duration["sat_translation"] = step_time
 
     # Interpret the results
-    # Use a subprocess to run something as a backend (I need to pass a file, as it seems)
-    # The output of the solver being in the commandline, I need to read the stdout of the process
     step_start = perf_counter()
     print(f"Calling the SAT solver in a subprocess...")
     print(filler)
@@ -95,7 +104,9 @@ def main(argv):
                 break
 
     print(f"Isomorphism: {'FOUND' if outcome else 'NOT FOUND'}")
-    print(f"SAT solving done in {perf_counter() - step_start:.1f}s!\n")
+    step_time = perf_counter() - step_start
+    print(f"SAT solving done in {step_time:.1f}s!\n")
+    steps_duration["sat_solving"] = step_time
     if outcome:
         print("Building the isomorphism...")
         print(filler)
@@ -108,7 +119,21 @@ def main(argv):
         print(f"Saved the result in file {iso_path}\n")
 
     print(filler)
-    print(f"Total time: {perf_counter() - global_start_time:.1f}s")
+    step_time = perf_counter() - global_start_time
+    print(f"Total time: {step_time:.1f}s")
+    steps_duration["total_time"] = step_time
+    if args.trace is not None:
+        print(f"Saving trace in {args.trace}")
+        with open(args.trace, "w+") as file:
+            ordered_times = [(k, v) for k, v in steps_duration.items()]
+            file.write(f"variables,clauses,simplified_variables,simplified_clauses,")
+            file.write(','.join(map(lambda x: x[0], ordered_times)))
+            file.write(f"\n")
+            file.write(f"{sat_instance.get_variables_count()},"
+                       f"{sat_instance.get_clauses_count()},"
+                       f"{sat_instance.get_simplified_variables_count()},"
+                       f"{sat_instance.get_simplified_clauses_count()},")
+            file.write(','.join(map(lambda x: f'{x[1]:0.1f}', ordered_times)))
     print()
 
 
