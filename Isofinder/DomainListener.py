@@ -28,8 +28,13 @@ class DomainListener(PddlListener):
         name = ctx.predicate().getText()
 
         # TEMPORARY - only works for non-typed domains
-        arity = len([arg for arg in ctx.typedVariableList().getChildren()])
-        arguments_type_list = ["UNTYPED"] * arity
+        arguments_type_list = []
+        typedVariableList = ctx.typedVariableList()
+        for singleTypeVarList in typedVariableList.singleTypeVarList():
+            object_type = singleTypeVarList.t.getText()
+            arguments_type_list.extend([object_type] * len(singleTypeVarList.VARIABLE()))
+
+        arguments_type_list.extend(["UNTYPED"] * len(typedVariableList.VARIABLE()))
 
         predicate = Predicate(name, arguments_type_list)
 
@@ -43,19 +48,45 @@ class DomainListener(PddlListener):
         parameters_raw = next(it.islice(ctx.getChildren(), 5, None))
         actionDefBody = next(it.islice(ctx.getChildren(), 7, None))
 
-        parameters = {"UNTYPED": []}
+        parameters = {}
 
-        # Retrieve the parameters and their types
-        # TODO: add support for typed parameters
-        # (In this block and in the subsequent ones)
-        for param in parameters_raw.getChildren():
-            parameters["UNTYPED"].append(param.getText())
+        # Retrieve the parameters and their respective types
+        # Start by finding the types of each parameters
+        if parameters_raw.VARIABLE():
+            parameters["UNTYPED"] = []
 
+        for variable in parameters_raw.VARIABLE():
+            parameters["UNTYPED"].append(variable.getText())
+
+        for singleTypeVarList in parameters_raw.singleTypeVarList():
+            objects_type = singleTypeVarList.t.getText()
+            if objects_type not in parameters:
+                parameters[objects_type] = []
+
+            for variable in singleTypeVarList.VARIABLE():
+                parameters[objects_type].append(variable.getText())
+
+        # Build the reverse association table for convenience
+        variable_to_type = {}
+
+        for variable_type, variable_list in parameters.items():
+            for variable in variable_list:
+                variable_to_type[variable] = variable_type
+
+        # Then explore the actions, but without the proper types (as types are given in the parameters only)
         precondition_raw = next(it.islice(actionDefBody.getChildren(), 1, None))
         effects_raw = next(it.islice(actionDefBody.getChildren(), 3, None))
 
         precondition = self.exploreAction(precondition_raw)
         effects = self.exploreAction(effects_raw)
+
+        # Affect the correct type to each symbol of the preconditions and effects
+        for literal in it.chain(precondition, effects):
+            old_action_predicate = literal.predicate
+            new_arguments_type_list = []
+            for argument_name in old_action_predicate.arguments_name_list:
+                new_arguments_type_list.append(variable_to_type[argument_name])
+            old_action_predicate.arguments_type_list = new_arguments_type_list
 
         action = Action(action_name, parameters, precondition, effects)
         self.actions.append(action)
@@ -65,7 +96,7 @@ class DomainListener(PddlListener):
         Build the list of predicates that one can find in an action. Can handle both preconditions and effects.
         """
         # Exploration of the preconditions
-        if isinstance(node, PddlParser.GoalDescContext): #node.goalDesc():
+        if isinstance(node, PddlParser.GoalDescContext):
             children = list(node.getChildren())
             if len(children) <= 1:
                 # This should be an atomicTermFormula, and handled in another call
@@ -73,7 +104,7 @@ class DomainListener(PddlListener):
                 return [self.exploreAction(children[0])]
             else:
                 if children[1].getText() == 'and':
-                    # Return each of the subsequent precidates
+                    # Return each of the subsequent predicates
                     preconds = it.filterfalse(lambda x: self.andFilter(x.getText()), node.getChildren())
                     found_predicates = []
 

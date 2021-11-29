@@ -15,7 +15,7 @@ class InstanceListener(PddlListener):
         self.initPredicates = []
         self.goalPredicates = []
 
-        self.currentlyParsing = None # Goal or None
+        self.currentlyParsing = None  # 'Goal', 'Objects' or None
 
     def buildStructure(self):
         self.pddlInstance = PDDLInstance(self.name, self.objects,
@@ -102,9 +102,29 @@ class InstanceListener(PddlListener):
 
     # Instance-specific objects parsing
     def enterObjectDecl(self, ctx):
-        typed_objects_list = next(islice(ctx.getChildren(), 2, None)).getChildren()
-        for child in typed_objects_list:
+        self.currentlyParsing = 'Objects'
+        # typed_objects_list = next(islice(ctx.getChildren(), 2, None)).getChildren()
+        # for child in typed_objects_list:
+        #      self.objects["UNTYPED"].append(child.getText())
+
+    def exitObjectDecl(self, ctx):
+        self.currentlyParsing = None
+
+    def enterTypedNameList(self, ctx):
+        if self.currentlyParsing != 'Objects':
+            return
+        for child in ctx.NAME():
             self.objects["UNTYPED"].append(child.getText())
+
+    def enterSingleTypeNameList(self, ctx):
+        if self.currentlyParsing != 'Objects':
+            return
+        object_type = ctx.t.getText()
+        for child in ctx.NAME():
+            if object_type in self.objects:
+                self.objects[object_type].append(child.getText())
+            else:
+                self.objects[object_type] = [child.getText()]
 
     def getObjects(self):
         return self.objects

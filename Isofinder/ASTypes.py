@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Dict
 from dataclasses import dataclass
 
 
@@ -88,7 +88,7 @@ class PDDLInstance:
     A structure that represents a PDDL instance that has been extracted from a problem file
     """
     name: str
-    objects: List
+    objects: Dict[str, List]
     init: List[HashedLiteral]
     goal: List[HashedLiteral]
 
