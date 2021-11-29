@@ -31,7 +31,7 @@ class DomainListener(PddlListener):
         arguments_type_list = []
         typedVariableList = ctx.typedVariableList()
         for singleTypeVarList in typedVariableList.singleTypeVarList():
-            object_type = singleTypeVarList.t.getText()
+            object_type = singleTypeVarList.t.getText().upper()
             arguments_type_list.extend([object_type] * len(singleTypeVarList.VARIABLE()))
 
         arguments_type_list.extend(["UNTYPED"] * len(typedVariableList.VARIABLE()))
@@ -59,7 +59,7 @@ class DomainListener(PddlListener):
             parameters["UNTYPED"].append(variable.getText())
 
         for singleTypeVarList in parameters_raw.singleTypeVarList():
-            objects_type = singleTypeVarList.t.getText()
+            objects_type = singleTypeVarList.t.getText().upper()
             if objects_type not in parameters:
                 parameters[objects_type] = []
 

@@ -119,7 +119,7 @@ class InstanceListener(PddlListener):
     def enterSingleTypeNameList(self, ctx):
         if self.currentlyParsing != 'Objects':
             return
-        object_type = ctx.t.getText()
+        object_type = ctx.t.getText().upper()
         for child in ctx.NAME():
             if object_type in self.objects:
                 self.objects[object_type].append(child.getText())
