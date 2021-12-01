@@ -15,10 +15,10 @@ class StripsProblem:
     opId_to_action: dict = attr.ib()
     opId_to_operator: Dict[int, Operator] = attr.ib()
 
-    init_pos: dict = attr.ib()
-    init_neg: dict = attr.ib()
-    goal_pos: dict = attr.ib()
-    goal_neg: dict = attr.ib()
+    init_pos: list = attr.ib()
+    init_neg: list = attr.ib()
+    goal_pos: list = attr.ib()
+    goal_neg: list = attr.ib()
 
     # Statistics
     max_pre_arity: int = attr.ib(init=False, default=0)
@@ -94,7 +94,7 @@ class StripsProblem:
         return len(self.varId_to_predicate)
 
     def get_operator_count(self):
-        return len(self.opId_to_action)
+        return len(self.opId_to_operator)
 
     def get_predicate_by_var_id(self, var_id):
         return self.varId_to_predicate[var_id]
