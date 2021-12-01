@@ -46,7 +46,7 @@ class Grounder:
         self.build_initial_and_goal_states()
         stop_time = perf_counter()
         print(f"Done. Found {self.get_variables_count()} fluents and {self.get_operators_count()} operators "
-              f"in {stop_time - start_time:.4f}s")
+              f"in {stop_time - start_time:.2f}s")
 
         return StripsProblem(self.predicate_to_var_id, self.var_id_to_predicate,
                              self.action_to_op_id, self.op_id_to_action,
@@ -73,7 +73,7 @@ class Grounder:
             current_arguments_list: The name of the current arguments that have already been grounded
 
         Returns:
-            True if and only if a correct grounding has been false
+            True if and only if a correct grounding has been found
             False otherwise
         """
         objects_dictionary = self.pddlInstance.objects
