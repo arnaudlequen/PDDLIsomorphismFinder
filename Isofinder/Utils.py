@@ -8,6 +8,9 @@ def measure_time(func, *args):
 
 
 def progress_bar(percentage, width=10):
+    if percentage > 1:
+        return f"[{'█'*width}[ >100%"
+
     char_left = int(percentage*width)
     if char_left < percentage * width:
         s = '█'*char_left + '▓'
