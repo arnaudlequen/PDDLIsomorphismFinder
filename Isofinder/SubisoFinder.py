@@ -38,6 +38,8 @@ class SubisoFinder:
             problem2: The smaller problem
             file_path: The path to the file to which the intermediate SAT formula should be saved
         """
+        small_filler = ''.join(['-'] * 30)
+
         n1, m1 = problem1.get_fluent_count(), problem1.get_operator_count()
         n2, m2 = problem2.get_fluent_count(), problem2.get_operator_count()
 
@@ -68,6 +70,7 @@ class SubisoFinder:
             step_counter = f"{{step}}/{len(self.pruning_steps)}"
 
             print("Performing pruning steps ...")
+            print(small_filler)
             fluents_domain = [set(range(n1)) for _ in range(n2)]  # f_m[i][j]: can fluent f'_i be mapped to f_j?
             operators_domain = [set(range(m1)) for _ in range(m2)]
 
@@ -170,6 +173,7 @@ class SubisoFinder:
             sat_instance.set_partial_assignment(partial_assignment)
 
         print("Generating SAT instance")
+        print(small_filler)
 
         # SAT creation phase
         current_step = 1
