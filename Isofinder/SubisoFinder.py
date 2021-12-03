@@ -107,14 +107,15 @@ class SubisoFinder:
                             for fluent in selector(op):
                                 selector(fluent_associations[fluent]).add(op_id)
 
-                # Main algorithm inspired by AC3 in constraint propagation
+                # Main algorithm inspired by AC3 for constraint propagation
                 items_list = [(f, 0) for f in range(problem2.get_fluent_count())]
                 items_list.extend((o, 1) for o in range(problem2.get_operator_count()))
                 total_items_number = len(items_list)
 
                 update_queue = collections.deque(items_list)
 
-                force_additional_pass = 1
+                # For debugging purpose
+                force_additional_pass = 0
 
                 while update_queue:
                     var, var_type = update_queue.pop()
@@ -185,12 +186,16 @@ class SubisoFinder:
                 print(f"Step {step_counter.format(step=current_step)}: {progress_bar(i / n2, 24)}",
                       sep='', end='\r', flush=True)
                 clause = [f_to_fid(i, j) for j in range(n1)]
-                sat_instance.add_clause(clause)
+                added_successfully = sat_instance.add_clause(clause)
+                if not added_successfully:
+                    return None
                 # Now with the unicity of the image (not the injectivity)
                 for j in range(n1):
                     for k in range(j + 1, n1):
                         clause = [-1 * f_to_fid(i, j), -1 * f_to_fid(i, k)]
-                        sat_instance.add_clause(clause)
+                        added_successfully = sat_instance.add_clause(clause)
+                        if not added_successfully:
+                            return None
 
             step_end_str = f"Step {step_counter.format(step=current_step)}: Done " \
                            f"({sat_instance.get_new_clauses_count()} clauses, " \
@@ -204,12 +209,16 @@ class SubisoFinder:
                 print(f"Step {step_counter.format(step=current_step)}: {progress_bar(i / m2, 24)}",
                       sep='', end='\r', flush=True)
                 clause = [o_to_oid(i, j) for j in range(m1)]
-                sat_instance.add_clause(clause)
+                added_successfully = sat_instance.add_clause(clause)
+                if not added_successfully:
+                    return None
 
                 for j in range(m1):
                     for k in range(j + 1, m1):
                         clause = [-1 * o_to_oid(i, j), -1 * o_to_oid(i, k)]
-                        sat_instance.add_clause(clause)
+                        added_successfully = sat_instance.add_clause(clause)
+                        if not added_successfully:
+                            return None
 
             step_end_str = f"Step {step_counter.format(step=current_step)}: Done " \
                            f"({sat_instance.get_new_clauses_count()} clauses, " \
@@ -237,7 +246,9 @@ class SubisoFinder:
                         for k in op2_list:
                             clause = [-1 * o_to_oid(i, j)]
                             clause.extend([f_to_fid(k, l) for l in op1_list])
-                            sat_instance.add_clause(clause)
+                            added_successfully = sat_instance.add_clause(clause)
+                            if not added_successfully:
+                                return None
 
             step_end_str = f"Step {step_counter.format(step=current_step)}: Done " \
                            f"({sat_instance.get_new_clauses_count()} clauses, " \
@@ -260,7 +271,9 @@ class SubisoFinder:
                         for l in op1_list:
                             clause = [-1 * o_to_oid(i, j)]
                             clause.extend([f_to_fid(k, l) for k in range(n2)])
-                            sat_instance.add_clause(clause)
+                            added_successfully = sat_instance.add_clause(clause)
+                            if not added_successfully:
+                                return None
             step_end_str = f"Step {step_counter.format(step=current_step)}: Done " \
                            f"({sat_instance.get_new_clauses_count()} clauses, " \
                            f"{sat_instance.get_new_simplified_clauses_count()} simplified)"
@@ -276,7 +289,9 @@ class SubisoFinder:
                 for j in range(m2):
                     for k in range(j + 1, m2):
                         clause = [-1 * o_to_oid(j, i), -1 * o_to_oid(k, i)]
-                        sat_instance.add_clause(clause)
+                        added_successfully = sat_instance.add_clause(clause)
+                        if not added_successfully:
+                            return None
 
             step_end_str = f"Step {step_counter.format(step=current_step)}: Done " \
                            f"({sat_instance.get_new_clauses_count()} clauses, " \
@@ -312,7 +327,9 @@ class SubisoFinder:
                               f"{progress_bar(progress / total_length, 24)}",
                               sep='', end='\r', flush=True)
                         clause = [f_to_fid(i, j) for j in var_a]
-                        sat_instance.add_clause(clause)
+                        added_successfully = sat_instance.add_clause(clause)
+                        if not added_successfully:
+                            return None
                         progress += 1
 
             step_end_str = f"Step {step_counter.format(step=current_step)}: Done " \
@@ -365,8 +382,9 @@ class SubisoFinder:
                             break
 
                     if removable:
-                        operators_domain[op2_id].remove(op1_id)
-                        removed_candidates += 1
+                        if op1_id in operators_domain[op2_id]:
+                            operators_domain[op2_id].remove(op1_id)
+                            removed_candidates += 1
 
         return removed_candidates
 
@@ -410,9 +428,10 @@ class SubisoFinder:
 
         return removed_candidates
 
-    def interpret_assignment(self, problem1, problem2, assignment, out_file=sys.stdout):
+    def interpret_assignment(self, problem1: StripsProblem, problem2: StripsProblem, assignment,
+                             actions_name_only=False, out_file=sys.stdout):
         """
-        Interpret a model of the formula that is built in convertToSAT, and write it in a legible
+        Interpret a model of the formula that is built in convert_to_sat, and write it in a legible
         format.
         """
         filler = ''.join(['='] * 30)
@@ -445,7 +464,10 @@ class SubisoFinder:
         for k in range(n1 * n2 + 1, n1 * n2 + m1 * m2 + 1):
             if assignment[k]:
                 i, j = oid_to_o(k)
-                if self.verbose_action_names:
+                if actions_name_only:
+                    out_file.write(f"{problem2.get_action_by_op_id(i)} => "
+                                   f"{problem1.get_action_by_op_id(j)}\n")
+                elif self.verbose_action_names:
                     out_file.write(f"{problem2.pretty_print_action_by_op_id(i)} => "
                                    f"{problem1.pretty_print_action_by_op_id(j)}\n")
                 else:

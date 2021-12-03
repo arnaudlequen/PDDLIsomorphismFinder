@@ -40,7 +40,7 @@ class SatInstance:
 
         self.file = None
 
-    def add_clause(self, variables: List[int]) -> None:
+    def add_clause(self, variables: List[int]) -> bool:
         """
         Add a clause that consists of a list of variables, assumed to be non-null signed integers.
 
@@ -49,7 +49,7 @@ class SatInstance:
                 negated, then i should be negative
         """
         if not variables:
-            return
+            return True
 
         # Create a copy as we will alter the clause
         # Maybe there is no need to?
@@ -63,14 +63,15 @@ class SatInstance:
                 if literal > 0 and self.partial_assignment[abs(literal)] or \
                         literal < 0 and not self.partial_assignment[abs(literal)]:
                     self.simplified_clauses_count += 1
-                    return
+                    return True
                 clause[i] = 0
 
         clause = list(it.filterfalse(lambda x: x == 0, clause))
         self.simplified_variables_count += len(variables) - len(clause)
 
         if not clause:
-            print("ERROR: Empty clause")  # No clause should be empty, by construction
+            return False
+            # print("ERROR: Empty clause")
 
         if self.file is not None:
             self.print_clause(clause, self.file)
@@ -79,6 +80,8 @@ class SatInstance:
 
         self.new_clauses_count += 1
         self.clauses_count += 1
+
+        return True
 
     def open_output_file(self, file_path: str):
         self.file = open(file_path, "w+")

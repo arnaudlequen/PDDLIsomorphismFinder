@@ -73,7 +73,15 @@ def main(argv):
     subiso_finder = SubisoFinder()
     sat_instance = subiso_finder.convert_to_sat(problem1, problem2, args.cnfpath)
     if sat_instance is None:
+        step_end_str = "Added a non-consistent clause: exiting..."
+        print(f"{step_end_str:<45}")
+        print()
+        print("Isomorphism: NOT FOUND")
+        print(filler)
+        step_time = perf_counter() - global_start_time
+        print(f"Total time: {step_time:.1f}s")
         return
+
     step_time = perf_counter() - step_start
     print(f"Translation done in {step_time:.1f}s!\n")
     print(f"Saved result in file {args.cnfpath}\n")
@@ -110,6 +118,13 @@ def main(argv):
                 # The first text character is v, which is not part of the variable assigment. Variables are however
                 # numbered starting from 1, so this is convenient
                 assignment[0] = None
+                # Sometimes when variables after some N are not used, the solver does not output their assignation
+                # in the model. So we need to complete the assignment
+                n1 = problem1.get_fluent_count()
+                n2 = problem2.get_fluent_count()
+                m1 = problem1.get_operator_count()
+                m2 = problem2.get_operator_count()
+                assignment.extend([False] * (n1 * n2 + m1 * m2 + 1 - len(assignment)))
                 break
 
     print(f"Isomorphism: {'FOUND' if outcome else 'NOT FOUND'}")
@@ -122,7 +137,7 @@ def main(argv):
         iso_path = args.output
 
         with open(iso_path, 'w+') as iso_file:
-            subiso_finder.interpret_assignment(problem1, problem2, assignment, iso_file)
+            subiso_finder.interpret_assignment(problem1, problem2, assignment, args.touist, iso_file)
 
         print("Isomorphism built")
         print(f"Saved the result in file {iso_path}\n")
@@ -131,14 +146,20 @@ def main(argv):
     step_time = perf_counter() - global_start_time
     print(f"Total time: {step_time:.1f}s")
     steps_duration["total_time"] = step_time
+
     if args.trace is not None:
         print(f"Saving trace in {args.trace}")
         with open(args.trace, "w+") as file:
             ordered_times = [(k, v) for k, v in steps_duration.items()]
-            file.write(f"variables,clauses,simplified_variables,simplified_clauses,")
+            file.write(f"p1fluents,p1operators,p2fluents,p2operators,"
+                       f"variables,clauses,simplified_variables,simplified_clauses,")
             file.write(','.join(map(lambda x: x[0], ordered_times)))
             file.write(f"\n")
-            file.write(f"{sat_instance.get_variables_count()},"
+            file.write(f"{problem1.get_fluent_count()},"
+                       f"{problem1.get_operator_count()},"
+                       f"{problem2.get_fluent_count()},"
+                       f"{problem2.get_operator_count()},"
+                       f"{sat_instance.get_variables_count()},"
                        f"{sat_instance.get_clauses_count()},"
                        f"{sat_instance.get_simplified_variables_count()},"
                        f"{sat_instance.get_simplified_clauses_count()},")
@@ -156,6 +177,7 @@ def touistplan_parser(args, steps_duration):
     print("Parsing problem 1...")
     step_start = perf_counter()
     print(small_filler)
+    print(f"Instance {args.instance1Path}")
     problem1 = touistplan_parse_single(args.domain1Path, args.instance1Path)
     print(f"Done. Found {problem1.get_fluent_count()} fluents and {problem1.get_operator_count()} operators "
           f"in {perf_counter() - step_start:.2f}s")
@@ -163,6 +185,7 @@ def touistplan_parser(args, steps_duration):
 
     print("Parsing problem 2...")
     print(small_filler)
+    print(f"Instance {args.instance2Path}")
     problem2 = touistplan_parse_single(args.domain2Path, args.instance2Path)
     print(f"Done. Found {problem2.get_fluent_count()} fluents and {problem2.get_operator_count()} operators "
           f"in {perf_counter() - step_start:.2f}s")
@@ -177,7 +200,7 @@ def trim_action_or_predicate(element):
 
 def touistplan_parse_single(domain_path, instance_path):
     step_start = perf_counter()
-    print("Calling TouISTPlan to extract STRIPS problem 1 from file...")
+    print("Calling TouISTPlan to extract STRIPS problem from file...")
     subprocess_args = ['./Solvers/touistplan', domain_path, instance_path, '-e', 'sat',
                        '-insat', './tmp/blankrules.touistl']
     process = subprocess.run(subprocess_args, capture_output=True)
@@ -229,8 +252,7 @@ def touist_process_problem_sets() -> StripsProblem:
                     action_to_opId[action] = opId
                     opId_to_action[opId] = action
 
-                    operator_name = action.split('_')[1]
-                    operator = Operator(operator_name, [], [], [], [])
+                    operator = Operator(action, [], [], [], [])
                     opId_to_operator[opId] = operator
 
             # Todo: refactor this whole block
@@ -241,7 +263,8 @@ def touist_process_problem_sets() -> StripsProblem:
 
                 opId = action_to_opId[action]
                 operator = opId_to_operator[opId]
-                operator.pre_pos = list(map(lambda predicate: predicate_to_varId[predicate], predicates))
+                if predicates != ['']:
+                    operator.pre_pos = list(map(lambda predicate: predicate_to_varId[predicate], predicates))
 
             elif line.startswith("$Add("):
                 action, predicates = line.split(' = ')
@@ -250,7 +273,8 @@ def touist_process_problem_sets() -> StripsProblem:
 
                 opId = action_to_opId[action]
                 operator = opId_to_operator[opId]
-                operator.eff_pos = list(map(lambda predicate: predicate_to_varId[predicate], predicates))
+                if predicates != ['']:
+                    operator.eff_pos = list(map(lambda predicate: predicate_to_varId[predicate], predicates))
 
             elif line.startswith("$Del("):
                 action, predicates = line.split(' = ')
@@ -259,7 +283,8 @@ def touist_process_problem_sets() -> StripsProblem:
 
                 opId = action_to_opId[action]
                 operator = opId_to_operator[opId]
-                operator.eff_neg = list(map(lambda predicate: predicate_to_varId[predicate], predicates))
+                if predicates != ['']:
+                    operator.eff_neg = list(map(lambda predicate: predicate_to_varId[predicate], predicates))
 
             elif line.startswith("$I = "):
                 _, predicates = line.split(' = ')

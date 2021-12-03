@@ -16,4 +16,4 @@ def progress_bar(percentage, width=10):
         s = '█'*char_left + '▓'
     else:
         s = '█'*char_left
-    return f"[{s:░<{width}}] {percentage * 100:.1f}%"
+    return f"[{s:░<{width}}] {percentage * 100:.1f}% "
