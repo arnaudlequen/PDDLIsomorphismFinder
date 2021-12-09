@@ -66,6 +66,10 @@ def main(argv):
     else:
         problem1, problem2 = adhoc_parser(args, steps_duration)
 
+    if problem1 is None or problem2 is None:
+        print("Aborting...")
+        return
+
     # Translation to SAT
     step_start = perf_counter()
     print("Translating the STRIPS-sub-isomorphism instance to SAT...")
@@ -214,6 +218,11 @@ def touistplan_parser(args, steps_duration):
     print(f"Done. Found {problem2.get_fluent_count()} fluents and {problem2.get_operator_count()} operators "
           f"in {perf_counter() - step_start:.2f}s")
     print()
+
+    if problem1.get_fluent_count() == 0 or problem1.get_operator_count() == 0 or \
+        problem2.get_fluent_count() == 0 or problem2.get_operator_count() == 0:
+        print("ERROR: Empty problem. Maybe the parser encountered an error?")
+        return None, None
 
     return problem1, problem2
 
