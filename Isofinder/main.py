@@ -72,10 +72,6 @@ def main(argv):
         print("Aborting...")
         return
 
-    print(problem1)
-    print()
-    print(problem2)
-
     # Translation to SAT
     step_start = perf_counter()
     print("Translating the STRIPS-sub-isomorphism instance to SAT...")
