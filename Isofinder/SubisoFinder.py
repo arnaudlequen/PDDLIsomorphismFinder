@@ -22,12 +22,14 @@ class SubisoFinder:
             'OperatorsImages',
             'MorphismProperty',
             'BijectionProperty',
+            'FluentsInjectivity',
             'OperatorsInjectivity',
             # 'InitialStateConservation',
             # 'GoalStateConservation',
         ]
 
-    def convert_to_sat(self, problem1: StripsProblem, problem2: StripsProblem, file_path: str = None):
+    def convert_to_sat(self, problem1: StripsProblem, problem2: StripsProblem, file_path: str = None,
+                       clean_trace: bool = False):
         """
         Consider the problem STRIPS-subproblem-isomorphism(problem1, problem2), where one tries to find a subproblem of
         problem1 that is isomorphic to problem2. This function gives a SAT encoding of it.
@@ -44,21 +46,25 @@ class SubisoFinder:
         n2, m2 = problem2.get_fluent_count(), problem2.get_operator_count()
 
         if n1 < n2 or m1 < m2:
-            print("The target problem is too big, no subproblem exists")
-            return None
+            print("The target problem is too big: switching problems...")
+            problem3 = problem1
+            problem1 = problem2
+            problem2 = problem3
+            n1, m1 = problem1.get_fluent_count(), problem1.get_operator_count()
+            n2, m2 = problem2.get_fluent_count(), problem2.get_operator_count()
 
         # Functions that help with the conversion from the problem's data to variables of the SAT formula
         f_to_fid, fid_to_f, o_to_oid, oid_to_o = self.get_objects_to_id_functions(problem1, problem2)
 
         # Definition of the formula
-        expected_clause_count = n2 + n2 * (n1 ** 2) + m2 + m2 * (m1 ** 2) \
+        expected_clauses_count = n2 + n2 * (n1 ** 2) + m2 + m2 * (m1 ** 2) \
                                 + 4 * m2 * m1 * n2 + m1 * (m2 ** 2) + 2 * n1 + 2 * n2
         expected_variables_count = n1 * n2 + m1 * m2
         print(f"Maximum number of variables: {expected_variables_count}")
-        print(f"Maximum number of clauses: < {expected_clause_count}")
+        print(f"Maximum number of clauses: < {expected_clauses_count}")
         print()
 
-        sat_instance = SatInstance(expected_variables_count)
+        sat_instance = SatInstance(expected_variables_count, expected_clauses_count)
         if file_path is not None:
             sat_instance.open_output_file(file_path)
 
@@ -81,8 +87,9 @@ class SubisoFinder:
             if 'OperatorProfiling' in self.pruning_steps:
                 for i in range(m2):
                     oi_profile = problem2.get_operator_profile(i)
-                    print(f"Step {step_counter.format(step=current_step)}: {progress_bar(i / m2, 24)}",
-                          sep='', end='\r', flush=True)
+                    if not clean_trace:
+                        print(f"Step {step_counter.format(step=current_step)}: {progress_bar(i / m2, 24)}",
+                              sep='', end='\r', flush=True)
                     for j in range(m1):
                         if oi_profile != problem1.get_operator_profile(j):
 
@@ -119,9 +126,10 @@ class SubisoFinder:
 
                 while update_queue:
                     var, var_type = update_queue.pop()
-                    print(f"Step {step_counter.format(step=current_step)}: "
-                          f"{progress_bar(len(update_queue) / total_items_number, 24)}",
-                          sep='', end='\r', flush=True)
+                    if not clean_trace:
+                        print(f"Step {step_counter.format(step=current_step)}: "
+                              f"{progress_bar(len(update_queue) / total_items_number, 24)}",
+                              sep='', end='\r', flush=True)
 
                     # Can be removed: mostly for debugging purposes
                     if force_additional_pass > 0 and not update_queue:
@@ -183,12 +191,15 @@ class SubisoFinder:
         # (1) Make sure that we have a proper image for each fluent of P2
         if 'FluentsImages' in self.sat_steps:
             for i in range(n2):
-                print(f"Step {step_counter.format(step=current_step)}: {progress_bar(i / n2, 24)}",
-                      sep='', end='\r', flush=True)
+                if not clean_trace:
+                    print(f"Step {step_counter.format(step=current_step)}: {progress_bar(i / n2, 24)}",
+                          sep='', end='\r', flush=True)
+
                 clause = [f_to_fid(i, j) for j in range(n1)]
                 added_successfully = sat_instance.add_clause(clause)
                 if not added_successfully:
                     return None
+
                 # Now with the unicity of the image (not the injectivity)
                 for j in range(n1):
                     for k in range(j + 1, n1):
@@ -206,8 +217,9 @@ class SubisoFinder:
         # (2) Image of operators, same as above
         if 'OperatorsImages' in self.sat_steps:
             for i in range(m2):
-                print(f"Step {step_counter.format(step=current_step)}: {progress_bar(i / m2, 24)}",
-                      sep='', end='\r', flush=True)
+                if not clean_trace:
+                    print(f"Step {step_counter.format(step=current_step)}: {progress_bar(i / m2, 24)}",
+                          sep='', end='\r', flush=True)
                 clause = [o_to_oid(i, j) for j in range(m1)]
                 added_successfully = sat_instance.add_clause(clause)
                 if not added_successfully:
@@ -229,8 +241,9 @@ class SubisoFinder:
         # (3) Enforcing the morphism property
         if 'MorphismProperty' in self.sat_steps:
             for i in range(m2):
-                print(f"Step {step_counter.format(step=current_step)}: {progress_bar(i / m2, 24)}",
-                      sep='', end='\r', flush=True)
+                if not clean_trace:
+                    print(f"Step {step_counter.format(step=current_step)}: {progress_bar(i / m2, 24)}",
+                          sep='', end='\r', flush=True)
                 for j in range(m1):
                     # If we map o'_j to o_i, then for each fluent in the pre (eff) of o'_j, there should be its image in
                     # the pre (eff) of o_i
@@ -259,8 +272,9 @@ class SubisoFinder:
         # Make sure there is no superfluous fluents in the images
         if 'BijectionProperty' in self.sat_steps:
             for i in range(m2):
-                print(f"Step {step_counter.format(step=current_step)}: {progress_bar(i / m2, 24)}",
-                      sep='', end='\r', flush=True)
+                if not clean_trace:
+                    print(f"Step {step_counter.format(step=current_step)}: {progress_bar(i / m2, 24)}",
+                          sep='', end='\r', flush=True)
                 for j in range(m1):
                     operator1 = problem1.get_operator_by_id(j)
 
@@ -280,11 +294,32 @@ class SubisoFinder:
             print(f"{step_end_str:<45}")
             current_step += 1
 
+        # Enforce the injectivity of the morphism between fluents
+        if 'FluentsInjectivity' in self.sat_steps:
+            for i in range(n1):
+                if not clean_trace:
+                    print(f"Step {step_counter.format(step=current_step)}: {progress_bar(i / n1, 24)}",
+                          sep='', end='\r', flush=True)
+
+                for j in range(n2):
+                    for k in range(j + 1, n2):
+                        clause = [-1 * f_to_fid(j, i), -1 * f_to_fid(k, i)]
+                        added_successfully = sat_instance.add_clause(clause)
+                        if not added_successfully:
+                            return None
+
+            step_end_str = f"Step {step_counter.format(step=current_step)}: Done " \
+                           f"({sat_instance.get_new_clauses_count()} clauses, " \
+                           f"{sat_instance.get_new_simplified_clauses_count()} simplified)"
+            print(f"{step_end_str:<45}")
+            current_step += 1
+
         # Enforce the injectivity of the morphism between operators
         if 'OperatorsInjectivity' in self.sat_steps:
             for i in range(m1):
-                print(f"Step {step_counter.format(step=current_step)}: {progress_bar(i / m1, 24)}",
-                      sep='', end='\r', flush=True)
+                if not clean_trace:
+                    print(f"Step {step_counter.format(step=current_step)}: {progress_bar(i / m1, 24)}",
+                          sep='', end='\r', flush=True)
 
                 for j in range(m2):
                     for k in range(j + 1, m2):
@@ -323,9 +358,10 @@ class SubisoFinder:
 
                 for var_a, var_b in back_and_forth_lists:
                     for i in var_b:
-                        print(f"Step {step_counter.format(step=current_step)}: "
-                              f"{progress_bar(progress / total_length, 24)}",
-                              sep='', end='\r', flush=True)
+                        if not clean_trace:
+                            print(f"Step {step_counter.format(step=current_step)}: "
+                                  f"{progress_bar(progress / total_length, 24)}",
+                                  sep='', end='\r', flush=True)
                         clause = [f_to_fid(i, j) for j in var_a]
                         added_successfully = sat_instance.add_clause(clause)
                         if not added_successfully:

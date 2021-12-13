@@ -40,6 +40,8 @@ def main(argv):
                         help="Output a datafile that summarizes the main data points of the execution")
     parser.add_argument('--touist', type=str2bool, nargs='?', const=True, default=False,
                         help="Use TouISTPlan to extract STRIPS problems from PDDL files")
+    parser.add_argument('--clean', type=str2bool, nargs='?', const=True, default=False,
+                        help="Do not show progress bars and create a clean trace for further processing")
     args = parser.parse_args()
 
     try:
@@ -70,12 +72,16 @@ def main(argv):
         print("Aborting...")
         return
 
+    print(problem1)
+    print()
+    print(problem2)
+
     # Translation to SAT
     step_start = perf_counter()
     print("Translating the STRIPS-sub-isomorphism instance to SAT...")
     print(filler)
     subiso_finder = SubisoFinder()
-    sat_instance = subiso_finder.convert_to_sat(problem1, problem2, args.cnfpath)
+    sat_instance = subiso_finder.convert_to_sat(problem1, problem2, args.cnfpath, args.clean)
     if sat_instance is None:
         step_end_str = "Added a non-consistent clause: exiting..."
         print(f"{step_end_str:<45}")
@@ -207,6 +213,7 @@ def touistplan_parser(args, steps_duration):
     print(small_filler)
     print(f"Instance {args.instance1Path}")
     problem1 = touistparse_parse_single(args.domain1Path, args.instance1Path)
+    # problem1 = touistplan_parse_single_file(args.domain1Path, args.instance1Path)
     print(f"Done. Found {problem1.get_fluent_count()} fluents and {problem1.get_operator_count()} operators "
           f"in {perf_counter() - step_start:.2f}s")
     print()
@@ -215,6 +222,7 @@ def touistplan_parser(args, steps_duration):
     print(small_filler)
     print(f"Instance {args.instance2Path}")
     problem2 = touistparse_parse_single(args.domain2Path, args.instance2Path)
+    # problem2 = touistplan_parse_single_file(args.domain2Path, args.instance2Path)
     print(f"Done. Found {problem2.get_fluent_count()} fluents and {problem2.get_operator_count()} operators "
           f"in {perf_counter() - step_start:.2f}s")
     print()
@@ -241,6 +249,7 @@ def touistparse_parse_single(domain_path, instance_path):
     print("Processing the output...")
     problem = touist_process_problem_sets_string(process.stdout)
     print(f"Processing done in {perf_counter() - step_start:.1f}s")
+    print(process.stderr)
 
     return problem
 
