@@ -1,7 +1,8 @@
 import os
+import itertools as it
+import math
 import sys
 from typing import List, Union
-import itertools as it
 
 
 class SatInstance:
@@ -23,12 +24,15 @@ class SatInstance:
     clauses: List[List[int]]
     simplified_clauses_count: int
 
-    def __init__(self, nb_variables):
+    clause_padding = 20  # Padding for the
+
+    def __init__(self, nb_variables, clause_estimation=1e20):
         self.nb_variables = nb_variables
         self.partial_assignment = [None] * (nb_variables + 1)
 
         self.clauses_count = 0
         self.clauses = []
+        self.clause_padding = math.ceil(math.log10(clause_estimation + 1))
         # self.clauses = [[] for _ in range(nb_clauses)]
 
         # Statistics
@@ -87,12 +91,14 @@ class SatInstance:
         self.file = open(file_path, "w+")
 
         # Attempt to write an estimate of the numbers of variables and clauses
-        self.file.write(f"p cnf {self.get_variables_count()} 0\n")
+        # The padding on the number of clauses is necessary in order not to have to rewrite the whole file on file
+        # after the correction
+        self.file.write(f"p cnf {self.get_variables_count()} {'0'*self.clause_padding}\n")
 
     def close_output_file(self):
         # Correction of the estimate of the numbers of variables and clauses
         self.file.seek(0, os.SEEK_SET)
-        self.file.write(f"p cnf {self.get_variables_count()} {self.get_clauses_count()}\n")
+        self.file.write(f"p cnf {self.get_variables_count()} {self.get_clauses_count():0>{self.clause_padding}}\n")
 
         # Bad practice but only way I found to keep the SATInstance encapsulated
         self.file.close()
