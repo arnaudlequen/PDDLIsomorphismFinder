@@ -1,6 +1,7 @@
 import attr
 from ASTypes import *
 from DataStructures import OperatorProfile
+import math
 from typing import List, Dict
 
 
@@ -59,6 +60,17 @@ class StripsProblem:
         flat_fluents = [' '.join(map(lambda x: self.varId_to_predicate[x], l)) for l in [pre_pos, pre_neg, eff_pos, eff_neg]]
         pre_eff = ' '.join([f"({fluents})" for fluents in flat_fluents])
         return f"<{action_name}: {pre_eff}>"
+
+    def __str__(self):
+        f_digit = math.ceil(math.log10(len(self.varId_to_predicate) + 1))
+        o_digit = math.ceil(math.log10(len(self.opId_to_action) + 1))
+        s  = 'Fluents:\n'
+        s += '\n'.join([f" {f_id: >{f_digit}}: {f_name}" for f_id, f_name in self.varId_to_predicate.items()])
+        s += '\n'
+        s += 'Operators:\n'
+        s += '\n'.join([f" {o_id: >{o_digit}}: {o_name}" for o_id, o_name in self.opId_to_action.items()])
+
+        return s
 
     def enumerate_operators(self):
         return enumerate(self.opId_to_operator.values())
