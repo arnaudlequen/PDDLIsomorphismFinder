@@ -45,6 +45,9 @@ class SubisoFinder:
         n1, m1 = problem1.get_fluent_count(), problem1.get_operator_count()
         n2, m2 = problem2.get_fluent_count(), problem2.get_operator_count()
 
+        # Durations of the various steps
+        durations = {}
+
         if n1 < n2 or m1 < m2:
             print("The target problem is too big: switching problems...")
             problem3 = problem1
@@ -85,6 +88,7 @@ class SubisoFinder:
 
             # (1.1) Operators local consistency
             if 'OperatorProfiling' in self.pruning_steps:
+                step_start = perf_counter()
                 for i in range(m2):
                     oi_profile = problem2.get_operator_profile(i)
                     if not clean_trace:
@@ -98,10 +102,12 @@ class SubisoFinder:
 
                 step_end_str = f"Step {step_counter.format(step=current_step)}: Done"
                 print(f"{step_end_str:<45}")
+                durations['sat_operator_profiling_time'] = perf_counter() - step_start
                 current_step += 1
 
             # (1.2) Constraint propagation
             if 'ConstraintPropagation' in self.pruning_steps:
+                step_start = perf_counter()
                 # Build the fluent -> action association table
                 fluent1_associations = [FluentOccurrences() for _ in range(problem1.get_fluent_count())]
                 fluent2_associations = [FluentOccurrences() for _ in range(problem2.get_fluent_count())]
@@ -163,6 +169,7 @@ class SubisoFinder:
 
                 step_end_str = f"Step {step_counter.format(step=current_step)}: Done"
                 print(f"{step_end_str:<45}")
+                durations['sat_constraint_propagation_time'] = perf_counter() - step_start
                 current_step += 1
 
             # Propagating the results to the SATInstance
@@ -190,6 +197,7 @@ class SubisoFinder:
 
         # (1) Make sure that we have a proper image for each fluent of P2
         if 'FluentsImages' in self.sat_steps:
+            step_start = perf_counter()
             for i in range(n2):
                 if not clean_trace:
                     print(f"Step {step_counter.format(step=current_step)}: {progress_bar(i / n2, 24)}",
@@ -211,11 +219,13 @@ class SubisoFinder:
             step_end_str = f"Step {step_counter.format(step=current_step)}: Done " \
                            f"({sat_instance.get_new_clauses_count()} clauses, " \
                            f"{sat_instance.get_new_simplified_clauses_count()} simplified)"
+            durations['sat_fluents_images_time'] = perf_counter() - step_start
             print(f"{step_end_str:<45}")
             current_step += 1
 
         # (2) Image of operators, same as above
         if 'OperatorsImages' in self.sat_steps:
+            step_start = perf_counter()
             for i in range(m2):
                 if not clean_trace:
                     print(f"Step {step_counter.format(step=current_step)}: {progress_bar(i / m2, 24)}",
@@ -235,11 +245,13 @@ class SubisoFinder:
             step_end_str = f"Step {step_counter.format(step=current_step)}: Done " \
                            f"({sat_instance.get_new_clauses_count()} clauses, " \
                            f"{sat_instance.get_new_simplified_clauses_count()} simplified)"
+            durations['sat_operators_images_time'] = perf_counter() - step_start
             print(f"{step_end_str:<45}")
             current_step += 1
 
         # (3) Enforcing the morphism property
         if 'MorphismProperty' in self.sat_steps:
+            step_start = perf_counter()
             for i in range(m2):
                 if not clean_trace:
                     print(f"Step {step_counter.format(step=current_step)}: {progress_bar(i / m2, 24)}",
@@ -266,11 +278,13 @@ class SubisoFinder:
             step_end_str = f"Step {step_counter.format(step=current_step)}: Done " \
                            f"({sat_instance.get_new_clauses_count()} clauses, " \
                            f"{sat_instance.get_new_simplified_clauses_count()} simplified)"
+            durations['sat_morphism_property_time'] = perf_counter() - step_start
             print(f"{step_end_str:<45}")
             current_step += 1
 
         # Make sure there is no superfluous fluents in the images
         if 'BijectionProperty' in self.sat_steps:
+            step_start = perf_counter()
             for i in range(m2):
                 if not clean_trace:
                     print(f"Step {step_counter.format(step=current_step)}: {progress_bar(i / m2, 24)}",
@@ -291,11 +305,13 @@ class SubisoFinder:
             step_end_str = f"Step {step_counter.format(step=current_step)}: Done " \
                            f"({sat_instance.get_new_clauses_count()} clauses, " \
                            f"{sat_instance.get_new_simplified_clauses_count()} simplified)"
+            durations['sat_bijection_property_time'] = perf_counter() - step_start
             print(f"{step_end_str:<45}")
             current_step += 1
 
         # Enforce the injectivity of the morphism between fluents
         if 'FluentsInjectivity' in self.sat_steps:
+            step_start = perf_counter()
             for i in range(n1):
                 if not clean_trace:
                     print(f"Step {step_counter.format(step=current_step)}: {progress_bar(i / n1, 24)}",
@@ -311,11 +327,13 @@ class SubisoFinder:
             step_end_str = f"Step {step_counter.format(step=current_step)}: Done " \
                            f"({sat_instance.get_new_clauses_count()} clauses, " \
                            f"{sat_instance.get_new_simplified_clauses_count()} simplified)"
+            durations['sat_fluents_injectivity_time'] = perf_counter() - step_start
             print(f"{step_end_str:<45}")
             current_step += 1
 
         # Enforce the injectivity of the morphism between operators
         if 'OperatorsInjectivity' in self.sat_steps:
+            step_start = perf_counter()
             for i in range(m1):
                 if not clean_trace:
                     print(f"Step {step_counter.format(step=current_step)}: {progress_bar(i / m1, 24)}",
@@ -331,22 +349,27 @@ class SubisoFinder:
             step_end_str = f"Step {step_counter.format(step=current_step)}: Done " \
                            f"({sat_instance.get_new_clauses_count()} clauses, " \
                            f"{sat_instance.get_new_simplified_clauses_count()} simplified)"
+            durations['sat_operators_injectivity_time'] = perf_counter() - step_start
             print(f"{step_end_str:<45}")
             current_step += 1
 
         # Initial and goal states
         compare_lists = []
         if 'InitialStateConservation' in self.sat_steps:
+            step_start = perf_counter()
             compare_lists_aux = []
             for i in range(0, 2):
                 compare_lists_aux.append((problem1.get_initial_state()[i], problem2.get_initial_state()[i]))
             compare_lists.append(compare_lists_aux)
+            durations['sat_initial_state_time'] = perf_counter() - step_start
 
         if 'GoalStateConservation' in self.sat_steps:
+            step_start = perf_counter()
             compare_lists_aux = []
             for i in range(0, 2):
                 compare_lists_aux.append((problem1.get_goal_state()[i], problem2.get_goal_state()[i]))
             compare_lists.append(compare_lists_aux)
+            durations['sat_goal_state_time'] = perf_counter() - step_start
 
         for compare_list in compare_lists:
             progress = 0
@@ -382,7 +405,7 @@ class SubisoFinder:
 
         sat_instance.close_output_file()
 
-        return sat_instance
+        return sat_instance, durations
 
     def cp_revise_operators(self, op2_id, operators_domain, fluents_domain,
                             problem1: StripsProblem, problem2: StripsProblem) -> int:

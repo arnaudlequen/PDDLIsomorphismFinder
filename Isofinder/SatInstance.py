@@ -24,7 +24,7 @@ class SatInstance:
     clauses: List[List[int]]
     simplified_clauses_count: int
 
-    clause_padding = 20  # Padding for the
+    clause_padding = 20  # Padding for the clause count
 
     def __init__(self, nb_variables, clause_estimation=1e20):
         self.nb_variables = nb_variables
@@ -32,8 +32,7 @@ class SatInstance:
 
         self.clauses_count = 0
         self.clauses = []
-        self.clause_padding = math.ceil(math.log10(clause_estimation + 1))
-        # self.clauses = [[] for _ in range(nb_clauses)]
+        self.clause_padding = math.ceil(math.log10(clause_estimation + nb_variables + 1))  # Add nb_var for partial assignment
 
         # Statistics
         self.simplified_variables_count = 0
@@ -96,9 +95,21 @@ class SatInstance:
         self.file.write(f"p cnf {self.get_variables_count()} {'0'*self.clause_padding}\n")
 
     def close_output_file(self):
+        # Add all impossible associations as clauses?
+        pre_assigned_vars = 0
+
+        for variable, value in enumerate(self.partial_assignment):
+            if variable == 0:
+                continue
+
+            if value is not None:
+                self.file.write(f"{variable} 0\n" if value else f"-{variable} 0\n")
+                pre_assigned_vars += 1
+
         # Correction of the estimate of the numbers of variables and clauses
         self.file.seek(0, os.SEEK_SET)
-        self.file.write(f"p cnf {self.get_variables_count()} {self.get_clauses_count():0>{self.clause_padding}}\n")
+        self.file.write(f"p cnf {self.get_variables_count()} "
+                        f"{self.get_clauses_count() + pre_assigned_vars:0>{self.clause_padding}}\n")
 
         # Bad practice but only way I found to keep the SATInstance encapsulated
         self.file.close()

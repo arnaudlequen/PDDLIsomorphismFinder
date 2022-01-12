@@ -32,15 +32,15 @@ def main(argv):
                         help="The file of the subproblem to extract, in PDDL format")
     parser.add_argument('-c', '--cnfpath', type=str, default='./tmp/satencoding.cnf',
                         help="The file in which to save the SAT formula that is passed to the solver")
-    parser.add_argument('-s', '--satsolver', type=str, default='./Solvers/Bin/glucose-syrup_static',
-                        help="The path to the SAT solver binary")
+    parser.add_argument('-s', '--satsolver', type=str, default='maplelcmd',
+                        help="The SAT solver to use")
     parser.add_argument('-o', '--output', type=str, default='output.isom',
                         help="The file in which to save the sub-isomorphism")
     parser.add_argument('-t', '--trace', type=str, default=None,
                         help="Output a datafile that summarizes the main data points of the execution")
     parser.add_argument('--touist', type=str2bool, nargs='?', const=True, default=False,
                         help="Use TouISTPlan to extract STRIPS problems from PDDL files")
-    parser.add_argument('--clean', type=str2bool, nargs='?', const=True, default=False,
+    parser.add_argument('--clean', '-l', type=str2bool, nargs='?', const=True, default=False,
                         help="Do not show progress bars and create a clean trace for further processing")
     args = parser.parse_args()
 
@@ -53,6 +53,8 @@ def main(argv):
         os.mkdir('./solvedata')
     except FileExistsError:
         pass
+
+    solver_path, solver_args = get_sat_solver_data(args.satsolver)
 
     steps_duration = {}
     global_start_time = perf_counter()
@@ -77,7 +79,7 @@ def main(argv):
     print("Translating the STRIPS-sub-isomorphism instance to SAT...")
     print(filler)
     subiso_finder = SubisoFinder()
-    sat_instance = subiso_finder.convert_to_sat(problem1, problem2, args.cnfpath, args.clean)
+    sat_instance, conversion_durations = subiso_finder.convert_to_sat(problem1, problem2, args.cnfpath, args.clean)
     if sat_instance is None:
         step_end_str = "Added a non-consistent clause: exiting..."
         print(f"{step_end_str:<45}")
@@ -93,22 +95,22 @@ def main(argv):
     step_time = perf_counter() - step_start
     print(f"Translation done in {step_time:.1f}s!\n")
     print(f"Saved result in file {args.cnfpath}\n")
+    steps_duration = steps_duration | conversion_durations
     steps_duration["sat_translation"] = step_time
 
     # Interpret the results
     step_start = perf_counter()
     print(f"Calling the SAT solver in a subprocess...")
     print(filler)
-    solver_path = args.satsolver
-    # Added option -model for Glucose
-    process = subprocess.run([solver_path, '-model', args.cnfpath], capture_output=True, text=True)
-    print("SAT solving done. Processing the output...")
+    sat_process = subprocess.run([solver_path, *solver_args, args.cnfpath],
+                                 capture_output=True, text=True)
+    print("SAT solving done. Processing the output..."),
 
     outcome = None
     assignment = None
 
     # I'm copying the output and transforming it, so it's not super efficient
-    for line in process.stdout.split('\n'):
+    for line in sat_process.stdout.split('\n'):
         if len(line) == 0:
             continue
         line_elements = line.split()
@@ -134,6 +136,17 @@ def main(argv):
                 m2 = problem2.get_operator_count()
                 assignment.extend([False] * (n1 * n2 + m1 * m2 + 1 - len(assignment)))
                 break
+
+    if outcome is None or (outcome is True and assignment is None):
+        print(f"SAT returned with code {sat_process.returncode}. Aborting...")
+        solver_out_path = "./tmp/solver.stdout"
+        solver_err_path = "./tmp/solver.stderr"
+        print(f"Saving solver output in {solver_out_path} and {solver_err_path}")
+        with open(solver_out_path, 'w+') as file_out:
+            file_out.write(sat_process.stdout)
+        with open(solver_err_path, 'w+') as file_err:
+            file_err.write(sat_process.stderr)
+        return
 
     print(f"Isomorphism: {'FOUND' if outcome else 'NOT FOUND'}")
     step_time = perf_counter() - step_start
@@ -183,11 +196,11 @@ def print_trace(args, outcome, problem1, problem2, sat_instance, steps_duration)
         else:
             # Not optimal
             file.write(f"0,0,0,0,")
-        file.write(f"{outcome_to_number(outcome)},")
+        file.write(f"{outcome_to_int(outcome)},")
         file.write(','.join(map(lambda x: f'{x[1]:0.1f}', ordered_times)))
 
 
-def outcome_to_number(outcome):
+def outcome_to_int(outcome):
     match outcome:
         case True:
             return 100
@@ -195,6 +208,16 @@ def outcome_to_number(outcome):
             return 0
         case None:
             return 10
+
+
+def outcome_to_str(outcome):
+    match outcome:
+        case True:
+            return 'FOUND'
+        case False:
+            return 'UNSAT'
+        case None:
+            return 'CP CUT'
 
 
 def touistplan_parser(args, steps_duration):
@@ -230,6 +253,13 @@ def touistplan_parser(args, steps_duration):
 
     return problem1, problem2
 
+def get_sat_solver_data(solver_name: str):
+    solver_root = './Solvers/Bin'
+    match solver_name:
+        case 'glucose':
+            return f"{solver_root}/glucose-syrup_static", ['-model']
+        case 'maplelcmd':
+            return f"{solver_root}/glucose_static_maplelcmd", ['-drup-file=./tmp/proof.out']
 
 def trim_action_or_predicate(element):
     return element[2:]
