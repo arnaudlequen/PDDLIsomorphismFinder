@@ -42,6 +42,8 @@ def main(argv):
                         help="Use TouISTPlan to extract STRIPS problems from PDDL files")
     parser.add_argument('--clean', '-l', type=str2bool, nargs='?', const=True, default=False,
                         help="Do not show progress bars and create a clean trace for further processing")
+    parser.add_argument('--no-cp', type=str2bool, nargs='?', const=True, default=False,
+                        help="Do not run any constraint propagation step")
     args = parser.parse_args()
 
     try:
@@ -79,7 +81,7 @@ def main(argv):
     print("Translating the STRIPS-sub-isomorphism instance to SAT...")
     print(filler)
     subiso_finder = SubisoFinder()
-    sat_instance, conversion_durations = subiso_finder.convert_to_sat(problem1, problem2, args.cnfpath, args.clean)
+    sat_instance, conversion_durations = subiso_finder.convert_to_sat(problem1, problem2, args.no_cp, args.cnfpath, args.clean)
     if sat_instance is None:
         step_end_str = "Added a non-consistent clause: exiting..."
         print(f"{step_end_str:<45}")
@@ -178,7 +180,7 @@ def print_trace(args, outcome, problem1, problem2, sat_instance, steps_duration)
         return
 
     print(f"Saving trace in {args.trace}")
-    with open(args.trace, "w+") as file:
+    with open(args.trace, "w") as file:
         ordered_times = [(k, v) for k, v in steps_duration.items()]
         file.write(f"p1fluents,p1operators,p2fluents,p2operators,"
                    f"variables,clauses,simplified_variables,simplified_clauses,outcome,")
