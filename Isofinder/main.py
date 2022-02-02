@@ -91,7 +91,7 @@ def main(argv):
         step_time = perf_counter() - global_start_time
         steps_duration["total_time"] = step_time
         print(f"Total time: {step_time:.1f}s")
-        print_trace(args, None, problem1, problem2, None, steps_duration)
+        print_trace(args, 'CPCUT', problem1, problem2, None, steps_duration)
         return
 
     step_time = perf_counter() - step_start
@@ -99,6 +99,7 @@ def main(argv):
     print(f"Saved result in file {args.cnfpath}\n")
     steps_duration = steps_duration | conversion_durations
     steps_duration["sat_translation"] = step_time
+    print_trace(args, 'DNF', problem1, problem2, sat_instance, steps_duration)
 
     # Interpret the results
     step_start = perf_counter()
@@ -171,7 +172,7 @@ def main(argv):
     steps_duration["total_time"] = step_time
 
     if args.trace is not None:
-        print_trace(args, outcome, problem1, problem2, sat_instance, steps_duration)
+        print_trace(args, str(outcome), problem1, problem2, sat_instance, steps_duration)
     print()
 
 
@@ -204,22 +205,14 @@ def print_trace(args, outcome, problem1, problem2, sat_instance, steps_duration)
 
 def outcome_to_int(outcome):
     match outcome:
-        case True:
+        case 'True':
             return 100
-        case False:
+        case 'False':
             return 0
-        case None:
+        case 'CPCUT':
             return 10
-
-
-def outcome_to_str(outcome):
-    match outcome:
-        case True:
-            return 'FOUND'
-        case False:
-            return 'UNSAT'
-        case None:
-            return 'CP CUT'
+        case 'DNF':
+            return -1
 
 
 def touistplan_parser(args, steps_duration):
