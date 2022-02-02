@@ -28,7 +28,7 @@ class SubisoFinder:
             # 'GoalStateConservation',
         ]
 
-    def convert_to_sat(self, problem1: StripsProblem, problem2: StripsProblem, file_path: str = None,
+    def convert_to_sat(self, problem1: StripsProblem, problem2: StripsProblem, nocp: bool, file_path: str = None,
                        clean_trace: bool = False):
         """
         Consider the problem STRIPS-subproblem-isomorphism(problem1, problem2), where one tries to find a subproblem of
@@ -74,7 +74,7 @@ class SubisoFinder:
         partial_assignment: List[bool | None] = [None] * (expected_variables_count + 1)
 
         # Pruning impossible mappings
-        if len(self.pruning_steps) > 0:
+        if len(self.pruning_steps) > 0 and not nocp:
             current_step = 1
             step_counter = f"{{step}}/{len(self.pruning_steps)}"
 
@@ -206,7 +206,7 @@ class SubisoFinder:
                 clause = [f_to_fid(i, j) for j in range(n1)]
                 added_successfully = sat_instance.add_clause(clause)
                 if not added_successfully:
-                    return None
+                    return None, set()
 
                 # Now with the unicity of the image (not the injectivity)
                 for j in range(n1):
@@ -214,7 +214,7 @@ class SubisoFinder:
                         clause = [-1 * f_to_fid(i, j), -1 * f_to_fid(i, k)]
                         added_successfully = sat_instance.add_clause(clause)
                         if not added_successfully:
-                            return None
+                            return None, set()
 
             step_end_str = f"Step {step_counter.format(step=current_step)}: Done " \
                            f"({sat_instance.get_new_clauses_count()} clauses, " \
@@ -233,14 +233,14 @@ class SubisoFinder:
                 clause = [o_to_oid(i, j) for j in range(m1)]
                 added_successfully = sat_instance.add_clause(clause)
                 if not added_successfully:
-                    return None
+                    return None, set()
 
                 for j in range(m1):
                     for k in range(j + 1, m1):
                         clause = [-1 * o_to_oid(i, j), -1 * o_to_oid(i, k)]
                         added_successfully = sat_instance.add_clause(clause)
                         if not added_successfully:
-                            return None
+                            return None, set()
 
             step_end_str = f"Step {step_counter.format(step=current_step)}: Done " \
                            f"({sat_instance.get_new_clauses_count()} clauses, " \
@@ -273,7 +273,7 @@ class SubisoFinder:
                             clause.extend([f_to_fid(k, l) for l in op1_list])
                             added_successfully = sat_instance.add_clause(clause)
                             if not added_successfully:
-                                return None
+                                return None, set()
 
             step_end_str = f"Step {step_counter.format(step=current_step)}: Done " \
                            f"({sat_instance.get_new_clauses_count()} clauses, " \
@@ -301,7 +301,7 @@ class SubisoFinder:
                             clause.extend([f_to_fid(k, l) for k in range(n2)])
                             added_successfully = sat_instance.add_clause(clause)
                             if not added_successfully:
-                                return None
+                                return None, set()
             step_end_str = f"Step {step_counter.format(step=current_step)}: Done " \
                            f"({sat_instance.get_new_clauses_count()} clauses, " \
                            f"{sat_instance.get_new_simplified_clauses_count()} simplified)"
@@ -322,7 +322,7 @@ class SubisoFinder:
                         clause = [-1 * f_to_fid(j, i), -1 * f_to_fid(k, i)]
                         added_successfully = sat_instance.add_clause(clause)
                         if not added_successfully:
-                            return None
+                            return None, set()
 
             step_end_str = f"Step {step_counter.format(step=current_step)}: Done " \
                            f"({sat_instance.get_new_clauses_count()} clauses, " \
@@ -344,7 +344,7 @@ class SubisoFinder:
                         clause = [-1 * o_to_oid(j, i), -1 * o_to_oid(k, i)]
                         added_successfully = sat_instance.add_clause(clause)
                         if not added_successfully:
-                            return None
+                            return None, set()
 
             step_end_str = f"Step {step_counter.format(step=current_step)}: Done " \
                            f"({sat_instance.get_new_clauses_count()} clauses, " \
@@ -388,7 +388,7 @@ class SubisoFinder:
                         clause = [f_to_fid(i, j) for j in var_a]
                         added_successfully = sat_instance.add_clause(clause)
                         if not added_successfully:
-                            return None
+                            return None, set()
                         progress += 1
 
             step_end_str = f"Step {step_counter.format(step=current_step)}: Done " \
