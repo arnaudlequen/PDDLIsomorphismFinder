@@ -56,7 +56,8 @@ class SatInstance:
 
         # Create a copy as we will alter the clause
         # Maybe there is no need to?
-        clause = variables[:]
+        # clause = variables[:]
+        clause = variables
 
         # Simplify the formula : delete the clause when it is satisfied by the partial assignment, or remove the
         # literals that are false
