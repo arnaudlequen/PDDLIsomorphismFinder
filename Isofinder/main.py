@@ -70,7 +70,8 @@ def main(argv):
     print("Translating the STRIPS-sub-isomorphism instance to SAT...")
     print(filler)
     subiso_finder = SubisoFinder()
-    sat_instance, conversion_durations = subiso_finder.convert_to_sat(problem1, problem2, args.cp, args.cnfpath, args.clean)
+    sat_instance, conversion_durations = subiso_finder.convert_to_sat(problem1, problem2, args.cp, args.cnfpath,
+                                                                      args.clean)
     if sat_instance is None:
         step_end_str = "Added a non-consistent clause: exiting..."
         print(f"{step_end_str:<45}")
@@ -231,11 +232,12 @@ def touistplan_parser(args, steps_duration):
     print()
 
     if problem1.get_fluent_count() == 0 or problem1.get_operator_count() == 0 or \
-        problem2.get_fluent_count() == 0 or problem2.get_operator_count() == 0:
+            problem2.get_fluent_count() == 0 or problem2.get_operator_count() == 0:
         print("ERROR: Empty problem. Maybe the parser encountered an error?")
         return None, None
 
     return problem1, problem2
+
 
 def get_sat_solver_data(solver_name: str):
     solver_root = './Solvers/Bin'
@@ -244,6 +246,7 @@ def get_sat_solver_data(solver_name: str):
             return f"{solver_root}/glucose-syrup_static", ['-model']
         case 'maplelcmd':
             return f"{solver_root}/glucose_static_maplelcmd", ['-drup-file=./tmp/proof.out']
+
 
 def trim_action_or_predicate(element):
     return element[2:]
@@ -268,7 +271,7 @@ def touistplan_parse_single_file(domain_path, instance_path):
     step_start = perf_counter()
     print("Calling TouISTPlan to extract STRIPS problem from file...")
     subprocess_args = ['./Solvers/touistplan', domain_path, instance_path, '-e', 'sat',
-                        '-insat', './tmp/blankrules.touistl']
+                       '-insat', './tmp/blankrules.touistl']
     process = subprocess.run(subprocess_args, capture_output=True)
     print(f"Extraction done in {perf_counter() - step_start:.1f}s")
     step_start = perf_counter()
