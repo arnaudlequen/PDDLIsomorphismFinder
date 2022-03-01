@@ -82,6 +82,13 @@ bash general.sh blocks 4 10
 
 Script `general_nocp.sh` works in a similar way, but will not use the constraint-propagation step.
 
+# Visualize results
+In order to visualize results, two Python scripts can be found in folder Results.
+
+`make_graphs.py domain` generates graphs for a specific domain, given by the folder's name.
+
+`make_overview.py` generates a summary of the results on all domains found in the Results folder.
+
 # Supports
 PDDL planning problems with propositional preconditions and effects
 

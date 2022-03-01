@@ -1,5 +1,6 @@
 
 main:
+	mkdir Solvers/Bin
 	make satsolver
 	make touistparse
 	cd ./ANTLR && ./build.sh
