@@ -37,7 +37,7 @@ python3 main.py [-h] [-c CNFPATH] [-s SATSOLVER] [-o OUTPUT] [-t TRACE]
 
   **instancesmall.pddl**: The file of the subproblem to extract, in PDDL format
 
-Optional arguments:
+### Optional arguments:
   **-h, --help**: Show this help message and exit
 
   **-c CNFPATH, --cnfpath CNFPATH**: 
