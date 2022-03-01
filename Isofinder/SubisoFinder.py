@@ -24,8 +24,8 @@ class SubisoFinder:
             'BijectionProperty',
             'FluentsInjectivity',
             'OperatorsInjectivity',
-            # 'InitialStateConservation',
-            # 'GoalStateConservation',
+            'InitialStateConservation',
+            'GoalStateConservation',
         ]
 
     def convert_to_sat(self, problem1: StripsProblem, problem2: StripsProblem, nocp: bool, file_path: str = None,
@@ -48,6 +48,8 @@ class SubisoFinder:
         # Durations of the various steps
         durations = {}
 
+        # Add another test if n1 < n2 and m1 > m2, i.e., problems are incomparable
+
         if n1 < n2 or m1 < m2:
             print("The target problem is too big: switching problems...")
             problem3 = problem1
@@ -61,7 +63,7 @@ class SubisoFinder:
 
         # Definition of the formula
         expected_clauses_count = n2 + n2 * (n1 ** 2) + m2 + m2 * (m1 ** 2) \
-                                + 4 * m2 * m1 * n2 + m1 * (m2 ** 2) + 2 * n1 + 2 * n2
+                                 + 4 * m2 * m1 * n2 + m1 * (m2 ** 2) + 2 * n1 + 2 * n2
         expected_variables_count = n1 * n2 + m1 * m2
         print(f"Maximum number of variables: {expected_variables_count}")
         print(f"Maximum number of clauses: < {expected_clauses_count}")
@@ -96,7 +98,6 @@ class SubisoFinder:
                               sep='', end='\r', flush=True)
                     for j in range(m1):
                         if oi_profile != problem1.get_operator_profile(j):
-
                             operators_domain[i].remove(j)
                             simplified_operator_count += 1
 
@@ -175,7 +176,7 @@ class SubisoFinder:
             # Propagating the results to the SATInstance
             print(f"Pruning done. Associations removed:")
             print(f"Fluents: {simplified_fluent_count} ({simplified_fluent_count / (n1 * n2) * 100:0.2f}%)")
-            print(f"Operators: {simplified_operator_count} ({simplified_operator_count/(m1 * m2) * 100:0.2f}%)")
+            print(f"Operators: {simplified_operator_count} ({simplified_operator_count / (m1 * m2) * 100:0.2f}%)")
             print()
 
             for i in range(n2):
@@ -376,20 +377,42 @@ class SubisoFinder:
             total_length = sum([len(l1) + len(l2) for l1, l2 in compare_list])
             for var_list1, var_list2 in compare_list:
 
-                back_and_forth_lists = [(var_list1, var_list2),
-                                        (var_list2, var_list1)]
+                # back_and_forth_lists = [(var_list1, var_list2),
+                #                        (var_list2, var_list1)]
 
-                for var_a, var_b in back_and_forth_lists:
-                    for i in var_b:
-                        if not clean_trace:
-                            print(f"Step {step_counter.format(step=current_step)}: "
-                                  f"{progress_bar(progress / total_length, 24)}",
-                                  sep='', end='\r', flush=True)
-                        clause = [f_to_fid(i, j) for j in var_a]
-                        added_successfully = sat_instance.add_clause(clause)
-                        if not added_successfully:
-                            return None, set()
-                        progress += 1
+                for i in var_list2:
+                    if not clean_trace:
+                        print(f"Step {step_counter.format(step=current_step)}: "
+                              f"{progress_bar(progress / total_length, 24)}",
+                              sep='', end='\r', flush=True)
+                    clause = [f_to_fid(i, j) for j in var_list1]
+                    added_successfully = sat_instance.add_clause(clause)
+                    if not added_successfully:
+                        return None, set()
+                    progress += 1
+
+                for j in var_list1:
+                    if not clean_trace:
+                        print(f"Step {step_counter.format(step=current_step)}: "
+                              f"{progress_bar(progress / total_length, 24)}",
+                              sep='', end='\r', flush=True)
+                    clause = [f_to_fid(i, j) for i in var_list2]
+                    added_successfully = sat_instance.add_clause(clause)
+                    if not added_successfully:
+                        return None, set()
+                    progress += 1
+
+                # for var_a, var_b in back_and_forth_lists:
+                #    for i in var_b:
+                #        if not clean_trace:
+                #            print(f"Step {step_counter.format(step=current_step)}: "
+                #                  f"{progress_bar(progress / total_length, 24)}",
+                #                  sep='', end='\r', flush=True)
+                #        clause = [f_to_fid(i, j) for j in var_a]
+                #        added_successfully = sat_instance.add_clause(clause)
+                #        if not added_successfully:
+                #            return None, set()
+                #        progress += 1
 
             step_end_str = f"Step {step_counter.format(step=current_step)}: Done " \
                            f"({sat_instance.get_new_clauses_count()} clauses, " \

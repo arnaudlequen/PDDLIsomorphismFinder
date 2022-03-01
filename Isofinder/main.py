@@ -11,17 +11,6 @@ filler = ''.join(['='] * 30)
 small_filler = ''.join(['-'] * 30)
 
 
-def str2bool(v):
-    if isinstance(v, bool):
-       return v
-    if v.lower() in ('yes', 'true', 't', 'y', '1'):
-        return True
-    elif v.lower() in ('no', 'false', 'f', 'n', '0'):
-        return False
-    else:
-        raise argparse.ArgumentTypeError('Boolean value expected.')
-
-
 def main(argv):
     parser = argparse.ArgumentParser(description="Sub-isomorphism finder for STRIPS planning problems")
     parser.add_argument('domain1Path', metavar='domainbig.pddl', type=str, help="The domain file in PDDL format")
@@ -38,11 +27,11 @@ def main(argv):
                         help="The file in which to save the sub-isomorphism")
     parser.add_argument('-t', '--trace', type=str, default=None,
                         help="Output a datafile that summarizes the main data points of the execution")
-    parser.add_argument('--touist', type=str2bool, nargs='?', const=True, default=False,
+    parser.add_argument('--touist', type=bool, action=argparse.BooleanOptionalAction, default=True,
                         help="Use TouISTPlan to extract STRIPS problems from PDDL files")
-    parser.add_argument('--clean', '-l', type=str2bool, nargs='?', const=True, default=False,
+    parser.add_argument('--clean', '-l', type=bool, action=argparse.BooleanOptionalAction, default=False,
                         help="Do not show progress bars and create a clean trace for further processing")
-    parser.add_argument('--no-cp', type=str2bool, nargs='?', const=True, default=False,
+    parser.add_argument('--no-cp', type=bool, action=argparse.BooleanOptionalAction, default=False,
                         help="Do not run any constraint propagation step")
     args = parser.parse_args()
 

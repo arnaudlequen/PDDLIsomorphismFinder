@@ -3,7 +3,7 @@
   (:predicates 	(OBJ ?obj)
 	       	(TRUCK ?truck)
                	(LOCATION ?loc)
-		(driver ?d)
+		(DRIVER ?d)
 		(at ?obj ?loc)
 		(in ?obj1 ?obj)
 		(driving ?d ?v)
