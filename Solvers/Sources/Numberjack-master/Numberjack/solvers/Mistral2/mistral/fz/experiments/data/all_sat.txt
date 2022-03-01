@@ -1,3 +1,0 @@
-data/sat/langford.fzn
-data/sat/queens.fzn
-data/sat/satisfy.fzn
