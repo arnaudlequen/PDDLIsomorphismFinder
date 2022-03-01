@@ -28,7 +28,7 @@ class SubisoFinder:
             'GoalStateConservation',
         ]
 
-    def convert_to_sat(self, problem1: StripsProblem, problem2: StripsProblem, nocp: bool, file_path: str = None,
+    def convert_to_sat(self, problem1: StripsProblem, problem2: StripsProblem, cp: bool, file_path: str = None,
                        clean_trace: bool = False):
         """
         Consider the problem STRIPS-subproblem-isomorphism(problem1, problem2), where one tries to find a subproblem of
@@ -76,7 +76,7 @@ class SubisoFinder:
         partial_assignment: List[bool | None] = [None] * (expected_variables_count + 1)
 
         # Pruning impossible mappings
-        if len(self.pruning_steps) > 0 and not nocp:
+        if len(self.pruning_steps) > 0 and cp:
             current_step = 1
             step_counter = f"{{step}}/{len(self.pruning_steps)}"
 

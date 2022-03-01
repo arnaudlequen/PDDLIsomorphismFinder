@@ -31,8 +31,8 @@ def main(argv):
                         help="Use TouISTPlan to extract STRIPS problems from PDDL files")
     parser.add_argument('--clean', '-l', type=bool, action=argparse.BooleanOptionalAction, default=False,
                         help="Do not show progress bars and create a clean trace for further processing")
-    parser.add_argument('--no-cp', type=bool, action=argparse.BooleanOptionalAction, default=False,
-                        help="Do not run any constraint propagation step")
+    parser.add_argument('--cp', type=bool, action=argparse.BooleanOptionalAction, default=True,
+                        help="Run constraint propagation preprocessing")
     args = parser.parse_args()
 
     try:
@@ -70,7 +70,7 @@ def main(argv):
     print("Translating the STRIPS-sub-isomorphism instance to SAT...")
     print(filler)
     subiso_finder = SubisoFinder()
-    sat_instance, conversion_durations = subiso_finder.convert_to_sat(problem1, problem2, args.no_cp, args.cnfpath, args.clean)
+    sat_instance, conversion_durations = subiso_finder.convert_to_sat(problem1, problem2, args.cp, args.cnfpath, args.clean)
     if sat_instance is None:
         step_end_str = "Added a non-consistent clause: exiting..."
         print(f"{step_end_str:<45}")
