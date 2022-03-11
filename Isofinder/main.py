@@ -1,6 +1,9 @@
 import argparse
 import os
 import sys
+from enum import Enum
+
+from EmbeddingFinder import *
 from SubisoFinder import *
 from StripsConverter import *
 from SatInstance import *
@@ -9,6 +12,19 @@ from time import perf_counter
 
 filler = ''.join(['='] * 30)
 small_filler = ''.join(['-'] * 30)
+
+
+class ProblemType(Enum):
+    SUBISO = 0
+    EMBEDDING = 1
+
+
+def str2pbtype(s: str) -> ProblemType:
+    if s.lower() == 'subiso':
+        return ProblemType.SUBISO
+    elif s.lower() == 'embed':
+        return ProblemType.EMBEDDING
+    raise argparse.ArgumentTypeError('Problem type not recognized')
 
 
 def main(argv):
@@ -33,6 +49,8 @@ def main(argv):
                         help="Do not show progress bars and create a clean trace for further processing")
     parser.add_argument('--cp', type=bool, action=argparse.BooleanOptionalAction, default=True,
                         help="Run constraint propagation preprocessing")
+    parser.add_argument('--type', type=str2pbtype, const=True, nargs='?', default=ProblemType.SUBISO,
+                        help="Search either an isomorphism of subinstances (subiso) or an embedding (embed)")
     args = parser.parse_args()
 
     try:
@@ -69,8 +87,13 @@ def main(argv):
     step_start = perf_counter()
     print("Translating the STRIPS-sub-isomorphism instance to SAT...")
     print(filler)
-    subiso_finder = SubisoFinder()
-    sat_instance, conversion_durations = subiso_finder.convert_to_sat(problem1, problem2, args.cp, args.cnfpath,
+    if args.type == ProblemType.SUBISO:
+        isofinder = SubisoFinder()
+    elif args.type == ProblemType.EMBEDDING:
+        isofinder = EmbeddingFinder()
+    else:
+        raise Exception
+    sat_instance, conversion_durations = isofinder.convert_to_sat(problem1, problem2, args.cp, args.cnfpath,
                                                                       args.clean)
     if sat_instance is None:
         step_end_str = "Added a non-consistent clause: exiting..."
@@ -151,7 +174,7 @@ def main(argv):
         iso_path = args.output
 
         with open(iso_path, 'w+') as iso_file:
-            subiso_finder.interpret_assignment(problem1, problem2, assignment, args.touist, iso_file)
+            isofinder.interpret_assignment(problem1, problem2, assignment, args.touist, iso_file)
 
         print("Isomorphism built")
         print(f"Saved the result in file {iso_path}\n")
