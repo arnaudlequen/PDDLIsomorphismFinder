@@ -391,8 +391,14 @@ def touist_process_problem_sets_string(output: str) -> StripsProblem:
             _, predicates = line.split(' = ')
             goal_pos_predicates = list(map(trim_action_or_predicate, predicates[1:-1].split(',')))
 
-    init_pos = list(map(lambda p: predicate_to_varId[p], init_pos_predicates))
-    goal_pos = list(map(lambda p: predicate_to_varId[p], goal_pos_predicates))
+    if init_pos_predicates:
+        init_pos = list(map(lambda p: predicate_to_varId[p], init_pos_predicates))
+    else:
+        init_pos = []
+    if goal_pos_predicates:
+        goal_pos = list(map(lambda p: predicate_to_varId[p], goal_pos_predicates))
+    else:
+        goal_pos = []
 
     problem = StripsProblem(predicate_to_varId, varId_to_predicate,
                             action_to_opId, opId_to_action, opId_to_operator,
