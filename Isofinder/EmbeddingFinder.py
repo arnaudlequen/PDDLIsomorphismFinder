@@ -173,7 +173,7 @@ class EmbeddingFinder:
                     self.update_progress_bar('pruning', i / m1)
 
                     for j in range(m2):
-                        if oi_profile != problem2.get_operator_profile(j):
+                        if not (oi_profile.leq(problem2.get_operator_profile(j))):
                             domains['operators'][i].remove(j)
                             simplified_operator_count += 1
 

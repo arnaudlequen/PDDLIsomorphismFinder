@@ -14,6 +14,15 @@ class OperatorProfile:
     prep_to_effn: int = attr.ib(default=-1)
     pren_to_effp: int = attr.ib(default=-1)
 
+    def leq(self, other):
+        if self.pre_pos <= other.pre_pos and \
+            self.pre_neg <= other.pre_neg and \
+            self.eff_pos <= other.eff_pos and \
+            self.eff_neg <= other.eff_neg:
+            return True
+
+        return False
+
 
 @attr.s(slots=True)
 class FluentOccurrences:

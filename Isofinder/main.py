@@ -386,10 +386,14 @@ def touist_process_problem_sets_string(output: str) -> StripsProblem:
         elif line.startswith("$I = "):
             _, predicates = line.split(' = ')
             init_pos_predicates = list(map(trim_action_or_predicate, predicates[1:-1].split(',')))
+            if init_pos_predicates == ['']:
+                init_pos_predicates = []
 
         elif line.startswith("$G = "):
             _, predicates = line.split(' = ')
             goal_pos_predicates = list(map(trim_action_or_predicate, predicates[1:-1].split(',')))
+            if goal_pos_predicates == ['']:
+                goal_pos_predicates = []
 
     if init_pos_predicates:
         init_pos = list(map(lambda p: predicate_to_varId[p], init_pos_predicates))

@@ -148,8 +148,7 @@ method private parse_constraints =
 	fun atom ->
 	  let table = if atom#nb_terms <= 1 then unary_constraints else constraints_table in
 	    if not (AtomTable.mem table atom) then begin
- 	      Utils.eprint "\nImpossible goal : %s.\n\n" atom#to_string ;
-	      exit 102
+ 	      Utils.eprint "\nImpossible goal : %s.\n\n" atom#to_string
 	    end)
     in
       init_state <- create_init_state problem#init ;
