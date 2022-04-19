@@ -1,6 +1,6 @@
 import attr
-from ASTypes import *
-from DataStructures import OperatorProfile
+from parser.ast_types import *
+from data_structures import OperatorProfile
 import math
 from typing import List, Dict
 
@@ -50,7 +50,7 @@ class StripsProblem:
         """
         Pretty print a grounded STRIPS action
         """
-        # TODO: rework it all, redundancy with something that is already in Grounder.py
+        # TODO: rework it all, redundancy with something that is already in grounder.py
         operator = self.opId_to_operator[op_id]
 
         action_name = operator.name

@@ -1,11 +1,9 @@
 import collections
 
-from DomainListener import *
-from InstanceListener import *
-from StripsConverter import *
-from SatInstance import *
-from Utils import progress_bar
-from DataStructures import FluentOccurrences
+from strips_converter import *
+from sat_instance import *
+from utils import progress_bar
+from data_structures import FluentOccurrences
 
 
 class SubisoFinder:
@@ -511,7 +509,7 @@ class SubisoFinder:
         return removed_candidates
 
     def interpret_assignment(self, problem1: StripsProblem, problem2: StripsProblem, assignment,
-                             actions_name_only=False, out_file=sys.stdout):
+                             actions_name_only=True, out_file=sys.stdout):
         """
         Interpret a model of the formula that is built in convert_to_sat, and write it in a legible
         format.

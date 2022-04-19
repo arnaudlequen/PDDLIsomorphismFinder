@@ -1,11 +1,9 @@
 import collections
 from enum import Enum
-from DomainListener import *
-from InstanceListener import *
-from StripsConverter import *
-from SatInstance import *
-from Utils import progress_bar
-from DataStructures import FluentOccurrences
+from strips_converter import *
+from sat_instance import *
+from utils import progress_bar
+from data_structures import FluentOccurrences
 from typing import List, Tuple
 
 
