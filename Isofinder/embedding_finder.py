@@ -69,7 +69,7 @@ class EmbeddingFinder:
         if n2 > n1:
             print("Impossible to find an embedding: P does not have enough fluents")
             print("Exiting...")
-            return None
+            return None, set()
 
         # Functions that help with the conversion from the problem's data to variables of the SAT formula
         satid = SatIdConverter(problem1, problem2)
