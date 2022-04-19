@@ -1,0 +1,24 @@
+<component name="InspectionProjectProfileManager">
+  <profile version="1.0">
+    <option name="myName" value="Project Default" />
+    <inspection_tool class="PyUnresolvedReferencesInspection" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="ignoredIdentifiers">
+        <list>
+          <option value="sign" />
+          <option value="arguments_type_list" />
+          <option value="name" />
+          <option value="arguments_name_list" />
+          <option value="predicate" />
+          <option value="predicates" />
+          <option value="parameters" />
+          <option value="precondition" />
+          <option value="effects" />
+          <option value="pre_pos" />
+          <option value="pre_neg" />
+          <option value="eff_pos" />
+          <option value="eff_neg" />
+        </list>
+      </option>
+    </inspection_tool>
+  </profile>
+</component>

@@ -1,7 +1,4 @@
-from ASTypes import *
-from DomainListener import *
-from InstanceListener import *
-from StripsProblem import StripsProblem
+from strips_problem import StripsProblem
 from time import perf_counter
 import itertools as it
 

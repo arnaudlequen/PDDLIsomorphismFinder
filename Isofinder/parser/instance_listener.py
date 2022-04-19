@@ -1,7 +1,6 @@
-from antlr.PddlListener import PddlListener
-from collections import namedtuple
-from itertools import islice
-from ASTypes import *
+from .PddlListener import PddlListener
+from .PddlParser import PddlParser
+from .ast_types import HashedLiteral, PDDLInstance
 
 
 class InstanceListener(PddlListener):

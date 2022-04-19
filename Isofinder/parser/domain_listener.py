@@ -1,8 +1,8 @@
-from antlr.PddlListener import PddlListener
-from antlr.PddlParser import *
+from .PddlListener import PddlListener
+from .PddlParser import *
 from collections import namedtuple
 import itertools as it
-from ASTypes import *
+from .ast_types import *
 
 
 class DomainListener(PddlListener):

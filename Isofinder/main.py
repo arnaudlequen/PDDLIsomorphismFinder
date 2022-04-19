@@ -1,13 +1,12 @@
 import argparse
-import os
-import sys
-from enum import Enum
-
-from EmbeddingFinder import *
-from SubisoFinder import *
-from StripsConverter import *
-from SatInstance import *
 import subprocess
+
+from parser.ast_types import Operator
+from embedding_finder import *
+from fd_parser import fd_parser
+from sat_instance import *
+from subiso_finder import *
+from strips_converter import *
 from time import perf_counter
 
 filler = ''.join(['='] * 30)
@@ -43,8 +42,8 @@ def main(argv):
                         help="The file in which to save the sub-isomorphism")
     parser.add_argument('-t', '--trace', type=str, default=None,
                         help="Output a datafile that summarizes the main data points of the execution")
-    parser.add_argument('--touist', type=bool, action=argparse.BooleanOptionalAction, default=True,
-                        help="Use TouISTPlan to extract STRIPS problems from PDDL files")
+    parser.add_argument('--parser', type=str, default='fd',
+                        help="Which parser among adhoc, fd, touist to use")
     parser.add_argument('--clean', '-l', type=bool, action=argparse.BooleanOptionalAction, default=False,
                         help="Do not show progress bars and create a clean trace for further processing")
     parser.add_argument('--cp', type=bool, action=argparse.BooleanOptionalAction, default=True,
@@ -74,10 +73,13 @@ def main(argv):
     print()
 
     problem1, problem2 = None, None
-    if args.touist:
-        problem1, problem2 = touistplan_parser(args, steps_duration)
-    else:
-        problem1, problem2 = adhoc_parser(args, steps_duration)
+    match args.parser:
+        case 'touist':
+            problem1, problem2 = touistplan_parser(args, steps_duration)
+        case 'adhoc':
+            problem1, problem2 = adhoc_parser(args, steps_duration)
+        case _:
+            problem1, problem2 = fd_parser(args)
 
     if problem1 is None or problem2 is None:
         print("Aborting...")
@@ -174,7 +176,7 @@ def main(argv):
         iso_path = args.output
 
         with open(iso_path, 'w+') as iso_file:
-            isofinder.interpret_assignment(problem1, problem2, assignment, args.touist, iso_file)
+            isofinder.interpret_assignment(problem1, problem2, assignment, out_file=iso_file)
 
         print("Isomorphism built")
         print(f"Saved the result in file {iso_path}\n")
