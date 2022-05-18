@@ -12,6 +12,7 @@ class VarType(Enum):
     OPERATOR = 1
     FUSEFUL = 2
     OACTIVE = 3
+    DOMCOUNT = 4
 
 
 class EmbeddingFinder:
@@ -40,7 +41,8 @@ class EmbeddingFinder:
             'ActiveOperatorDefinition',
         ]
 
-    def convert_to_sat(self, problem1: StripsProblem, problem2: StripsProblem, cp: bool, file_path: str = None,
+    def convert_to_sat(self, problem1: StripsProblem, problem2: StripsProblem, cp: bool,
+                       file_path: str = None,
                        clean_trace: bool = False):
         """
         Consider the problem STRIPS-subproblem-isomorphism(problem1, problem2), where one tries to find a subproblem of
@@ -58,7 +60,7 @@ class EmbeddingFinder:
         self.current_step = 0
         self.clean_trace = clean_trace
 
-        small_filler = ''.join(['-'] * 30)
+        small_filler = '-' * 30
 
         n1, m1 = problem1.get_fluent_count(), problem1.get_operator_count()
         n2, m2 = problem2.get_fluent_count(), problem2.get_operator_count()
@@ -67,9 +69,10 @@ class EmbeddingFinder:
         self.durations = {}
 
         if n2 > n1:
-            print("Impossible to find an embedding: P does not have enough fluents")
-            print("Exiting...")
-            return None, set()
+            print("P has fewer fluents than P', swapping problems...")
+            problem1, problem2 = problem2, problem1
+            n1, n2 = n2, n1
+            m1, m2 = m2, m1
 
         # Functions that help with the conversion from the problem's data to variables of the SAT formula
         satid = SatIdConverter(problem1, problem2)
@@ -78,7 +81,7 @@ class EmbeddingFinder:
         # TODO: adjust the formula below
         expected_clauses_count = n2 + n2 * (n1 ** 2) + m2 + m2 * (m1 ** 2) \
                                  + 4 * m2 * m1 * n2 + m1 * (m2 ** 2) + 2 * n1 + 2 * n2
-        expected_variables_count = n1 * (n2 + 1) + m1 * (m2 + 1) + 1
+        expected_variables_count = (n1 + 1) * (n2 + 1) + (m1 + 1) * (m2 + 1) + 1
         print(f"Maximum number of variables: {expected_variables_count}")
         print(f"Maximum number of clauses: < {expected_clauses_count}")
         print()
@@ -131,7 +134,7 @@ class EmbeddingFinder:
                     neutral_fluents_image.difference_update(set(problem2.get_goal_state()[k]))
 
                 # Number of fluents that are simplified in the domain of neutral fluents (i.e., fluents not in I or G)
-                simplified_non_neutral_fluents = n2 - len(neutral_fluents_image)
+                simplified_non_neutral_fluents = n1 - len(neutral_fluents_image)
 
                 progress = 0
                 step_length = len(problem1.get_initial_state()[0]) + len(problem1.get_initial_state()[1]) + \
@@ -180,7 +183,8 @@ class EmbeddingFinder:
             # (1.3) Constraint propagation
             if 'CPConstraintPropagation' in self.pruning_steps:
                 step_start = perf_counter()
-                # Build the fluent -> action association tables
+
+                # Optimization: build the fluent -> action association tables
                 fluent1_associations = [FluentOccurrences() for _ in range(problem1.get_fluent_count())]
                 fluent2_associations = [FluentOccurrences() for _ in range(problem2.get_fluent_count())]
 
@@ -193,8 +197,9 @@ class EmbeddingFinder:
                                 selector(fluent_associations[fluent]).add(op_id)
 
                 # Main algorithm inspired by AC3 for constraint propagation
-                items_list: List[Tuple[int, VarType]] \
-                    = [(f, VarType.FLUENT) for f in range(problem2.get_fluent_count())]
+                items_list: List[Tuple[int, VarType]] = []
+                items_list.extend([(f, VarType.FLUENT) for f in range(problem2.get_fluent_count())])
+                items_list.append((-1, VarType.DOMCOUNT))
                 items_list.extend([(o, VarType.OPERATOR) for o in range(problem1.get_operator_count())])
                 items_list.extend([(f, VarType.FUSEFUL) for f in range(problem1.get_fluent_count())])
                 items_list.extend([(o, VarType.OACTIVE) for o in range(problem1.get_operator_count())])
@@ -206,7 +211,7 @@ class EmbeddingFinder:
                 force_additional_pass = 0
 
                 while update_queue:
-                    var, var_type = update_queue.pop()
+                    var, var_type = update_queue.popleft()
                     self.update_progress_bar('pruning', len(update_queue) / total_items_number)
 
                     # Can be removed: mostly for debugging purposes
@@ -219,7 +224,7 @@ class EmbeddingFinder:
                     # In case a fluent is up next
                     if var_type == VarType.FLUENT:
                         rm_count = self.cp_revise_fluents(var, domains, fluent1_associations, fluent2_associations)
-                        # TODO: adapt this to account for the asymetries of the associations (F' -> F but O -> O')
+                        # TODO: adapt this to account for the asymmetries of the associations (F' -> F but O -> O')
                         if rm_count > 0:
                             simplified_fluent_count += rm_count
                             # Re-revise the domains of the operators o1 that "use" the fluent for which some candidate
@@ -231,6 +236,7 @@ class EmbeddingFinder:
                                     for op1_id in domains['operators'][op2_id]:
                                         operators_to_add.add(op1_id)
 
+                            # I don't think we can propagate everything the same here
                             for op1_id in operators_to_add:
                                 # TODO: find out why there is a typing issue here
                                 update_queue.append((op1_id, VarType.OPERATOR))
@@ -240,15 +246,16 @@ class EmbeddingFinder:
                         rm_count = self.cp_revise_operators(var, domains, problem1, problem2)
                         if rm_count > 0:
                             simplified_operator_count += rm_count
-                            op2 = problem2.get_operator_by_id(var)
-                            for selector in [lambda x: x.pre_pos, lambda x: x.pre_neg,
-                                             lambda x: x.eff_pos, lambda x: x.eff_neg]:
-                                for fluent2 in selector(op2):
-                                    update_queue.append((fluent2, VarType.FLUENT))
+                            # PROPAGATION
+                            # op1 = problem1.get_operator_by_id(var)
+                            # for selector in [lambda x: x.pre_pos, lambda x: x.pre_neg,
+                            #                  lambda x: x.eff_pos, lambda x: x.eff_neg]:
+                            #     for fluent1 in selector(op1):
+                            #         update_queue.append((fluent1, VarType.FLUENT))
 
                     # In case a variable of type fluent_useful is up next
                     if var_type == VarType.FUSEFUL:
-                        rm_count = self.cp_revise_fuseful(var, domains, problem1, fluent1_associations)
+                        rm_count = self.cp_revise_fuseful(var, domains, problem2, fluent1_associations)
                         if rm_count > 0:
                             simplified_fluent_count += rm_count
                             # Re-revise the domains of the operators potentially made active by the fluent
@@ -256,24 +263,36 @@ class EmbeddingFinder:
                                 for op1_id in selector(fluent1_associations[var]):
                                     update_queue.append((op1_id, VarType.OPERATOR))
 
+                    # In case a variable of type operator_active is up next
                     if var_type == VarType.OACTIVE:
-                        # The variable is not used yet
+                        # No revision of the variable
                         pass
+
+                    # Signal to count the domain
+                    if var_type == VarType.DOMCOUNT:
+                        extend_queue, fuseful_found_count = self.revise_domain_counts(domains, fluent1_associations)
+                        update_queue.extend(extend_queue)
 
                 self.end_step('CPConstraintPropagation', step_start, sat_instance)
 
+            # End of the domain-restricting techniques
             # Propagating the results to the SATInstance
             print(f"Pruning done. Associations removed:")
             print(f"Fluents: {simplified_fluent_count} ({simplified_fluent_count / (n1 * n2) * 100:0.2f}%)")
             print(f"Operators: {simplified_operator_count} ({simplified_operator_count / (m1 * m2) * 100:0.2f}%)")
             print()
 
-            for i in range(n2):
-                for j in set(range(n1)) - domains['fluents'][i]:
+            # Check if some domain is empty
+            if self.exists_empty_domain(domains):
+                print("Empty domain found")
+                return None, set()
+
+            for j in range(n2):
+                for i in set(range(n1)) - domains['fluents'][j]:
                     partial_assignment[satid.conv('fmap')(i, j)] = False
 
-            for i in range(m2):
-                for j in set(range(m1)) - domains['operators'][i]:
+            for i in range(m1):
+                for j in set(range(m2)) - domains['operators'][i]:
                     partial_assignment[satid.conv('omap')(i, j)] = False
 
             sat_instance.set_partial_assignment(partial_assignment)
@@ -309,7 +328,7 @@ class EmbeddingFinder:
             step_start = perf_counter()
 
             for i in range(n1):
-                self.update_progress_bar('sat', i / n2)
+                self.update_progress_bar('sat', i / n1)
                 for j in range(n2):
                     for k in range(j + 1, n2):
                         clause = [-1 * satid.conv('fmap')(i, j), -1 * satid.conv('fmap')(i, k)]
@@ -475,10 +494,43 @@ class EmbeddingFinder:
 
         return sat_instance, self.durations
 
+    def revise_domain_counts(self, domains, fluent1_associations):
+        revised_count = 0
+        update_queue = []
+        domains_multiplicity = {}
+
+        for domain in domains['fluents']:
+            hashed = self.hash_domain(domain)
+            if hashed in domains_multiplicity:
+                domains_multiplicity[hashed] += 1
+            else:
+                domains_multiplicity[hashed] = 1
+
+        # Check if some domain has all of its fluents useful
+        for domain_hash, count in domains_multiplicity.items():
+            unhashed_domain = self.unhash_domain(domain_hash)
+
+            if len(unhashed_domain) >= count:
+                for fluent in unhashed_domain:
+                    if domains['fuseful'][fluent] == {True}:
+                        continue
+
+                    assert domains['fuseful'][fluent] != {False}, "ERROR: setting a non-useful fluent to useful"
+
+                    revised_count += 1
+                    domains['fuseful'][fluent] = {True}
+
+                    # for selector in [lambda x: x.eff_pos, lambda x: x.eff_neg]:
+                    #     for op1_id in selector(fluent1_associations[fluent]):
+                    #         update_queue.append((op1_id, VarType.OPERATOR))
+                    #         pass
+
+        return update_queue, revised_count
+
     @staticmethod
-    def cp_revise_operators(op2_id, domains, problem1: StripsProblem, problem2: StripsProblem) -> int:
+    def cp_revise_operators(op1_id, domains, problem1: StripsProblem, problem2: StripsProblem) -> int:
         """
-        Revise the possibilities of affectations of operator `operator` of problem 2 to the operators of problem 1.
+        Revise the possibilities of affectations of operator `op1_id` of problem 2 to the operators of problem 1.
         Modifies in place the various matrices
 
         Return
@@ -486,10 +538,10 @@ class EmbeddingFinder:
         """
         removed_candidates = 0
 
-        op2 = problem2.get_operator_by_id(op2_id)
+        op1 = problem1.get_operator_by_id(op1_id)
 
-        for op1_id in domains['operators'][op2_id].copy():
-            op1 = problem1.get_operator_by_id(op1_id)
+        for op2_id in domains['operators'][op1_id].copy():
+            op2 = problem2.get_operator_by_id(op2_id)
             keep_operator = True
 
             attributes_lists = [(op1.pre_pos, op2.pre_pos),
@@ -499,14 +551,14 @@ class EmbeddingFinder:
 
             # Check if there exists a fluent in op2_lst that can't be mapped to a fluent of op1_lst
             for op1_lst, op2_lst in attributes_lists:
-                for fluent1_id in op1_lst:
-                    if domains['fuseful'][fluent1_id] != {True}:
+                for fluent2_id in op2_lst:
+                    if domains['fuseful'][fluent2_id] != {True}:
                         continue
 
                     # The fluent is useful and is related to o1, so it has to be matched
                     fluent_matched = False
 
-                    for fluent2_id in op2_lst:
+                    for fluent1_id in op1_lst:
                         if fluent1_id in domains['fluents'][fluent2_id]:
                             fluent_matched = True
                             break
@@ -516,7 +568,7 @@ class EmbeddingFinder:
 
             if not keep_operator:
                 # if op1_id in domains['operators'][op2_id]:  # There should be no need for this line
-                domains['operators'][op2_id].remove(op1_id)
+                domains['operators'][op1_id].remove(op2_id)
                 removed_candidates += 1
 
         return removed_candidates
@@ -537,7 +589,7 @@ class EmbeddingFinder:
             keep_fluent = True
 
             # Check that f can be useful
-            if True not in domains['fuseful'][fluent1_id]:
+            if True not in domains['fuseful'][fluent2_id]:
                 keep_fluent = False
 
             # Check that for each o1 in which f1 appears in the effect, there is another o2 (in D(o1) in which f2
@@ -616,6 +668,16 @@ class EmbeddingFinder:
         domains['fuseful'][fluent1_id] = candidate_domain
 
         return changed
+
+    def exists_empty_domain(self, domains):
+        for domain in domains['fluents']:
+            if not len(domain):
+                return True
+        for domain in domains['operators']:
+            if not len(domain):
+                return True
+
+        return False
 
     def interpret_assignment(self, problem1: StripsProblem, problem2: StripsProblem, assignment,
                              actions_name_only=False, out_file=sys.stdout):
@@ -708,6 +770,22 @@ class EmbeddingFinder:
         print(f"{step_end_str:<45}")
         self.current_step += 1
 
+    def dump_fluents_domains(self, domains):
+        domains_fluents = domains['fluents']
+
+        with open('domains.txt', 'w+') as dfile:
+            for domain in domains_fluents:
+                dfile.write(' '.join(map(str, sorted(list(domain)))))
+                dfile.write('\n')
+
+    def hash_domain(self, domain):
+        return '_'.join(list(map(str, sorted(list(domain)))))
+
+    def unhash_domain(self, domain_hash):
+        if domain_hash == '':
+            return []
+        return list(map(int, domain_hash.split('_')))
+
 
 class SatIdConverter:
     def __init__(self, problem1: StripsProblem, problem2: StripsProblem):
@@ -733,7 +811,7 @@ class SatIdConverter:
         # Operators / OperatorsId
         if m1 >= m2:
             omap = [lambda i, j: (j * m1 + i) + offset1,
-                    lambda k: ((k - offset2) % m1, (k - offset1) // m1)]
+                    lambda k: ((k - offset1) % m1, (k - offset1) // m1)]
         else:
             omap = [lambda i, j: (i * m2 + j) + offset1,
                     lambda k: ((k - offset1) // m2, (k - offset1) % m2)]
@@ -767,8 +845,3 @@ class SatIdConverter:
 
     def conv(self, sat_variable, direction=1):
         return self.conversion_function(sat_variable, direction)
-
-
-
-
-

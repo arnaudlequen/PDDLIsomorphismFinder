@@ -98,7 +98,7 @@ def main(argv):
     sat_instance, conversion_durations = isofinder.convert_to_sat(problem1, problem2, args.cp, args.cnfpath,
                                                                       args.clean)
     if sat_instance is None:
-        step_end_str = "Added a non-consistent clause: exiting..."
+        step_end_str = "Formula is non-consistent: exiting..."
         print(f"{step_end_str:<45}")
         print()
         print("Isomorphism: NOT FOUND")
