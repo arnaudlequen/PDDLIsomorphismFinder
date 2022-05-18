@@ -75,7 +75,6 @@ class SatInstance:
 
         if not clause:
             return False
-            # print("ERROR: Empty clause")
 
         if self.file is not None:
             self.print_clause(clause, self.file)
