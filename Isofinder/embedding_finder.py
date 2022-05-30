@@ -68,12 +68,6 @@ class EmbeddingFinder:
         # Durations of the various steps
         self.durations = {}
 
-        if n2 > n1:
-            print("P has fewer fluents than P', swapping problems...")
-            problem1, problem2 = problem2, problem1
-            n1, n2 = n2, n1
-            m1, m2 = m2, m1
-
         # Functions that help with the conversion from the problem's data to variables of the SAT formula
         satid = SatIdConverter(problem1, problem2)
 
@@ -397,7 +391,7 @@ class EmbeddingFinder:
 
                     for f1_list, f2_list in required_mappings:
                         for i in f1_list:
-                            clause = [-1 * satid.conv('fuse')(i), -1 * satid.conv('omap')(o, k)]
+                            clause = [-1 * satid.conv('oact')(o), -1 * satid.conv('fuse')(i), -1 * satid.conv('omap')(o, k)]
                             clause.extend([satid.conv('fmap')(i, j) for j in f2_list])
 
                             added_successfully = sat_instance.add_clause(clause)
@@ -456,7 +450,6 @@ class EmbeddingFinder:
             for i in range(n1):
                 clause = [satid.conv('fmap')(i, j) for j in range(n2)]
                 clause.append(-1 * satid.conv('fuse')(i))
-
                 added_successfully = sat_instance.add_clause(clause)
                 if not added_successfully:
                     return None, set()
@@ -472,9 +465,10 @@ class EmbeddingFinder:
         if 'ActiveOperatorDefinition' in self.sat_steps:
             step_start = perf_counter()
 
-            for i in range(n1):
-                for o in range(m1):
-                    if i in problem1.get_operator_by_id(i).eff_pos or i in problem1.get_operator_by_id(i).eff_neg:
+            for o in range(m1):
+                lsts = [problem1.get_operator_by_id(o).eff_pos, problem1.get_operator_by_id(o).eff_neg]
+                for lst in lsts:
+                    for i in lst:
                         clause = [-1 * satid.conv('fuse')(i), satid.conv('oact')(o)]
 
                         added_successfully = sat_instance.add_clause(clause)
@@ -673,9 +667,9 @@ class EmbeddingFinder:
         for domain in domains['fluents']:
             if not len(domain):
                 return True
-        for domain in domains['operators']:
-            if not len(domain):
-                return True
+        # for domain in domains['operators']:
+        #     if not len(domain):
+        #         return True
 
         return False
 
@@ -702,9 +696,9 @@ class EmbeddingFinder:
             if assignment[k]:
                 i, j = satid.conv('fmap', -1)(k)
                 if self.verbose_action_names:
-                    out_file.write(f"{problem2.get_predicate_by_var_id(i)} => {problem1.get_predicate_by_var_id(j)}\n")
+                    out_file.write(f"{problem2.get_predicate_by_var_id(j)} => {problem1.get_predicate_by_var_id(i)}\n")
                 else:
-                    out_file.write(f"{i} => {j}\n")
+                    out_file.write(f"{j} => {i}\n")
 
         out_file.write("\n")
         out_file.write(filler)
@@ -716,14 +710,14 @@ class EmbeddingFinder:
             if assignment[k]:
                 i, j = satid.conv('omap', -1)(k)
                 if actions_name_only:
-                    out_file.write(f"{problem2.get_action_by_op_id(i)} => "
-                                   f"{problem1.get_action_by_op_id(j)}\n")
+                    out_file.write(f"{problem1.get_action_by_op_id(i)} => "
+                                   f"{problem2.get_action_by_op_id(j)}\n")
                 elif self.verbose_action_names:
-                    out_file.write(f"{problem2.pretty_print_action_by_op_id(i)} => "
-                                   f"{problem1.pretty_print_action_by_op_id(j)}\n")
+                    out_file.write(f"{problem1.pretty_print_action_by_op_id(i)} => "
+                                   f"{problem2.pretty_print_action_by_op_id(j)}\n")
                 else:
-                    out_file.write(f"{problem2.get_action_by_op_id(i)} => "
-                                   f"{problem1.get_action_by_op_id(j)}\n")
+                    out_file.write(f"{problem1.get_action_by_op_id(i)} => "
+                                   f"{problem2.get_action_by_op_id(j)}\n")
 
     def update_progress_bar(self, phase, percentage):
         step_count = 0
@@ -803,30 +797,77 @@ class SatIdConverter:
         # Associations between fluents of P and P'
         offset0 = 1
 
-        fmap = [lambda i, j: (j * n1 + i) + offset0,
-                lambda k: ((k - offset0) % n1, (k - offset0) // n1)]
+        # fmap = [lambda i, j: (j * n1 + i) + offset0,
+        #         lambda k: ((k - offset0) % n1, (k - offset0) // n1)]
+        def fmap_d(i, j):
+            assert 0 <= i < n1, "Fluent 1 not in range"
+            assert 0 <= j < n2, "Fluent 2 not in range"
+            return (i * n2 + j) + offset0
+
+        def fmap_c(k):
+            assert 0 <= k - offset0 < n1 * n2, "Fluent variable not in range"
+            return (k - offset0) // n2, (k - offset0) % n2
+
+        # fmap = [lambda i, j: (i * n2 + j) + offset0,
+        #         lambda k: ((k - offset0) // n2, (k - offset0) % n2)]
+        fmap = [fmap_d, fmap_c]
         self.converters['fmap'] = fmap
         offset1 = n1 * n2 + offset0
 
         # Operators / OperatorsId
         if m1 >= m2:
-            omap = [lambda i, j: (j * m1 + i) + offset1,
-                    lambda k: ((k - offset1) % m1, (k - offset1) // m1)]
+            def omap_d(i, j):
+                assert 0 <= i < m1, "Operator 1 not in range"
+                assert 0 <= j < m2, "Operator 2 not in range"
+                return (j * m1 + i) + offset1
+
+            def omap_c(k):
+                assert 0 <= k - offset1 < m1 * m2, "Operator variable not in range"
+                return (k - offset1) % m1, (k - offset1) // m1
+            # omap = [lambda i, j: (j * m1 + i) + offset1,
+            #         lambda k: ((k - offset1) % m1, (k - offset1) // m1)]
         else:
-            omap = [lambda i, j: (i * m2 + j) + offset1,
-                    lambda k: ((k - offset1) // m2, (k - offset1) % m2)]
-        self.converters['omap'] = omap
+            def omap_d(i, j):
+                assert 0 <= i < m1, "Operator 1 not in range"
+                assert 0 <= j < m2, "Operator 2 not in range"
+                return (i * m2 + j) + offset1
+
+            def omap_c(k):
+                assert 0 <= k - offset1 < m1 * m2, "Operator variable not in range"
+                return (k - offset1) // m2, (k - offset1) % m2
+            # omap = [lambda i, j: (i * m2 + j) + offset1,
+            #         lambda k: ((k - offset1) // m2, (k - offset1) % m2)]
+        self.converters['omap'] = [omap_d, omap_c]
         offset2 = m1 * m2 + offset1
 
         # Fluents / UsefulFluentId
-        fuse = [lambda i: i + offset2,
-                lambda k: k - offset2]
+        def fuse_d(i):
+            assert 0 <= i < n1
+            return i + offset2
+
+        def fuse_c(k):
+            assert 0 <= k - offset2 <= n1
+            return k - offset2
+
+        fuse = [fuse_d, fuse_c]
+        # fuse = [lambda i: i + offset2,
+        #         lambda k: k - offset2]
         self.converters['fuse'] = fuse
         offset3 = n1 + offset2
 
         # Operators / ActiveOperatorId
-        oact = [lambda i: i + offset3,
-                lambda k: k - offset3]
+        def oact_d(i):
+            assert 0 <= i < m1
+            return i + offset3
+
+        def oact_c(k):
+            assert 0 <= k - offset3 <= m1
+            return k - offset3
+
+        oact = [oact_d, oact_c]
+
+        # oact = [lambda i: i + offset3,
+        #         lambda k: k - offset3]
         self.converters['oact'] = oact
 
     def conversion_function(self, sat_variable, direction=1):

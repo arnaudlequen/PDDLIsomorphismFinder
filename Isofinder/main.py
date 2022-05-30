@@ -85,6 +85,11 @@ def main(argv):
         print("Aborting...")
         return
 
+    # Size conditions
+    if args.type == ProblemType.EMBEDDING and problem2.get_fluent_count() > problem1.get_fluent_count():
+        print("P has fewer fluents than P', swapping problems...")
+        problem1, problem2 = problem2, problem1
+
     # Translation to SAT
     step_start = perf_counter()
     print("Translating the STRIPS-sub-isomorphism instance to SAT...")
@@ -166,6 +171,7 @@ def main(argv):
             file_err.write(sat_process.stderr)
         return
 
+    # TODO: REMOVE THIS
     print(f"Isomorphism: {'FOUND' if outcome else 'NOT FOUND'}")
     step_time = perf_counter() - step_start
     print(f"SAT solving done in {step_time:.1f}s!\n")
