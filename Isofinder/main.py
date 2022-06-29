@@ -8,6 +8,7 @@ from sat_instance import *
 from subiso_finder import *
 from strips_converter import *
 from time import perf_counter
+from verify_embedding import *
 
 filler = ''.join(['='] * 30)
 small_filler = ''.join(['-'] * 30)
@@ -50,6 +51,8 @@ def main(argv):
                         help="Run constraint propagation preprocessing")
     parser.add_argument('--type', type=str2pbtype, const=True, nargs='?', default=ProblemType.SUBISO,
                         help="Search either an isomorphism of subinstances (subiso) or an embedding (embed)")
+    parser.add_argument('--verifymode', type=bool, action=argparse.BooleanOptionalAction, default=False,
+                        help="Only verify that the homomorphism found is correct")
     args = parser.parse_args()
 
     try:
@@ -90,6 +93,14 @@ def main(argv):
         print("P has fewer fluents than P', swapping problems...")
         problem1, problem2 = problem2, problem1
 
+    if args.verifymode:
+        if args.type == ProblemType.EMBEDDING:
+            verify_homomorphism(problem1, problem2, args)
+            return
+        else:
+            print("Error: problem type not supported for verification")
+            return
+
     # Translation to SAT
     step_start = perf_counter()
     print("Translating the STRIPS-sub-isomorphism instance to SAT...")
@@ -111,7 +122,8 @@ def main(argv):
         step_time = perf_counter() - global_start_time
         steps_duration["total_time"] = step_time
         print(f"Total time: {step_time:.1f}s")
-        print_trace(args, 'CPCUT', problem1, problem2, None, steps_duration)
+        if args.trace is not None:
+            print_trace(args, 'CPCUT', problem1, problem2, None, steps_duration)
         return
 
     step_time = perf_counter() - step_start
@@ -119,7 +131,8 @@ def main(argv):
     print(f"Saved result in file {args.cnfpath}\n")
     steps_duration = steps_duration | conversion_durations
     steps_duration["sat_translation"] = step_time
-    print_trace(args, 'DNF', problem1, problem2, sat_instance, steps_duration)
+    if args.trace is not None:
+        print_trace(args, 'DNF', problem1, problem2, sat_instance, steps_duration)
 
     # Interpret the results
     step_start = perf_counter()
@@ -153,6 +166,7 @@ def main(argv):
                 assignment[0] = None
                 # Sometimes when variables after some N are not used, the solver does not output their assignation
                 # in the model. So we need to complete the assignment
+                # Note: this should be updated to support embeddings
                 n1 = problem1.get_fluent_count()
                 n2 = problem2.get_fluent_count()
                 m1 = problem1.get_operator_count()
@@ -171,7 +185,6 @@ def main(argv):
             file_err.write(sat_process.stderr)
         return
 
-    # TODO: REMOVE THIS
     print(f"Isomorphism: {'FOUND' if outcome else 'NOT FOUND'}")
     step_time = perf_counter() - step_start
     print(f"SAT solving done in {step_time:.1f}s!\n")
@@ -222,6 +235,7 @@ def print_trace(args, outcome, problem1, problem2, sat_instance, steps_duration)
             file.write(f"0,0,0,0,")
         file.write(f"{outcome_to_int(outcome)},")
         file.write(','.join(map(lambda x: f'{x[1]:0.1f}', ordered_times)))
+
 
 
 def outcome_to_int(outcome):

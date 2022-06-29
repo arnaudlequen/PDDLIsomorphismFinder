@@ -117,6 +117,11 @@ def fd_parser_aux(domain_path, instance_path):
     step_time = perf_counter() - global_start  # Remove
     print(f"Conversion to STRIPS done in {step_time:.1f}s!\n")
 
+    del task
+    del relaxed_reachable
+    del atoms
+    del actions
+
     return problem
 
 

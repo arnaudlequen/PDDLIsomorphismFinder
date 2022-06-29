@@ -15,6 +15,11 @@ class VarType(Enum):
     DOMCOUNT = 4
 
 
+class NotEnoughFluentsException(Exception):
+    """ Raised when there are less fluents than necessary in a set of fluent domains """
+    pass
+
+
 class EmbeddingFinder:
     def __init__(self):
         self.verbose_action_names = True
@@ -264,8 +269,13 @@ class EmbeddingFinder:
 
                     # Signal to count the domain
                     if var_type == VarType.DOMCOUNT:
-                        extend_queue, fuseful_found_count = self.revise_domain_counts(domains, fluent1_associations)
-                        update_queue.extend(extend_queue)
+                        try:
+                            extend_queue, fuseful_found_count = self.revise_domain_counts(domains, fluent1_associations)
+                            update_queue.extend(extend_queue)
+                        except NotEnoughFluentsException:
+                            print(f"Useful fluents mismatch. Aborting pruning")
+                            self.end_step('CPConstraintPropagation', step_start, sat_instance)
+                            return None, self.durations
 
                 self.end_step('CPConstraintPropagation', step_start, sat_instance)
 
@@ -279,7 +289,7 @@ class EmbeddingFinder:
             # Check if some domain is empty
             if self.exists_empty_domain(domains):
                 print("Empty domain found")
-                return None, set()
+                return None, self.durations
 
             for j in range(n2):
                 for i in set(range(n1)) - domains['fluents'][j]:
@@ -307,14 +317,14 @@ class EmbeddingFinder:
                 clause = [satid.conv('fmap')(i, j) for i in range(n1)]
                 added_successfully = sat_instance.add_clause(clause)
                 if not added_successfully:
-                    return None, set()
+                    return None, self.durations
 
                 for i1 in range(n1):
                     for i2 in range(i1 + 1, n1):
                         clause = [-1 * satid.conv('fmap')(i1, j), -1 * satid.conv('fmap')(i2, j)]
                         added_successfully = sat_instance.add_clause(clause)
                         if not added_successfully:
-                            return None, set()
+                            return None, self.durations
 
             self.end_step('FluentsImages', step_start, sat_instance)
 
@@ -328,7 +338,7 @@ class EmbeddingFinder:
                         clause = [-1 * satid.conv('fmap')(i, j), -1 * satid.conv('fmap')(i, k)]
                         added_successfully = sat_instance.add_clause(clause)
                         if not added_successfully:
-                            return None, set()
+                            return None, self.durations
 
             self.end_step('FluentsInjectivity', step_start, sat_instance)
 
@@ -341,14 +351,14 @@ class EmbeddingFinder:
                 clause.append(-1 * satid.conv('oact')(i))
                 added_successfully = sat_instance.add_clause(clause)
                 if not added_successfully:
-                    return None, set()
+                    return None, self.durations
 
                 for j in range(m2):
                     for k in range(j + 1, m2):
                         clause = [-1 * satid.conv('omap')(i, j), -1 * satid.conv('omap')(i, k)]
                         added_successfully = sat_instance.add_clause(clause)
                         if not added_successfully:
-                            return None, set()
+                            return None, self.durations
 
             self.end_step('OperatorsImages', step_start, sat_instance)
 
@@ -373,7 +383,7 @@ class EmbeddingFinder:
 
                             added_successfully = sat_instance.add_clause(clause)
                             if not added_successfully:
-                                return None, set()
+                                return None, self.durations
 
             self.end_step('MorphismInclusion', step_start, sat_instance)
 
@@ -396,7 +406,7 @@ class EmbeddingFinder:
 
                             added_successfully = sat_instance.add_clause(clause)
                             if not added_successfully:
-                                return None, set()
+                                return None, self.durations
 
             self.end_step('MorphismReverseInclusion', step_start, sat_instance)
 
@@ -419,7 +429,7 @@ class EmbeddingFinder:
 
                     added_successfully = sat_instance.add_clause(clause)
                     if not added_successfully:
-                        return None, set()
+                        return None, self.durations
 
             self.end_step('InitialStateConservation', step_start, sat_instance)
 
@@ -440,7 +450,7 @@ class EmbeddingFinder:
 
                     added_successfully = sat_instance.add_clause(clause)
                     if not added_successfully:
-                        return None, set()
+                        return None, self.durations
 
             self.end_step('GoalStateConservation', step_start, sat_instance)
 
@@ -452,13 +462,13 @@ class EmbeddingFinder:
                 clause.append(-1 * satid.conv('fuse')(i))
                 added_successfully = sat_instance.add_clause(clause)
                 if not added_successfully:
-                    return None, set()
+                    return None, self.durations
 
                 for j in range(n2):
                     clause = [satid.conv('fuse')(i), -1 * satid.conv('fmap')(i, j)]
                     added_successfully = sat_instance.add_clause(clause)
                     if not added_successfully:
-                        return None, set()
+                        return None, self.durations
 
             self.end_step('UsefulFluentsDefinition', step_start, sat_instance)
 
@@ -473,7 +483,7 @@ class EmbeddingFinder:
 
                         added_successfully = sat_instance.add_clause(clause)
                         if not added_successfully:
-                            return None, set()
+                            return None, self.durations
 
             self.end_step('ActiveOperatorDefinition', step_start, sat_instance)
 
@@ -493,6 +503,7 @@ class EmbeddingFinder:
         update_queue = []
         domains_multiplicity = {}
 
+        # Count the number of occurrences of each domain
         for domain in domains['fluents']:
             hashed = self.hash_domain(domain)
             if hashed in domains_multiplicity:
@@ -504,7 +515,7 @@ class EmbeddingFinder:
         for domain_hash, count in domains_multiplicity.items():
             unhashed_domain = self.unhash_domain(domain_hash)
 
-            if len(unhashed_domain) >= count:
+            if len(unhashed_domain) == count:
                 for fluent in unhashed_domain:
                     if domains['fuseful'][fluent] == {True}:
                         continue
@@ -518,6 +529,10 @@ class EmbeddingFinder:
                     #     for op1_id in selector(fluent1_associations[fluent]):
                     #         update_queue.append((op1_id, VarType.OPERATOR))
                     #         pass
+            # If some domain has fewer fluents than the number of times it appears
+            elif len(unhashed_domain) < count:
+                raise NotEnoughFluentsException
+
 
         return update_queue, revised_count
 
@@ -538,13 +553,17 @@ class EmbeddingFinder:
             op2 = problem2.get_operator_by_id(op2_id)
             keep_operator = True
 
+            effects_list = [(op1.eff_pos, op2.eff_pos),
+                            (op1.eff_neg, op2.eff_neg)]
+
             attributes_lists = [(op1.pre_pos, op2.pre_pos),
                                 (op1.pre_neg, op2.pre_neg),
                                 (op1.eff_pos, op2.eff_pos),
                                 (op1.eff_neg, op2.eff_neg)]
 
+            # Rule 1
             # Check if there exists a fluent in op2_lst that can't be mapped to a fluent of op1_lst
-            for op1_lst, op2_lst in attributes_lists:
+            for op1_lst, op2_lst in effects_list:
                 for fluent2_id in op2_lst:
                     if domains['fuseful'][fluent2_id] != {True}:
                         continue
@@ -559,6 +578,28 @@ class EmbeddingFinder:
 
                     if not fluent_matched:
                         keep_operator = False
+                        break
+
+                if not keep_operator:
+                    break
+
+            # Rule 2
+            # Check, for each fluent f' found in each candidate operator, that there exists a potentially useful fluent
+            # of o in the domain of f'
+            for op1_lst, op2_lst in attributes_lists:
+                for fluent2_id in op2_lst:
+                    fluent_matched = False
+                    for fluent1_id in op1_lst:
+                        if fluent1_id in domains['fluent'][fluent2_id] and True in domains['fuseful'][fluent1_id]:
+                            fluent_matched = True
+                            break
+
+                    if not fluent_matched:
+                        keep_operator = False
+                        break
+
+                if not keep_operator:
+                    break
 
             if not keep_operator:
                 # if op1_id in domains['operators'][op2_id]:  # There should be no need for this line

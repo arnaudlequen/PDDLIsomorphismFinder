@@ -87,6 +87,9 @@ class StripsProblem:
     def get_fluent_name(self, var_id):
         return self.varId_to_predicate[var_id]
 
+    def get_operator_id_by_name(self, operator_name):
+        return self.action_to_opId[operator_name]
+
     def get_operator_name(self, op_id):
         return self.opId_to_action[op_id]
 
