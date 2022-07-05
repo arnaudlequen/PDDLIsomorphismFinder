@@ -590,7 +590,7 @@ class EmbeddingFinder:
                 for fluent2_id in op2_lst:
                     fluent_matched = False
                     for fluent1_id in op1_lst:
-                        if fluent1_id in domains['fluent'][fluent2_id] and True in domains['fuseful'][fluent1_id]:
+                        if fluent1_id in domains['fluents'][fluent2_id] and True in domains['fuseful'][fluent1_id]:
                             fluent_matched = True
                             break
 
