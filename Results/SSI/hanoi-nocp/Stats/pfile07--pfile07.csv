@@ -1,0 +1,2 @@
+p1fluents,p1operators,p2fluents,p2operators,variables,clauses,simplified_variables,simplified_clauses,outcome,sat_fluents_images_time,sat_operators_images_time,sat_morphism_property_time,sat_bijection_property_time,sat_fluents_injectivity_time,sat_operators_injectivity_time,sat_initial_state_time,sat_goal_state_time,sat_translation
+116,364,116,364,145952,51429174,0,0,-1,2.6,81.7,3.9,49.6,2.5,81.5,0.0,0.0,222.1

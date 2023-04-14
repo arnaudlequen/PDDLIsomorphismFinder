@@ -1,0 +1,70 @@
+==============================
+STRIPS Isomorphism finder
+==============================
+
+Parsing problem 1
+------------------------------
+Calling FastDownward's parser...
+==============================
+Generating Datalog program... [0.000s CPU, 0.002s wall-clock]
+Normalizing Datalog program...
+Normalizing Datalog program: [0.000s CPU, 0.002s wall-clock]
+Preparing model... [0.000s CPU, 0.002s wall-clock]
+Generated 38 rules.
+Computing model... [0.030s CPU, 0.024s wall-clock]
+1344 relevant atoms
+2032 auxiliary atoms
+3376 final queue length
+4698 total queue pushes
+Completing instantiation... [0.020s CPU, 0.024s wall-clock]
+FD parsing done. Conversion to legacy internal representation...
+Done. Found 615 fluents and 528 operators in 0.1s
+Conversion to STRIPS done in 0.1s!
+
+------------------------------
+Done
+
+Parsing problem 2
+------------------------------
+Calling FastDownward's parser...
+==============================
+Generating Datalog program... [0.000s CPU, 0.001s wall-clock]
+Normalizing Datalog program...
+Normalizing Datalog program: [0.000s CPU, 0.001s wall-clock]
+Preparing model... [0.010s CPU, 0.002s wall-clock]
+Generated 38 rules.
+Computing model... [0.020s CPU, 0.027s wall-clock]
+1260 relevant atoms
+1988 auxiliary atoms
+3248 final queue length
+4286 total queue pushes
+Completing instantiation... [0.020s CPU, 0.019s wall-clock]
+FD parsing done. Conversion to legacy internal representation...
+Done. Found 608 fluents and 442 operators in 0.1s
+Conversion to STRIPS done in 0.1s!
+
+------------------------------
+Done
+
+Translating the STRIPS-sub-isomorphism instance to SAT...
+==============================
+Maximum number of variables: 607296
+Maximum number of clauses: < 1023909448
+
+Performing pruning steps ...
+------------------------------
+Step 1/2: Done                               
+Step 2/2: Done                               
+Pruning done. Associations removed:
+Fluents: 174045 (46.55%)
+Operators: 233376 (100.00%)
+
+Generating SAT instance
+------------------------------
+Empty clause found
+Formula is non-consistent: exiting...        
+
+Isomorphism: NOT FOUND
+==============================
+Total time: 1.6s
+Saving trace in ./Results/Subiso/sokoban/Stats/pfile03--pfile01.csv

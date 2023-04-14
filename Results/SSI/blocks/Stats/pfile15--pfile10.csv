@@ -1,0 +1,2 @@
+p1fluents,p1operators,p2fluents,p2operators,variables,clauses,simplified_variables,simplified_clauses,outcome,sat_operator_profiling_time,sat_constraint_propagation_time,sat_fluents_images_time,sat_operators_images_time,sat_morphism_property_time,sat_bijection_property_time,sat_fluents_injectivity_time,sat_operators_injectivity_time,sat_initial_state_time,sat_goal_state_time,sat_translation,sat_solving,total_time
+286,480,141,220,145926,10080896,13387465,36886740,0,0.1,0.6,12.6,39.5,2.2,32.5,5.8,17.4,0.0,0.0,110.8,97.4,208.2

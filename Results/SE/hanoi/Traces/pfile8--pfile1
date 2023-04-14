@@ -1,0 +1,65 @@
+==============================
+STRIPS Isomorphism finder
+==============================
+
+Parsing problem 1...
+------------------------------
+Instance ./Benchmarks/custom/hanoi/pfile8.pddl
+Calling TouISTPlan to extract STRIPS problem from file...
+Extraction done in 0.0s
+Processing the output...
+Processing done in 0.0s
+
+Done. Found 63 fluents and 328 operators in 0.04s
+
+Parsing problem 2...
+------------------------------
+Instance ./Benchmarks/custom/hanoi/pfile1.pddl
+Calling TouISTPlan to extract STRIPS problem from file...
+Extraction done in 0.0s
+Processing the output...
+Processing done in 0.0s
+
+Done. Found 7 fluents and 6 operators in 0.06s
+
+Translating the STRIPS-sub-isomorphism instance to SAT...
+==============================
+Maximum number of variables: 2409
+Maximum number of clauses: < 740352
+
+Performing pruning steps ...
+------------------------------
+Step 1/2: Done                               
+Step 2/2: Done                               
+Pruning done. Associations removed:
+Fluents: 6 (1.36%)
+Operators: 0 (0.00%)
+
+Generating SAT instance
+------------------------------
+Step 1/8: Done (13306 clauses, 372 simplified)
+Step 2/8: Done (321774 clauses, 0 simplified)
+Step 3/8: Done (13776 clauses, 0 simplified) 
+Step 4/8: Done (13776 clauses, 0 simplified) 
+Step 5/8: Done (1302 clauses, 21 simplified) 
+Step 6/8: Done (4920 clauses, 0 simplified)  
+Step 7/8: Done (15 clauses, 0 simplified)    
+Step 8/8: Done (9 clauses, 0 simplified)     
+------------------------------
+Number of variables: 2409 (4332 simplified)
+Number of clauses: 368878 (393 simplified)
+Translation done in 1.4s!
+
+Saved result in file ./Results/custom/hanoi/SatInstances/pfile8--pfile1.cnf
+
+Saving trace in ./Results/custom/hanoi/Stats/pfile8--pfile1.csv
+Calling the SAT solver in a subprocess...
+==============================
+SAT solving done. Processing the output...
+Isomorphism: NOT FOUND
+SAT solving done in 0.1s!
+
+==============================
+Total time: 1.6s
+Saving trace in ./Results/custom/hanoi/Stats/pfile8--pfile1.csv
+

@@ -1,0 +1,65 @@
+==============================
+STRIPS Isomorphism finder
+==============================
+
+Parsing problem 1...
+------------------------------
+Instance ./Benchmarks/custom/visitall-grid-complete/pfile10.pddl
+Calling TouISTPlan to extract STRIPS problem from file...
+Extraction done in 0.1s
+Processing the output...
+Processing done in 0.0s
+
+Done. Found 200 fluents and 360 operators in 0.06s
+
+Parsing problem 2...
+------------------------------
+Instance ./Benchmarks/custom/visitall-grid-complete/pfile6.pddl
+Calling TouISTPlan to extract STRIPS problem from file...
+Extraction done in 0.0s
+Processing the output...
+Processing done in 0.0s
+
+Done. Found 72 fluents and 120 operators in 0.09s
+
+Translating the STRIPS-sub-isomorphism instance to SAT...
+==============================
+Maximum number of variables: 57600
+Maximum number of clauses: < 36058336
+
+Performing pruning steps ...
+------------------------------
+Step 1/2: Done                               
+Step 2/2: Done                               
+Pruning done. Associations removed:
+Fluents: 3600 (25.00%)
+Operators: 0 (0.00%)
+
+Generating SAT instance
+------------------------------
+Step 1/8: Done (894672 clauses, 538200 simplified)
+Step 2/8: Done (7754520 clauses, 0 simplified)
+Step 3/8: Done (172800 clauses, 0 simplified)
+Step 4/8: Done (172800 clauses, 0 simplified)
+Step 5/8: Done (318600 clauses, 192600 simplified)
+Step 6/8: Done (2570400 clauses, 0 simplified)
+Step 7/8: Done (4 clauses, 0 simplified)     
+Step 8/8: Done (136 clauses, 0 simplified)   
+------------------------------
+Number of variables: 57600 (1602002 simplified)
+Number of clauses: 11883932 (730800 simplified)
+Translation done in 50.6s!
+
+Saved result in file ./Results/custom/visitall-grid-complete/SatInstances/pfile10--pfile6.cnf
+
+Saving trace in ./Results/custom/visitall-grid-complete/Stats/pfile10--pfile6.csv
+Calling the SAT solver in a subprocess...
+==============================
+SAT solving done. Processing the output...
+Isomorphism: NOT FOUND
+SAT solving done in 41.1s!
+
+==============================
+Total time: 91.8s
+Saving trace in ./Results/custom/visitall-grid-complete/Stats/pfile10--pfile6.csv
+

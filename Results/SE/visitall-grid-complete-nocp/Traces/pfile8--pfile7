@@ -1,0 +1,57 @@
+==============================
+STRIPS Isomorphism finder
+==============================
+
+Parsing problem 1...
+------------------------------
+Instance ./Benchmarks/custom/visitall-grid-complete/pfile8.pddl
+Calling TouISTPlan to extract STRIPS problem from file...
+Extraction done in 0.0s
+Processing the output...
+Processing done in 0.0s
+
+Done. Found 128 fluents and 224 operators in 0.04s
+
+Parsing problem 2...
+------------------------------
+Instance ./Benchmarks/custom/visitall-grid-complete/pfile7.pddl
+Calling TouISTPlan to extract STRIPS problem from file...
+Extraction done in 0.0s
+Processing the output...
+Processing done in 0.0s
+
+Done. Found 98 fluents and 168 operators in 0.07s
+
+Translating the STRIPS-sub-isomorphism instance to SAT...
+==============================
+Maximum number of variables: 50176
+Maximum number of clauses: < 31109838
+
+Generating SAT instance
+------------------------------
+Step 1/8: Done (796642 clauses, 0 simplified)
+Step 2/8: Done (4196136 clauses, 0 simplified)
+Step 3/8: Done (150528 clauses, 0 simplified)
+Step 4/8: Done (150528 clauses, 0 simplified)
+Step 5/8: Done (608384 clauses, 0 simplified)
+Step 6/8: Done (3142272 clauses, 0 simplified)
+Step 7/8: Done (4 clauses, 0 simplified)     
+Step 8/8: Done (113 clauses, 0 simplified)   
+------------------------------
+Number of variables: 50176 (0 simplified)
+Number of clauses: 9044607 (0 simplified)
+Translation done in 39.0s!
+
+Saved result in file ./Results/custom/visitall-grid-complete-nocp/SatInstances/pfile8--pfile7.cnf
+
+Saving trace in ./Results/custom/visitall-grid-complete-nocp/Stats/pfile8--pfile7.csv
+Calling the SAT solver in a subprocess...
+==============================
+SAT solving done. Processing the output...
+Isomorphism: NOT FOUND
+SAT solving done in 68.1s!
+
+==============================
+Total time: 107.2s
+Saving trace in ./Results/custom/visitall-grid-complete-nocp/Stats/pfile8--pfile7.csv
+

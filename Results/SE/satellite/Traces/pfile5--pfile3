@@ -1,0 +1,65 @@
+==============================
+STRIPS Isomorphism finder
+==============================
+
+Parsing problem 1...
+------------------------------
+Instance ./Benchmarks/custom/satellite/pfile5.pddl
+Calling TouISTPlan to extract STRIPS problem from file...
+Extraction done in 0.0s
+Processing the output...
+Processing done in 0.0s
+
+Done. Found 81 fluents and 527 operators in 0.05s
+
+Parsing problem 2...
+------------------------------
+Instance ./Benchmarks/custom/satellite/pfile3.pddl
+Calling TouISTPlan to extract STRIPS problem from file...
+Extraction done in 0.0s
+Processing the output...
+Processing done in 0.0s
+
+Done. Found 50 fluents and 204 operators in 0.07s
+
+Translating the STRIPS-sub-isomorphism instance to SAT...
+==============================
+Maximum number of variables: 111558
+Maximum number of clauses: < 100418514
+
+Performing pruning steps ...
+------------------------------
+Step 1/2: Done                               
+Step 2/2: Done                               
+Pruning done. Associations removed:
+Fluents: 3091 (76.32%)
+Operators: 77644 (72.22%)
+
+Generating SAT instance
+------------------------------
+Step 1/8: Done (11727 clauses, 150323 simplified)
+Step 2/8: Done (3286832 clauses, 24987976 simplified)
+Step 3/8: Done (108292 clauses, 283796 simplified)
+Step 4/8: Done (108292 clauses, 297668 simplified)
+Step 5/8: Done (6771 clauses, 92454 simplified)
+Step 6/8: Done (982968 clauses, 9929094 simplified)
+Step 7/8: Done (10 clauses, 0 simplified)    
+Step 8/8: Done (13 clauses, 0 simplified)    
+------------------------------
+Number of variables: 111558 (4435419 simplified)
+Number of clauses: 4504905 (35741311 simplified)
+Translation done in 61.0s!
+
+Saved result in file ./Results/custom/satellite/SatInstances/pfile5--pfile3.cnf
+
+Saving trace in ./Results/custom/satellite/Stats/pfile5--pfile3.csv
+Calling the SAT solver in a subprocess...
+==============================
+SAT solving done. Processing the output...
+Isomorphism: NOT FOUND
+SAT solving done in 1.4s!
+
+==============================
+Total time: 62.5s
+Saving trace in ./Results/custom/satellite/Stats/pfile5--pfile3.csv
+

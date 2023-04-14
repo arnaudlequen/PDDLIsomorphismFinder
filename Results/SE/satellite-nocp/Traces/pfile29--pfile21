@@ -1,0 +1,10 @@
+==============================
+STRIPS Isomorphism finder
+==============================
+
+Parsing problem 1...
+------------------------------
+Instance ./Benchmarks/custom/satellite/pfile29.pddl
+Calling TouISTPlan to extract STRIPS problem from file...
+Extraction done in 14.6s
+Processing the output...

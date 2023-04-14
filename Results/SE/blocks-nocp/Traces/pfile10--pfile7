@@ -1,0 +1,57 @@
+==============================
+STRIPS Isomorphism finder
+==============================
+
+Parsing problem 1...
+------------------------------
+Instance ./Benchmarks/custom/blocks/pfile10.pddl
+Calling TouISTPlan to extract STRIPS problem from file...
+Extraction done in 0.0s
+Processing the output...
+Processing done in 0.0s
+
+Done. Found 121 fluents and 200 operators in 0.04s
+
+Parsing problem 2...
+------------------------------
+Instance ./Benchmarks/custom/blocks/pfile7.pddl
+Calling TouISTPlan to extract STRIPS problem from file...
+Extraction done in 0.0s
+Processing the output...
+Processing done in 0.0s
+
+Done. Found 64 fluents and 98 operators in 0.06s
+
+Translating the STRIPS-sub-isomorphism instance to SAT...
+==============================
+Maximum number of variables: 27344
+Maximum number of clauses: < 11795956
+
+Generating SAT instance
+------------------------------
+Step 1/8: Done (464704 clauses, 0 simplified)
+Step 2/8: Done (1950298 clauses, 0 simplified)
+Step 3/8: Done (142800 clauses, 0 simplified)
+Step 4/8: Done (144060 clauses, 0 simplified)
+Step 5/8: Done (243936 clauses, 0 simplified)
+Step 6/8: Done (950600 clauses, 0 simplified)
+Step 7/8: Done (36 clauses, 0 simplified)    
+Step 8/8: Done (15 clauses, 0 simplified)    
+------------------------------
+Number of variables: 27344 (0 simplified)
+Number of clauses: 3896449 (0 simplified)
+Translation done in 18.4s!
+
+Saved result in file ./Results/custom/blocks-nocp/SatInstances/pfile10--pfile7.cnf
+
+Saving trace in ./Results/custom/blocks-nocp/Stats/pfile10--pfile7.csv
+Calling the SAT solver in a subprocess...
+==============================
+SAT solving done. Processing the output...
+Isomorphism: NOT FOUND
+SAT solving done in 47.1s!
+
+==============================
+Total time: 65.5s
+Saving trace in ./Results/custom/blocks-nocp/Stats/pfile10--pfile7.csv
+

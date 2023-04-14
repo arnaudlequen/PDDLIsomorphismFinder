@@ -1,0 +1,53 @@
+==============================
+STRIPS Isomorphism finder
+==============================
+
+Parsing problem 1
+------------------------------
+Calling FastDownward's parser...
+==============================
+Generating Datalog program... [0.000s CPU, 0.002s wall-clock]
+Normalizing Datalog program...
+Normalizing Datalog program: [0.000s CPU, 0.004s wall-clock]
+Preparing model... [0.010s CPU, 0.007s wall-clock]
+Generated 44 rules.
+Computing model... [6.250s CPU, 6.261s wall-clock]
+999330 relevant atoms
+22669 auxiliary atoms
+1021999 final queue length
+2009919 total queue pushes
+Completing instantiation... [25.150s CPU, 25.216s wall-clock]
+FD parsing done. Conversion to legacy internal representation...
+Done. Found 5944 fluents and 993075 operators in 49.1s
+Conversion to STRIPS done in 49.1s!
+
+------------------------------
+Done
+
+Parsing problem 2
+------------------------------
+Calling FastDownward's parser...
+==============================
+Generating Datalog program... [0.000s CPU, 0.001s wall-clock]
+Normalizing Datalog program...
+Normalizing Datalog program: [0.000s CPU, 0.002s wall-clock]
+Preparing model... [0.000s CPU, 0.002s wall-clock]
+Generated 44 rules.
+Computing model... [0.210s CPU, 0.215s wall-clock]
+41030 relevant atoms
+3345 auxiliary atoms
+44375 final queue length
+83525 total queue pushes
+Completing instantiation... [0.730s CPU, 0.731s wall-clock]
+FD parsing done. Conversion to legacy internal representation...
+Done. Found 1028 fluents and 39903 operators in 1.5s
+Conversion to STRIPS done in 1.5s!
+
+------------------------------
+Done
+
+Translating the STRIPS-sub-isomorphism instance to SAT...
+==============================
+Maximum number of variables: 39632782157
+Maximum number of clauses: < 41096461299742933
+

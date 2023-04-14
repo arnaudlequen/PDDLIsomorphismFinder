@@ -1,0 +1,65 @@
+==============================
+STRIPS Isomorphism finder
+==============================
+
+Parsing problem 1...
+------------------------------
+Instance ./Benchmarks/custom/tsp/pfile30.pddl
+Calling TouISTPlan to extract STRIPS problem from file...
+Extraction done in 0.1s
+Processing the output...
+Processing done in 0.0s
+
+Done. Found 60 fluents and 870 operators in 0.09s
+
+Parsing problem 2...
+------------------------------
+Instance ./Benchmarks/custom/tsp/pfile3.pddl
+Calling TouISTPlan to extract STRIPS problem from file...
+Extraction done in 0.0s
+Processing the output...
+Processing done in 0.0s
+
+Done. Found 6 fluents and 6 operators in 0.11s
+
+Translating the STRIPS-sub-isomorphism instance to SAT...
+==============================
+Maximum number of variables: 5580
+Maximum number of clauses: < 4719744
+
+Performing pruning steps ...
+------------------------------
+Step 1/2: Done                               
+Step 2/2: Done                               
+Pruning done. Associations removed:
+Fluents: 90 (25.00%)
+Operators: 0 (0.00%)
+
+Generating SAT instance
+------------------------------
+Step 1/8: Done (6621 clauses, 4005 simplified)
+Step 2/8: Done (2268096 clauses, 0 simplified)
+Step 3/8: Done (20880 clauses, 0 simplified) 
+Step 4/8: Done (20880 clauses, 0 simplified) 
+Step 5/8: Done (540 clauses, 360 simplified) 
+Step 6/8: Done (13050 clauses, 0 simplified) 
+Step 7/8: Done (2 clauses, 0 simplified)     
+Step 8/8: Done (33 clauses, 0 simplified)    
+------------------------------
+Number of variables: 5580 (20970 simplified)
+Number of clauses: 2330102 (4365 simplified)
+Translation done in 8.1s!
+
+Saved result in file ./Results/custom/tsp/SatInstances/pfile30--pfile3.cnf
+
+Saving trace in ./Results/custom/tsp/Stats/pfile30--pfile3.csv
+Calling the SAT solver in a subprocess...
+==============================
+SAT solving done. Processing the output...
+Isomorphism: NOT FOUND
+SAT solving done in 4.1s!
+
+==============================
+Total time: 12.3s
+Saving trace in ./Results/custom/tsp/Stats/pfile30--pfile3.csv
+

@@ -1,0 +1,62 @@
+==============================
+STRIPS Isomorphism finder
+==============================
+
+Parsing problem 1...
+------------------------------
+Instance ./Benchmarks/custom/hanoi/pfile7.pddl
+Calling TouISTPlan to extract STRIPS problem from file...
+Extraction done in 0.0s
+Processing the output...
+Processing done in 0.0s
+
+Done. Found 52 fluents and 238 operators in 0.04s
+
+Parsing problem 2...
+------------------------------
+Instance ./Benchmarks/custom/hanoi/pfile7.pddl
+Calling TouISTPlan to extract STRIPS problem from file...
+Extraction done in 0.0s
+Processing the output...
+Processing done in 0.0s
+
+Done. Found 52 fluents and 238 operators in 0.08s
+
+Translating the STRIPS-sub-isomorphism instance to SAT...
+==============================
+Maximum number of variables: 59348
+Maximum number of clauses: < 38885602
+
+Generating SAT instance
+------------------------------
+Step 1/8: Done (69004 clauses, 0 simplified) 
+Step 2/8: Done (6712552 clauses, 0 simplified)
+Step 3/8: Done (396508 clauses, 0 simplified)
+Step 4/8: Done (396508 clauses, 0 simplified)
+Step 5/8: Done (68952 clauses, 0 simplified) 
+Step 6/8: Done (6712314 clauses, 0 simplified)
+Step 7/8: Done (20 clauses, 0 simplified)    
+Step 8/8: Done (14 clauses, 0 simplified)    
+------------------------------
+Number of variables: 59348 (0 simplified)
+Number of clauses: 14355872 (0 simplified)
+Translation done in 61.5s!
+
+Saved result in file ./Results/custom/hanoi-nocp/SatInstances/pfile7--pfile7.cnf
+
+Saving trace in ./Results/custom/hanoi-nocp/Stats/pfile7--pfile7.csv
+Calling the SAT solver in a subprocess...
+==============================
+SAT solving done. Processing the output...
+Isomorphism: FOUND
+SAT solving done in 72.5s!
+
+Building the isomorphism...
+==============================
+Isomorphism built
+Saved the result in file ./Results/custom/hanoi-nocp/Output/pfile7--pfile7.hm
+
+==============================
+Total time: 134.1s
+Saving trace in ./Results/custom/hanoi-nocp/Stats/pfile7--pfile7.csv
+

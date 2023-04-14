@@ -1,0 +1,92 @@
+==============================
+STRIPS Isomorphism finder
+==============================
+
+Parsing problem 1
+------------------------------
+Calling FastDownward's parser...
+==============================
+Generating Datalog program... [0.000s CPU, 0.000s wall-clock]
+Normalizing Datalog program...
+Normalizing Datalog program: [0.000s CPU, 0.001s wall-clock]
+Preparing model... [0.000s CPU, 0.000s wall-clock]
+Generated 6 rules.
+Computing model... [0.010s CPU, 0.002s wall-clock]
+222 relevant atoms
+26 auxiliary atoms
+248 final queue length
+561 total queue pushes
+Completing instantiation... [0.000s CPU, 0.003s wall-clock]
+FD parsing done. Conversion to legacy internal representation...
+Done. Found 39 fluents and 169 operators in 0.0s
+Conversion to STRIPS done in 0.0s!
+
+------------------------------
+Done
+
+Parsing problem 2
+------------------------------
+Calling FastDownward's parser...
+==============================
+Generating Datalog program... [0.000s CPU, 0.000s wall-clock]
+Normalizing Datalog program...
+Normalizing Datalog program: [0.000s CPU, 0.000s wall-clock]
+Preparing model... [0.000s CPU, 0.000s wall-clock]
+Generated 6 rules.
+Computing model... [0.000s CPU, 0.000s wall-clock]
+13 relevant atoms
+4 auxiliary atoms
+17 final queue length
+22 total queue pushes
+Completing instantiation... [0.000s CPU, 0.000s wall-clock]
+FD parsing done. Conversion to legacy internal representation...
+Done. Found 6 fluents and 4 operators in 0.0s
+Conversion to STRIPS done in 0.0s!
+
+------------------------------
+Done
+
+Translating the STRIPS-sub-isomorphism instance to SAT...
+==============================
+Maximum number of variables: 910
+Maximum number of clauses: < 142398
+
+Performing pruning steps ...
+------------------------------
+Step 1/2: Done                               
+Step 2/2: Done                               
+Pruning done. Associations removed:
+Fluents: 78 (33.33%)
+Operators: 338 (50.00%)
+
+Generating SAT instance
+------------------------------
+Step 1/6: Done (2294 clauses, 2158 simplified)
+Step 2/6: Done (24340 clauses, 32448 simplified)
+Step 3/6: Done (1326 clauses, 1040 simplified)
+Step 4/6: Done (1326 clauses, 1326 simplified)
+Step 5/6: Done (286 clauses, 299 simplified) 
+Step 6/6: Done (169 clauses, 845 simplified) 
+------------------------------
+Number of variables: 910 (1430 simplified)
+Number of clauses: 29741 (38116 simplified)
+Translation done in 0.2s!
+
+Saved result in file ./Results/Subiso/tsp/SatInstances/pfile13--pfile02.cnf
+
+Saving trace in ./Results/Subiso/tsp/Stats/pfile13--pfile02.csv
+Calling the SAT solver in a subprocess...
+==============================
+SAT solving done. Processing the output...
+Isomorphism: FOUND
+SAT solving done in 0.0s!
+
+Building the isomorphism...
+==============================
+Isomorphism built
+Saved the result in file ./Results/Subiso/tsp/Output/pfile13--pfile02.hm
+
+==============================
+Total time: 0.2s
+Saving trace in ./Results/Subiso/tsp/Stats/pfile13--pfile02.csv
+

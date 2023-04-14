@@ -1,0 +1,46 @@
+==============================
+STRIPS Isomorphism finder
+==============================
+
+Parsing problem 1...
+------------------------------
+Instance ./Benchmarks/custom/sokoban/pfile7.pddl
+Calling TouISTPlan to extract STRIPS problem from file...
+Extraction done in 0.1s
+Processing the output...
+Processing done in 0.0s
+
+Done. Found 191 fluents and 312 operators in 0.07s
+
+Parsing problem 2...
+------------------------------
+Instance ./Benchmarks/custom/sokoban/pfile6.pddl
+Calling TouISTPlan to extract STRIPS problem from file...
+Extraction done in 0.1s
+Processing the output...
+Processing done in 0.0s
+
+Done. Found 251 fluents and 378 operators in 0.16s
+
+Translating the STRIPS-sub-isomorphism instance to SAT...
+==============================
+The target problem is too big: switching problems...
+Maximum number of variables: 165877
+Maximum number of clauses: < 183513522
+
+Performing pruning steps ...
+------------------------------
+Step 1/2: Done                               
+Step 2/2: Done                               
+Pruning done. Associations removed:
+Fluents: 43423 (90.58%)
+Operators: 117936 (100.00%)
+
+Generating SAT instance
+------------------------------
+Added a non-consistent clause: exiting...    
+
+Isomorphism: NOT FOUND
+==============================
+Total time: 0.7s
+Saving trace in ./Results/custom/sokoban/Stats/pfile7--pfile6.csv

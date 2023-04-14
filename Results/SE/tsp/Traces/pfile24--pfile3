@@ -1,0 +1,65 @@
+==============================
+STRIPS Isomorphism finder
+==============================
+
+Parsing problem 1...
+------------------------------
+Instance ./Benchmarks/custom/tsp/pfile24.pddl
+Calling TouISTPlan to extract STRIPS problem from file...
+Extraction done in 0.0s
+Processing the output...
+Processing done in 0.0s
+
+Done. Found 48 fluents and 552 operators in 0.06s
+
+Parsing problem 2...
+------------------------------
+Instance ./Benchmarks/custom/tsp/pfile3.pddl
+Calling TouISTPlan to extract STRIPS problem from file...
+Extraction done in 0.0s
+Processing the output...
+Processing done in 0.0s
+
+Done. Found 6 fluents and 6 operators in 0.07s
+
+Translating the STRIPS-sub-isomorphism instance to SAT...
+==============================
+Maximum number of variables: 3600
+Maximum number of clauses: < 1941528
+
+Performing pruning steps ...
+------------------------------
+Step 1/2: Done                               
+Step 2/2: Done                               
+Pruning done. Associations removed:
+Fluents: 72 (25.00%)
+Operators: 0 (0.00%)
+
+Generating SAT instance
+------------------------------
+Step 1/8: Done (4218 clauses, 2556 simplified)
+Step 2/8: Done (912462 clauses, 0 simplified)
+Step 3/8: Done (13248 clauses, 0 simplified) 
+Step 4/8: Done (13248 clauses, 0 simplified) 
+Step 5/8: Done (432 clauses, 288 simplified) 
+Step 6/8: Done (8280 clauses, 0 simplified)  
+Step 7/8: Done (2 clauses, 0 simplified)     
+Step 8/8: Done (27 clauses, 0 simplified)    
+------------------------------
+Number of variables: 3600 (13320 simplified)
+Number of clauses: 951917 (2844 simplified)
+Translation done in 3.3s!
+
+Saved result in file ./Results/custom/tsp/SatInstances/pfile24--pfile3.cnf
+
+Saving trace in ./Results/custom/tsp/Stats/pfile24--pfile3.csv
+Calling the SAT solver in a subprocess...
+==============================
+SAT solving done. Processing the output...
+Isomorphism: NOT FOUND
+SAT solving done in 0.9s!
+
+==============================
+Total time: 4.2s
+Saving trace in ./Results/custom/tsp/Stats/pfile24--pfile3.csv
+

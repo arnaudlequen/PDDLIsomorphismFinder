@@ -1,0 +1,70 @@
+==============================
+STRIPS Isomorphism finder
+==============================
+
+Parsing problem 1...
+------------------------------
+Instance ./Benchmarks/custom/visitall-grid-complete/pfile4.pddl
+Calling TouISTPlan to extract STRIPS problem from file...
+Extraction done in 0.0s
+Processing the output...
+Processing done in 0.0s
+
+Done. Found 32 fluents and 48 operators in 0.02s
+
+Parsing problem 2...
+------------------------------
+Instance ./Benchmarks/custom/visitall-grid-complete/pfile4.pddl
+Calling TouISTPlan to extract STRIPS problem from file...
+Extraction done in 0.0s
+Processing the output...
+Processing done in 0.0s
+
+Done. Found 32 fluents and 48 operators in 0.03s
+
+Translating the STRIPS-sub-isomorphism instance to SAT...
+==============================
+Maximum number of variables: 3328
+Maximum number of clauses: < 549072
+
+Performing pruning steps ...
+------------------------------
+Step 1/2: Done                               
+Step 2/2: Done                               
+Pruning done. Associations removed:
+Fluents: 256 (25.00%)
+Operators: 0 (0.00%)
+
+Generating SAT instance
+------------------------------
+Step 1/8: Done (9888 clauses, 6016 simplified)
+Step 2/8: Done (54192 clauses, 0 simplified) 
+Step 3/8: Done (9216 clauses, 0 simplified)  
+Step 4/8: Done (9216 clauses, 0 simplified)  
+Step 5/8: Done (9856 clauses, 6016 simplified)
+Step 6/8: Done (54144 clauses, 0 simplified) 
+Step 7/8: Done (4 clauses, 0 simplified)     
+Step 8/8: Done (32 clauses, 0 simplified)    
+------------------------------
+Number of variables: 3328 (39426 simplified)
+Number of clauses: 146548 (12032 simplified)
+Translation done in 0.7s!
+
+Saved result in file ./Results/custom/visitall-grid-complete/SatInstances/pfile4--pfile4.cnf
+
+Saving trace in ./Results/custom/visitall-grid-complete/Stats/pfile4--pfile4.csv
+Calling the SAT solver in a subprocess...
+==============================
+SAT solving done. Processing the output...
+Isomorphism: FOUND
+SAT solving done in 0.2s!
+
+Building the isomorphism...
+==============================
+Isomorphism built
+Saved the result in file ./Results/custom/visitall-grid-complete/Output/pfile4--pfile4.hm
+
+==============================
+Total time: 0.9s
+Saving trace in ./Results/custom/visitall-grid-complete/Stats/pfile4--pfile4.csv
+

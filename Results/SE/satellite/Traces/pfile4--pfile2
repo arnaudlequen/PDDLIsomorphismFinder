@@ -1,0 +1,52 @@
+==============================
+STRIPS Isomorphism finder
+==============================
+
+Parsing problem 1...
+------------------------------
+Instance ./Benchmarks/custom/satellite/pfile4.pddl
+Calling TouISTPlan to extract STRIPS problem from file...
+Extraction done in 0.0s
+Processing the output...
+Processing done in 0.0s
+
+Done. Found 58 fluents and 279 operators in 0.03s
+
+Parsing problem 2...
+------------------------------
+Instance ./Benchmarks/custom/satellite/pfile2.pddl
+Calling TouISTPlan to extract STRIPS problem from file...
+Extraction done in 0.0s
+Processing the output...
+Processing done in 0.0s
+
+Done. Found 37 fluents and 110 operators in 0.05s
+
+Translating the STRIPS-sub-isomorphism instance to SAT...
+==============================
+Maximum number of variables: 32836
+Maximum number of clauses: < 16605335
+
+Performing pruning steps ...
+------------------------------
+Step 1/2: Done                               
+Step 2/2: Done                               
+Pruning done. Associations removed:
+Fluents: 1438 (67.01%)
+Operators: 20814 (67.82%)
+
+Generating SAT instance
+------------------------------
+Step 1/8: Done (9082 clauses, 52116 simplified)
+Step 2/8: Done (793752 clauses, 3472268 simplified)
+Step 3/8: Done (33974 clauses, 80974 simplified)
+Step 4/8: Done (33974 clauses, 73826 simplified)
+Step 5/8: Done (5537 clauses, 33091 simplified)
+Step 6/8: Done (179574 clauses, 1493031 simplified)
+Step 7/8: Done (6 clauses, 0 simplified)     
+Added a non-consistent clause: exiting...    
+
+Isomorphism: NOT FOUND
+==============================
+Total time: 10.6s
+Saving trace in ./Results/custom/satellite/Stats/pfile4--pfile2.csv

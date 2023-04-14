@@ -1,0 +1,76 @@
+==============================
+STRIPS Isomorphism finder
+==============================
+
+Parsing problem 1
+------------------------------
+Calling FastDownward's parser...
+==============================
+Generating Datalog program... [0.000s CPU, 0.000s wall-clock]
+Normalizing Datalog program...
+Normalizing Datalog program: [0.010s CPU, 0.003s wall-clock]
+Preparing model... [0.000s CPU, 0.001s wall-clock]
+Generated 44 rules.
+Computing model... [0.010s CPU, 0.008s wall-clock]
+722 relevant atoms
+432 auxiliary atoms
+1154 final queue length
+1606 total queue pushes
+Completing instantiation... [0.010s CPU, 0.011s wall-clock]
+FD parsing done. Conversion to legacy internal representation...
+Done. Found 169 fluents and 527 operators in 0.0s
+Conversion to STRIPS done in 0.0s!
+
+------------------------------
+Done
+
+Parsing problem 2
+------------------------------
+Calling FastDownward's parser...
+==============================
+Generating Datalog program... [0.000s CPU, 0.000s wall-clock]
+Normalizing Datalog program...
+Normalizing Datalog program: [0.000s CPU, 0.002s wall-clock]
+Preparing model... [0.000s CPU, 0.001s wall-clock]
+Generated 44 rules.
+Computing model... [0.000s CPU, 0.002s wall-clock]
+199 relevant atoms
+120 auxiliary atoms
+319 final queue length
+394 total queue pushes
+Completing instantiation... [0.000s CPU, 0.002s wall-clock]
+FD parsing done. Conversion to legacy internal representation...
+Done. Found 74 fluents and 110 operators in 0.0s
+Conversion to STRIPS done in 0.0s!
+
+------------------------------
+Done
+
+Translating the STRIPS-sub-isomorphism instance to SAT...
+==============================
+Maximum number of variables: 70476
+Maximum number of clauses: < 56200194
+
+Performing pruning steps ...
+------------------------------
+Step 1/2: Done                               
+Step 2/2: Done                               
+Pruning done. Associations removed:
+Fluents: 5424 (43.37%)
+Operators: 41324 (71.29%)
+
+Generating SAT instance
+------------------------------
+Step 1/8: Done (536185 clauses, 514393 simplified)
+Step 2/8: Done (1765278 clauses, 13480942 simplified)
+Step 3/8: Done (62840 clauses, 150068 simplified)
+Step 4/8: Done (62840 clauses, 152760 simplified)
+Step 5/8: Done (149496 clauses, 306973 simplified)
+Step 6/8: Done (288547 clauses, 2870818 simplified)
+Step 7/8: Done (133 clauses, 0 simplified)   
+Added a non-consistent clause: exiting...    
+
+Isomorphism: NOT FOUND
+==============================
+Total time: 33.8s
+Saving trace in ./Results/Subiso/satellite/Stats/pfile05--pfile02.csv

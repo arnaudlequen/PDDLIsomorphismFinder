@@ -1,0 +1,57 @@
+==============================
+STRIPS Isomorphism finder
+==============================
+
+Parsing problem 1...
+------------------------------
+Instance ./Benchmarks/custom/hanoi/pfile8.pddl
+Calling TouISTPlan to extract STRIPS problem from file...
+Extraction done in 0.0s
+Processing the output...
+Processing done in 0.0s
+
+Done. Found 63 fluents and 328 operators in 0.04s
+
+Parsing problem 2...
+------------------------------
+Instance ./Benchmarks/custom/hanoi/pfile7.pddl
+Calling TouISTPlan to extract STRIPS problem from file...
+Extraction done in 0.0s
+Processing the output...
+Processing done in 0.0s
+
+Done. Found 52 fluents and 238 operators in 0.08s
+
+Translating the STRIPS-sub-isomorphism instance to SAT...
+==============================
+Maximum number of variables: 81340
+Maximum number of clauses: < 60628444
+
+Generating SAT instance
+------------------------------
+Step 1/8: Done (101608 clauses, 0 simplified)
+Step 2/8: Done (12763702 clauses, 0 simplified)
+Step 3/8: Done (546448 clauses, 0 simplified)
+Step 4/8: Done (546448 clauses, 0 simplified)
+Step 5/8: Done (83538 clauses, 0 simplified) 
+Step 6/8: Done (9250584 clauses, 0 simplified)
+Step 7/8: Done (21 clauses, 0 simplified)    
+Step 8/8: Done (15 clauses, 0 simplified)    
+------------------------------
+Number of variables: 81340 (0 simplified)
+Number of clauses: 23292364 (0 simplified)
+Translation done in 96.5s!
+
+Saved result in file ./Results/custom/hanoi-nocp/SatInstances/pfile8--pfile7.cnf
+
+Saving trace in ./Results/custom/hanoi-nocp/Stats/pfile8--pfile7.csv
+Calling the SAT solver in a subprocess...
+==============================
+SAT solving done. Processing the output...
+Isomorphism: NOT FOUND
+SAT solving done in 170.7s!
+
+==============================
+Total time: 267.3s
+Saving trace in ./Results/custom/hanoi-nocp/Stats/pfile8--pfile7.csv
+

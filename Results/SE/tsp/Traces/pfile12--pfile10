@@ -1,0 +1,65 @@
+==============================
+STRIPS Isomorphism finder
+==============================
+
+Parsing problem 1...
+------------------------------
+Instance ./Benchmarks/custom/tsp/pfile12.pddl
+Calling TouISTPlan to extract STRIPS problem from file...
+Extraction done in 0.0s
+Processing the output...
+Processing done in 0.0s
+
+Done. Found 24 fluents and 132 operators in 0.02s
+
+Parsing problem 2...
+------------------------------
+Instance ./Benchmarks/custom/tsp/pfile10.pddl
+Calling TouISTPlan to extract STRIPS problem from file...
+Extraction done in 0.0s
+Processing the output...
+Processing done in 0.0s
+
+Done. Found 20 fluents and 90 operators in 0.04s
+
+Translating the STRIPS-sub-isomorphism instance to SAT...
+==============================
+Maximum number of variables: 12360
+Maximum number of clauses: < 3599478
+
+Performing pruning steps ...
+------------------------------
+Step 1/2: Done                               
+Step 2/2: Done                               
+Pruning done. Associations removed:
+Fluents: 120 (25.00%)
+Operators: 0 (0.00%)
+
+Generating SAT instance
+------------------------------
+Step 1/8: Done (3440 clauses, 2100 simplified)
+Step 2/8: Done (778230 clauses, 0 simplified)
+Step 3/8: Done (47520 clauses, 0 simplified) 
+Step 4/8: Done (47520 clauses, 0 simplified) 
+Step 5/8: Done (2820 clauses, 1740 simplified)
+Step 6/8: Done (528660 clauses, 0 simplified)
+Step 7/8: Done (2 clauses, 0 simplified)     
+Step 8/8: Done (22 clauses, 0 simplified)    
+------------------------------
+Number of variables: 12360 (130800 simplified)
+Number of clauses: 1408214 (3840 simplified)
+Translation done in 5.3s!
+
+Saved result in file ./Results/custom/tsp/SatInstances/pfile12--pfile10.cnf
+
+Saving trace in ./Results/custom/tsp/Stats/pfile12--pfile10.csv
+Calling the SAT solver in a subprocess...
+==============================
+SAT solving done. Processing the output...
+Isomorphism: NOT FOUND
+SAT solving done in 45.6s!
+
+==============================
+Total time: 51.0s
+Saving trace in ./Results/custom/tsp/Stats/pfile12--pfile10.csv
+

@@ -1,0 +1,57 @@
+==============================
+STRIPS Isomorphism finder
+==============================
+
+Parsing problem 1...
+------------------------------
+Instance ./Benchmarks/custom/tsp/pfile6.pddl
+Calling TouISTPlan to extract STRIPS problem from file...
+Extraction done in 0.0s
+Processing the output...
+Processing done in 0.0s
+
+Done. Found 12 fluents and 30 operators in 0.01s
+
+Parsing problem 2...
+------------------------------
+Instance ./Benchmarks/custom/tsp/pfile5.pddl
+Calling TouISTPlan to extract STRIPS problem from file...
+Extraction done in 0.0s
+Processing the output...
+Processing done in 0.0s
+
+Done. Found 10 fluents and 20 operators in 0.03s
+
+Translating the STRIPS-sub-isomorphism instance to SAT...
+==============================
+Maximum number of variables: 720
+Maximum number of clauses: < 55514
+
+Generating SAT instance
+------------------------------
+Step 1/8: Done (670 clauses, 0 simplified)   
+Step 2/8: Done (8720 clauses, 0 simplified)  
+Step 3/8: Done (2400 clauses, 0 simplified)  
+Step 4/8: Done (2400 clauses, 0 simplified)  
+Step 5/8: Done (540 clauses, 0 simplified)   
+Step 6/8: Done (5700 clauses, 0 simplified)  
+Step 7/8: Done (2 clauses, 0 simplified)     
+Step 8/8: Done (11 clauses, 0 simplified)    
+------------------------------
+Number of variables: 720 (0 simplified)
+Number of clauses: 20443 (0 simplified)
+Translation done in 0.1s!
+
+Saved result in file ./Results/custom/tsp-nocp/SatInstances/pfile6--pfile5.cnf
+
+Saving trace in ./Results/custom/tsp-nocp/Stats/pfile6--pfile5.csv
+Calling the SAT solver in a subprocess...
+==============================
+SAT solving done. Processing the output...
+Isomorphism: NOT FOUND
+SAT solving done in 0.0s!
+
+==============================
+Total time: 0.1s
+Saving trace in ./Results/custom/tsp-nocp/Stats/pfile6--pfile5.csv
+

@@ -1,0 +1,70 @@
+==============================
+STRIPS Isomorphism finder
+==============================
+
+Parsing problem 1...
+------------------------------
+Instance ./Benchmarks/custom/blocks/pfile9.pddl
+Calling TouISTPlan to extract STRIPS problem from file...
+Extraction done in 0.0s
+Processing the output...
+Processing done in 0.0s
+
+Done. Found 100 fluents and 162 operators in 0.03s
+
+Parsing problem 2...
+------------------------------
+Instance ./Benchmarks/custom/blocks/pfile9.pddl
+Calling TouISTPlan to extract STRIPS problem from file...
+Extraction done in 0.0s
+Processing the output...
+Processing done in 0.0s
+
+Done. Found 100 fluents and 162 operators in 0.06s
+
+Translating the STRIPS-sub-isomorphism instance to SAT...
+==============================
+Maximum number of variables: 36244
+Maximum number of clauses: < 20001318
+
+Performing pruning steps ...
+------------------------------
+Step 1/2: Done                               
+Step 2/2: Done                               
+Pruning done. Associations removed:
+Fluents: 3753 (37.53%)
+Operators: 15714 (59.88%)
+
+Generating SAT instance
+------------------------------
+Step 1/8: Done (241444 clauses, 253656 simplified)
+Step 2/8: Done (368874 clauses, 1743930 simplified)
+Step 3/8: Done (78732 clauses, 113724 simplified)
+Step 4/8: Done (78732 clauses, 113724 simplified)
+Step 5/8: Done (224856 clauses, 270144 simplified)
+Step 6/8: Done (368712 clauses, 1743930 simplified)
+Step 7/8: Done (38 clauses, 0 simplified)    
+Step 8/8: Done (16 clauses, 0 simplified)    
+------------------------------
+Number of variables: 36244 (2559501 simplified)
+Number of clauses: 1361404 (4239108 simplified)
+Translation done in 15.8s!
+
+Saved result in file ./Results/custom/blocks/SatInstances/pfile9--pfile9.cnf
+
+Saving trace in ./Results/custom/blocks/Stats/pfile9--pfile9.csv
+Calling the SAT solver in a subprocess...
+==============================
+SAT solving done. Processing the output...
+Isomorphism: FOUND
+SAT solving done in 12.5s!
+
+Building the isomorphism...
+==============================
+Isomorphism built
+Saved the result in file ./Results/custom/blocks/Output/pfile9--pfile9.hm
+
+==============================
+Total time: 28.4s
+Saving trace in ./Results/custom/blocks/Stats/pfile9--pfile9.csv
+

@@ -1,0 +1,28 @@
+==============================
+STRIPS Isomorphism finder
+==============================
+
+Parsing problem 1...
+------------------------------
+Instance ./Benchmarks/custom/blocks/pfile46.pddl
+Calling TouISTPlan to extract STRIPS problem from file...
+Extraction done in 0.0s
+Processing the output...
+Processing done in 0.0s
+Fatal error: the file './Solvers/touistparse' is not a bytecode executable file
+
+Done. Found 0 fluents and 0 operators in 0.00s
+
+Parsing problem 2...
+------------------------------
+Instance ./Benchmarks/custom/blocks/pfile46.pddl
+Calling TouISTPlan to extract STRIPS problem from file...
+Extraction done in 0.0s
+Processing the output...
+Processing done in 0.0s
+Fatal error: the file './Solvers/touistparse' is not a bytecode executable file
+
+Done. Found 0 fluents and 0 operators in 0.00s
+
+ERROR: Empty problem. Maybe the parser encountered an error?
+Aborting...

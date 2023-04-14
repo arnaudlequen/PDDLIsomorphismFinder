@@ -1,0 +1,41 @@
+==============================
+STRIPS Isomorphism finder
+==============================
+
+Parsing problem 1
+------------------------------
+Calling FastDownward's parser...
+==============================
+Generating Datalog program... [0.040s CPU, 0.042s wall-clock]
+Normalizing Datalog program...
+Normalizing Datalog program: [0.000s CPU, 0.004s wall-clock]
+Preparing model... [0.140s CPU, 0.146s wall-clock]
+Generated 6 rules.
+Computing model... [0.310s CPU, 0.301s wall-clock]
+41782 relevant atoms
+16017 auxiliary atoms
+57799 final queue length
+76839 total queue pushes
+Completing instantiation... [0.340s CPU, 0.346s wall-clock]
+FD parsing done. Conversion to legacy internal representation...
+Done. Found 22515 fluents and 12768 operators in 1.3s
+Conversion to STRIPS done in 1.3s!
+
+------------------------------
+Done
+
+Parsing problem 2
+------------------------------
+Calling FastDownward's parser...
+==============================
+Generating Datalog program... [0.040s CPU, 0.041s wall-clock]
+Normalizing Datalog program...
+Normalizing Datalog program: [0.000s CPU, 0.003s wall-clock]
+Preparing model... [0.160s CPU, 0.158s wall-clock]
+Generated 6 rules.
+Computing model... [0.280s CPU, 0.287s wall-clock]
+40321 relevant atoms
+15456 auxiliary atoms
+55777 final queue length
+74147 total queue pushes
+Completing instantiation... [0.360s CPU, 0.361s wall-clock]

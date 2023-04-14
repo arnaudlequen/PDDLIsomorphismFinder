@@ -1,0 +1,65 @@
+==============================
+STRIPS Isomorphism finder
+==============================
+
+Parsing problem 1...
+------------------------------
+Instance ./Benchmarks/custom/tsp/pfile28.pddl
+Calling TouISTPlan to extract STRIPS problem from file...
+Extraction done in 0.1s
+Processing the output...
+Processing done in 0.0s
+
+Done. Found 56 fluents and 756 operators in 0.07s
+
+Parsing problem 2...
+------------------------------
+Instance ./Benchmarks/custom/tsp/pfile2.pddl
+Calling TouISTPlan to extract STRIPS problem from file...
+Extraction done in 0.0s
+Processing the output...
+Processing done in 0.0s
+
+Done. Found 4 fluents and 2 operators in 0.08s
+
+Translating the STRIPS-sub-isomorphism instance to SAT...
+==============================
+Maximum number of variables: 1736
+Maximum number of clauses: < 1182958
+
+Performing pruning steps ...
+------------------------------
+Step 1/2: Done                               
+Step 2/2: Done                               
+Pruning done. Associations removed:
+Fluents: 56 (25.00%)
+Operators: 0 (0.00%)
+
+Generating SAT instance
+------------------------------
+Step 1/8: Done (3840 clauses, 2324 simplified)
+Step 2/8: Done (570782 clauses, 0 simplified)
+Step 3/8: Done (6048 clauses, 0 simplified)  
+Step 4/8: Done (6048 clauses, 0 simplified)  
+Step 5/8: Done (196 clauses, 140 simplified) 
+Step 6/8: Done (756 clauses, 0 simplified)   
+Step 7/8: Done (2 clauses, 0 simplified)     
+Step 8/8: Done (30 clauses, 0 simplified)    
+------------------------------
+Number of variables: 1736 (4592 simplified)
+Number of clauses: 587702 (2464 simplified)
+Translation done in 2.0s!
+
+Saved result in file ./Results/custom/tsp/SatInstances/pfile28--pfile2.cnf
+
+Saving trace in ./Results/custom/tsp/Stats/pfile28--pfile2.csv
+Calling the SAT solver in a subprocess...
+==============================
+SAT solving done. Processing the output...
+Isomorphism: NOT FOUND
+SAT solving done in 0.8s!
+
+==============================
+Total time: 2.9s
+Saving trace in ./Results/custom/tsp/Stats/pfile28--pfile2.csv
+

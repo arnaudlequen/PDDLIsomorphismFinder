@@ -1,0 +1,65 @@
+==============================
+STRIPS Isomorphism finder
+==============================
+
+Parsing problem 1...
+------------------------------
+Instance ./Benchmarks/custom/visitall-grid-complete/pfile4.pddl
+Calling TouISTPlan to extract STRIPS problem from file...
+Extraction done in 0.0s
+Processing the output...
+Processing done in 0.0s
+
+Done. Found 32 fluents and 48 operators in 0.02s
+
+Parsing problem 2...
+------------------------------
+Instance ./Benchmarks/custom/visitall-grid-complete/pfile3.pddl
+Calling TouISTPlan to extract STRIPS problem from file...
+Extraction done in 0.0s
+Processing the output...
+Processing done in 0.0s
+
+Done. Found 18 fluents and 24 operators in 0.03s
+
+Translating the STRIPS-sub-isomorphism instance to SAT...
+==============================
+Maximum number of variables: 1728
+Maximum number of clauses: < 184462
+
+Performing pruning steps ...
+------------------------------
+Step 1/2: Done                               
+Step 2/2: Done                               
+Pruning done. Associations removed:
+Fluents: 144 (25.00%)
+Operators: 0 (0.00%)
+
+Generating SAT instance
+------------------------------
+Step 1/8: Done (5562 clauses, 3384 simplified)
+Step 2/8: Done (27096 clauses, 0 simplified) 
+Step 3/8: Done (4608 clauses, 0 simplified)  
+Step 4/8: Done (4608 clauses, 0 simplified)  
+Step 5/8: Done (3024 clauses, 1872 simplified)
+Step 6/8: Done (13248 clauses, 0 simplified) 
+Step 7/8: Done (4 clauses, 0 simplified)     
+Step 8/8: Done (25 clauses, 0 simplified)    
+------------------------------
+Number of variables: 1728 (11666 simplified)
+Number of clauses: 58175 (5256 simplified)
+Translation done in 0.3s!
+
+Saved result in file ./Results/custom/visitall-grid-complete/SatInstances/pfile4--pfile3.cnf
+
+Saving trace in ./Results/custom/visitall-grid-complete/Stats/pfile4--pfile3.csv
+Calling the SAT solver in a subprocess...
+==============================
+SAT solving done. Processing the output...
+Isomorphism: NOT FOUND
+SAT solving done in 0.1s!
+
+==============================
+Total time: 0.4s
+Saving trace in ./Results/custom/visitall-grid-complete/Stats/pfile4--pfile3.csv
+

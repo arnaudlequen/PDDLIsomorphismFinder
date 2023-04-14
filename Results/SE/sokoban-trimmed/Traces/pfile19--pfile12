@@ -1,0 +1,28 @@
+==============================
+STRIPS Isomorphism finder
+==============================
+
+Parsing problem 1...
+------------------------------
+Instance ./Benchmarks/custom/sokoban-trimmed/pfile19.pddl
+Calling TouISTPlan to extract STRIPS problem from file...
+Extraction done in 0.0s
+Processing the output...
+Processing done in 0.0s
+Fatal error: exception Sys_error("./Benchmarks/custom/sokoban-trimmed/pfile19.pddl: No such file or directory")
+
+Done. Found 0 fluents and 0 operators in 0.01s
+
+Parsing problem 2...
+------------------------------
+Instance ./Benchmarks/custom/sokoban-trimmed/pfile12.pddl
+Calling TouISTPlan to extract STRIPS problem from file...
+Extraction done in 0.0s
+Processing the output...
+Processing done in 0.0s
+Fatal error: exception Sys_error("./Benchmarks/custom/sokoban-trimmed/pfile12.pddl: No such file or directory")
+
+Done. Found 0 fluents and 0 operators in 0.02s
+
+ERROR: Empty problem. Maybe the parser encountered an error?
+Aborting...

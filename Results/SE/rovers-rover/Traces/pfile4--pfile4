@@ -1,0 +1,70 @@
+==============================
+STRIPS Isomorphism finder
+==============================
+
+Parsing problem 1...
+------------------------------
+Instance ./Benchmarks/custom/rovers-rover/pfile4.pddl
+Calling TouISTPlan to extract STRIPS problem from file...
+Extraction done in 0.1s
+Processing the output...
+Processing done in 0.0s
+
+Done. Found 190 fluents and 571 operators in 0.08s
+
+Parsing problem 2...
+------------------------------
+Instance ./Benchmarks/custom/rovers-rover/pfile4.pddl
+Calling TouISTPlan to extract STRIPS problem from file...
+Extraction done in 0.1s
+Processing the output...
+Processing done in 0.0s
+
+Done. Found 190 fluents and 571 operators in 0.16s
+
+Translating the STRIPS-sub-isomorphism instance to SAT...
+==============================
+Maximum number of variables: 362141
+Maximum number of clauses: < 626990503
+
+Performing pruning steps ...
+------------------------------
+Step 1/2: Done                               
+Step 2/2: Done                               
+Pruning done. Associations removed:
+Fluents: 30127 (83.45%)
+Operators: 319154 (97.89%)
+
+Generating SAT instance
+------------------------------
+Step 1/8: Done (488574 clauses, 2923066 simplified)
+Step 2/8: Done (93310 clauses, 92828946 simplified)
+Step 3/8: Done (35450 clauses, 1801457 simplified)
+Step 4/8: Done (35450 clauses, 1801457 simplified)
+Step 5/8: Done (94064 clauses, 3317386 simplified)
+Step 6/8: Done (82268 clauses, 92839417 simplified)
+Step 7/8: Done (96 clauses, 0 simplified)    
+Step 8/8: Done (36 clauses, 0 simplified)    
+------------------------------
+Number of variables: 362141 (5723707 simplified)
+Number of clauses: 829248 (195511729 simplified)
+Translation done in 295.7s!
+
+Saved result in file ./Results/custom/rovers-rover/SatInstances/pfile4--pfile4.cnf
+
+Saving trace in ./Results/custom/rovers-rover/Stats/pfile4--pfile4.csv
+Calling the SAT solver in a subprocess...
+==============================
+SAT solving done. Processing the output...
+Isomorphism: FOUND
+SAT solving done in 1.0s!
+
+Building the isomorphism...
+==============================
+Isomorphism built
+Saved the result in file ./Results/custom/rovers-rover/Output/pfile4--pfile4.hm
+
+==============================
+Total time: 297.0s
+Saving trace in ./Results/custom/rovers-rover/Stats/pfile4--pfile4.csv
+

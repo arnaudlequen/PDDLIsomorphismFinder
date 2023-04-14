@@ -1,0 +1,71 @@
+==============================
+STRIPS Isomorphism finder
+==============================
+
+Parsing problem 1
+------------------------------
+Calling FastDownward's parser...
+==============================
+Generating Datalog program... [0.000s CPU, 0.002s wall-clock]
+Normalizing Datalog program...
+Normalizing Datalog program: [0.010s CPU, 0.002s wall-clock]
+Preparing model... [0.000s CPU, 0.003s wall-clock]
+Generated 38 rules.
+Computing model... [0.020s CPU, 0.022s wall-clock]
+1294 relevant atoms
+1888 auxiliary atoms
+3182 final queue length
+4108 total queue pushes
+Completing instantiation... [0.020s CPU, 0.018s wall-clock]
+FD parsing done. Conversion to legacy internal representation...
+Done. Found 633 fluents and 400 operators in 0.1s
+Conversion to STRIPS done in 0.1s!
+
+------------------------------
+Done
+
+Parsing problem 2
+------------------------------
+Calling FastDownward's parser...
+==============================
+Generating Datalog program... [0.010s CPU, 0.002s wall-clock]
+Normalizing Datalog program...
+Normalizing Datalog program: [0.000s CPU, 0.002s wall-clock]
+Preparing model... [0.000s CPU, 0.003s wall-clock]
+Generated 38 rules.
+Computing model... [0.030s CPU, 0.027s wall-clock]
+1473 relevant atoms
+2480 auxiliary atoms
+3953 final queue length
+4897 total queue pushes
+Completing instantiation... [0.020s CPU, 0.022s wall-clock]
+FD parsing done. Conversion to legacy internal representation...
+Done. Found 771 fluents and 418 operators in 0.1s
+Conversion to STRIPS done in 0.1s!
+
+------------------------------
+Done
+
+Translating the STRIPS-sub-isomorphism instance to SAT...
+==============================
+The target problem is too big: switching problems...
+Maximum number of variables: 655243
+Maximum number of clauses: < 936404994
+
+Performing pruning steps ...
+------------------------------
+Step 1/2: Done                               
+Step 2/2: Done                               
+Pruning done. Associations removed:
+Fluents: 202002 (41.39%)
+Operators: 167200 (100.00%)
+
+Generating SAT instance
+------------------------------
+Empty clause found
+Formula is non-consistent: exiting...        
+
+Isomorphism: NOT FOUND
+==============================
+Total time: 1.5s
+Saving trace in ./Results/Subiso/sokoban/Stats/pfile18--pfile10.csv

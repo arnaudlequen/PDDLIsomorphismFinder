@@ -1,0 +1,65 @@
+==============================
+STRIPS Isomorphism finder
+==============================
+
+Parsing problem 1...
+------------------------------
+Instance ./Benchmarks/custom/rovers/pfile16.pddl
+Calling TouISTPlan to extract STRIPS problem from file...
+Extraction done in 0.2s
+Processing the output...
+Processing done in 0.0s
+
+Done. Found 369 fluents and 1525 operators in 0.22s
+
+Parsing problem 2...
+------------------------------
+Instance ./Benchmarks/custom/rovers/pfile11.pddl
+Calling TouISTPlan to extract STRIPS problem from file...
+Extraction done in 0.0s
+Processing the output...
+Processing done in 0.0s
+
+Done. Found 94 fluents and 116 operators in 0.25s
+
+Translating the STRIPS-sub-isomorphism instance to SAT...
+==============================
+Maximum number of variables: 211586
+Maximum number of clauses: < 369607570
+
+Performing pruning steps ...
+------------------------------
+Step 1/2: Done                               
+Step 2/2: Done                               
+Pruning done. Associations removed:
+Fluents: 25454 (73.38%)
+Operators: 176205 (99.61%)
+
+Generating SAT instance
+------------------------------
+Step 1/8: Done (1630916 clauses, 4751402 simplified)
+Step 2/8: Done (3159 clauses, 134794757 simplified)
+Step 3/8: Done (4724 clauses, 1129876 simplified)
+Step 4/8: Done (4724 clauses, 1133932 simplified)
+Step 5/8: Done (111833 clauses, 1501066 simplified)
+Step 6/8: Done (1094 clauses, 10170656 simplified)
+Step 7/8: Done (100 clauses, 0 simplified)   
+Step 8/8: Done (29 clauses, 0 simplified)    
+------------------------------
+Number of variables: 211586 (487349 simplified)
+Number of clauses: 1756579 (153481689 simplified)
+Translation done in 203.3s!
+
+Saved result in file ./Results/custom/rovers/SatInstances/pfile16--pfile11.cnf
+
+Saving trace in ./Results/custom/rovers/Stats/pfile16--pfile11.csv
+Calling the SAT solver in a subprocess...
+==============================
+SAT solving done. Processing the output...
+Isomorphism: NOT FOUND
+SAT solving done in 3.4s!
+
+==============================
+Total time: 207.0s
+Saving trace in ./Results/custom/rovers/Stats/pfile16--pfile11.csv
+

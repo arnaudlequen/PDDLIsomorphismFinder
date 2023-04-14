@@ -1,0 +1,65 @@
+==============================
+STRIPS Isomorphism finder
+==============================
+
+Parsing problem 1...
+------------------------------
+Instance ./Benchmarks/custom/gripper/pfile12.pddl
+Calling TouISTPlan to extract STRIPS problem from file...
+Extraction done in 0.0s
+Processing the output...
+Processing done in 0.0s
+
+Done. Found 108 fluents and 210 operators in 0.03s
+
+Parsing problem 2...
+------------------------------
+Instance ./Benchmarks/custom/gripper/pfile2.pddl
+Calling TouISTPlan to extract STRIPS problem from file...
+Extraction done in 0.0s
+Processing the output...
+Processing done in 0.0s
+
+Done. Found 28 fluents and 50 operators in 0.05s
+
+Translating the STRIPS-sub-isomorphism instance to SAT...
+==============================
+Maximum number of variables: 13524
+Maximum number of clauses: < 4232942
+
+Performing pruning steps ...
+------------------------------
+Step 1/2: Done                               
+Step 2/2: Done                               
+Pruning done. Associations removed:
+Fluents: 1640 (54.23%)
+Operators: 5504 (52.42%)
+
+Generating SAT instance
+------------------------------
+Step 1/8: Done (35976 clauses, 125836 simplified)
+Step 2/8: Done (257140 clauses, 840160 simplified)
+Step 3/8: Done (27468 clauses, 29232 simplified)
+Step 4/8: Done (27468 clauses, 30032 simplified)
+Step 5/8: Done (8348 clauses, 32476 simplified)
+Step 6/8: Done (57410 clauses, 199840 simplified)
+Step 7/8: Done (38 clauses, 0 simplified)    
+Step 8/8: Done (32 clauses, 0 simplified)    
+------------------------------
+Number of variables: 13524 (481768 simplified)
+Number of clauses: 413880 (1257576 simplified)
+Translation done in 3.6s!
+
+Saved result in file ./Results/custom/gripper/SatInstances/pfile12--pfile2.cnf
+
+Saving trace in ./Results/custom/gripper/Stats/pfile12--pfile2.csv
+Calling the SAT solver in a subprocess...
+==============================
+SAT solving done. Processing the output...
+Isomorphism: NOT FOUND
+SAT solving done in 2.6s!
+
+==============================
+Total time: 6.2s
+Saving trace in ./Results/custom/gripper/Stats/pfile12--pfile2.csv
+

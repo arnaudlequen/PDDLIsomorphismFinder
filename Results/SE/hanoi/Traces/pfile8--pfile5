@@ -1,0 +1,65 @@
+==============================
+STRIPS Isomorphism finder
+==============================
+
+Parsing problem 1...
+------------------------------
+Instance ./Benchmarks/custom/hanoi/pfile8.pddl
+Calling TouISTPlan to extract STRIPS problem from file...
+Extraction done in 0.0s
+Processing the output...
+Processing done in 0.0s
+
+Done. Found 63 fluents and 328 operators in 0.04s
+
+Parsing problem 2...
+------------------------------
+Instance ./Benchmarks/custom/hanoi/pfile5.pddl
+Calling TouISTPlan to extract STRIPS problem from file...
+Extraction done in 0.0s
+Processing the output...
+Processing done in 0.0s
+
+Done. Found 33 fluents and 110 operators in 0.07s
+
+Translating the STRIPS-sub-isomorphism instance to SAT...
+==============================
+Maximum number of variables: 38159
+Maximum number of clauses: < 20696912
+
+Performing pruning steps ...
+------------------------------
+Step 1/2: Done                               
+Step 2/2: Done                               
+Pruning done. Associations removed:
+Fluents: 32 (1.54%)
+Operators: 0 (0.00%)
+
+Generating SAT instance
+------------------------------
+Step 1/8: Done (62498 clauses, 1984 simplified)
+Step 2/8: Done (5899190 clauses, 0 simplified)
+Step 3/8: Done (252560 clauses, 0 simplified)
+Step 4/8: Done (252560 clauses, 0 simplified)
+Step 5/8: Done (32736 clauses, 528 simplified)
+Step 6/8: Done (1966360 clauses, 0 simplified)
+Step 7/8: Done (19 clauses, 0 simplified)    
+Step 8/8: Done (13 clauses, 0 simplified)    
+------------------------------
+Number of variables: 38159 (342766 simplified)
+Number of clauses: 8465936 (2512 simplified)
+Translation done in 34.7s!
+
+Saved result in file ./Results/custom/hanoi/SatInstances/pfile8--pfile5.cnf
+
+Saving trace in ./Results/custom/hanoi/Stats/pfile8--pfile5.csv
+Calling the SAT solver in a subprocess...
+==============================
+SAT solving done. Processing the output...
+Isomorphism: NOT FOUND
+SAT solving done in 22.3s!
+
+==============================
+Total time: 57.1s
+Saving trace in ./Results/custom/hanoi/Stats/pfile8--pfile5.csv
+

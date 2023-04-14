@@ -1,0 +1,65 @@
+==============================
+STRIPS Isomorphism finder
+==============================
+
+Parsing problem 1...
+------------------------------
+Instance ./Benchmarks/custom/hanoi/pfile3.pddl
+Calling TouISTPlan to extract STRIPS problem from file...
+Extraction done in 0.0s
+Processing the output...
+Processing done in 0.0s
+
+Done. Found 18 fluents and 38 operators in 0.02s
+
+Parsing problem 2...
+------------------------------
+Instance ./Benchmarks/custom/hanoi/pfile1.pddl
+Calling TouISTPlan to extract STRIPS problem from file...
+Extraction done in 0.0s
+Processing the output...
+Processing done in 0.0s
+
+Done. Found 7 fluents and 6 operators in 0.03s
+
+Translating the STRIPS-sub-isomorphism instance to SAT...
+==============================
+Maximum number of variables: 354
+Maximum number of clauses: < 18747
+
+Performing pruning steps ...
+------------------------------
+Step 1/2: Done                               
+Step 2/2: Done                               
+Pruning done. Associations removed:
+Fluents: 6 (4.76%)
+Operators: 0 (0.00%)
+
+Generating SAT instance
+------------------------------
+Step 1/8: Done (976 clauses, 102 simplified) 
+Step 2/8: Done (4224 clauses, 0 simplified)  
+Step 3/8: Done (1596 clauses, 0 simplified)  
+Step 4/8: Done (1596 clauses, 0 simplified)  
+Step 5/8: Done (357 clauses, 21 simplified)  
+Step 6/8: Done (570 clauses, 0 simplified)   
+Step 7/8: Done (10 clauses, 0 simplified)    
+Step 8/8: Done (4 clauses, 0 simplified)     
+------------------------------
+Number of variables: 354 (972 simplified)
+Number of clauses: 9333 (123 simplified)
+Translation done in 0.0s!
+
+Saved result in file ./Results/custom/hanoi/SatInstances/pfile3--pfile1.cnf
+
+Saving trace in ./Results/custom/hanoi/Stats/pfile3--pfile1.csv
+Calling the SAT solver in a subprocess...
+==============================
+SAT solving done. Processing the output...
+Isomorphism: NOT FOUND
+SAT solving done in 0.0s!
+
+==============================
+Total time: 0.1s
+Saving trace in ./Results/custom/hanoi/Stats/pfile3--pfile1.csv
+

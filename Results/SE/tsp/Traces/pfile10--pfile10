@@ -1,0 +1,70 @@
+==============================
+STRIPS Isomorphism finder
+==============================
+
+Parsing problem 1...
+------------------------------
+Instance ./Benchmarks/custom/tsp/pfile10.pddl
+Calling TouISTPlan to extract STRIPS problem from file...
+Extraction done in 0.0s
+Processing the output...
+Processing done in 0.0s
+
+Done. Found 20 fluents and 90 operators in 0.02s
+
+Parsing problem 2...
+------------------------------
+Instance ./Benchmarks/custom/tsp/pfile10.pddl
+Calling TouISTPlan to extract STRIPS problem from file...
+Extraction done in 0.0s
+Processing the output...
+Processing done in 0.0s
+
+Done. Found 20 fluents and 90 operators in 0.04s
+
+Translating the STRIPS-sub-isomorphism instance to SAT...
+==============================
+Maximum number of variables: 8500
+Maximum number of clauses: < 2114190
+
+Performing pruning steps ...
+------------------------------
+Step 1/2: Done                               
+Step 2/2: Done                               
+Pruning done. Associations removed:
+Fluents: 100 (25.00%)
+Operators: 0 (0.00%)
+
+Generating SAT instance
+------------------------------
+Step 1/8: Done (2370 clauses, 1450 simplified)
+Step 2/8: Done (360540 clauses, 0 simplified)
+Step 3/8: Done (32400 clauses, 0 simplified) 
+Step 4/8: Done (32400 clauses, 0 simplified) 
+Step 5/8: Done (2350 clauses, 1450 simplified)
+Step 6/8: Done (360450 clauses, 0 simplified)
+Step 7/8: Done (2 clauses, 0 simplified)     
+Step 8/8: Done (20 clauses, 0 simplified)    
+------------------------------
+Number of variables: 8500 (89200 simplified)
+Number of clauses: 790532 (2900 simplified)
+Translation done in 3.0s!
+
+Saved result in file ./Results/custom/tsp/SatInstances/pfile10--pfile10.cnf
+
+Saving trace in ./Results/custom/tsp/Stats/pfile10--pfile10.csv
+Calling the SAT solver in a subprocess...
+==============================
+SAT solving done. Processing the output...
+Isomorphism: FOUND
+SAT solving done in 0.6s!
+
+Building the isomorphism...
+==============================
+Isomorphism built
+Saved the result in file ./Results/custom/tsp/Output/pfile10--pfile10.hm
+
+==============================
+Total time: 3.7s
+Saving trace in ./Results/custom/tsp/Stats/pfile10--pfile10.csv
+

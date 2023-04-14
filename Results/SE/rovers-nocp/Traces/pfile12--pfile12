@@ -1,0 +1,62 @@
+==============================
+STRIPS Isomorphism finder
+==============================
+
+Parsing problem 1...
+------------------------------
+Instance ./Benchmarks/custom/rovers/pfile12.pddl
+Calling TouISTPlan to extract STRIPS problem from file...
+Extraction done in 0.1s
+Processing the output...
+Processing done in 0.0s
+
+Done. Found 103 fluents and 131 operators in 0.05s
+
+Parsing problem 2...
+------------------------------
+Instance ./Benchmarks/custom/rovers/pfile12.pddl
+Calling TouISTPlan to extract STRIPS problem from file...
+Extraction done in 0.0s
+Processing the output...
+Processing done in 0.0s
+
+Done. Found 103 fluents and 131 operators in 0.09s
+
+Translating the STRIPS-sub-isomorphism instance to SAT...
+==============================
+Maximum number of variables: 27770
+Maximum number of clauses: < 12659887
+
+Generating SAT instance
+------------------------------
+Step 1/8: Done (541162 clauses, 0 simplified)
+Step 2/8: Done (1115596 clauses, 0 simplified)
+Step 3/8: Done (107158 clauses, 0 simplified)
+Step 4/8: Done (107158 clauses, 0 simplified)
+Step 5/8: Done (541059 clauses, 0 simplified)
+Step 6/8: Done (1115465 clauses, 0 simplified)
+Step 7/8: Done (84 clauses, 0 simplified)    
+Step 8/8: Done (26 clauses, 0 simplified)    
+------------------------------
+Number of variables: 27770 (0 simplified)
+Number of clauses: 3527708 (0 simplified)
+Translation done in 18.0s!
+
+Saved result in file ./Results/custom/rovers-nocp/SatInstances/pfile12--pfile12.cnf
+
+Saving trace in ./Results/custom/rovers-nocp/Stats/pfile12--pfile12.csv
+Calling the SAT solver in a subprocess...
+==============================
+SAT solving done. Processing the output...
+Isomorphism: FOUND
+SAT solving done in 52.7s!
+
+Building the isomorphism...
+==============================
+Isomorphism built
+Saved the result in file ./Results/custom/rovers-nocp/Output/pfile12--pfile12.hm
+
+==============================
+Total time: 70.9s
+Saving trace in ./Results/custom/rovers-nocp/Stats/pfile12--pfile12.csv
+

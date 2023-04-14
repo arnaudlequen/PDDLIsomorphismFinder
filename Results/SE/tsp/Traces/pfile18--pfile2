@@ -1,0 +1,65 @@
+==============================
+STRIPS Isomorphism finder
+==============================
+
+Parsing problem 1...
+------------------------------
+Instance ./Benchmarks/custom/tsp/pfile18.pddl
+Calling TouISTPlan to extract STRIPS problem from file...
+Extraction done in 0.0s
+Processing the output...
+Processing done in 0.0s
+
+Done. Found 36 fluents and 306 operators in 0.04s
+
+Parsing problem 2...
+------------------------------
+Instance ./Benchmarks/custom/tsp/pfile2.pddl
+Calling TouISTPlan to extract STRIPS problem from file...
+Extraction done in 0.0s
+Processing the output...
+Processing done in 0.0s
+
+Done. Found 4 fluents and 2 operators in 0.05s
+
+Translating the STRIPS-sub-isomorphism instance to SAT...
+==============================
+Maximum number of variables: 756
+Maximum number of clauses: < 203558
+
+Performing pruning steps ...
+------------------------------
+Step 1/2: Done                               
+Step 2/2: Done                               
+Pruning done. Associations removed:
+Fluents: 36 (25.00%)
+Operators: 0 (0.00%)
+
+Generating SAT instance
+------------------------------
+Step 1/8: Done (1570 clauses, 954 simplified)
+Step 2/8: Done (93332 clauses, 0 simplified) 
+Step 3/8: Done (2448 clauses, 0 simplified)  
+Step 4/8: Done (2448 clauses, 0 simplified)  
+Step 5/8: Done (126 clauses, 90 simplified)  
+Step 6/8: Done (306 clauses, 0 simplified)   
+Step 7/8: Done (2 clauses, 0 simplified)     
+Step 8/8: Done (20 clauses, 0 simplified)    
+------------------------------
+Number of variables: 756 (1872 simplified)
+Number of clauses: 100252 (1044 simplified)
+Translation done in 0.3s!
+
+Saved result in file ./Results/custom/tsp/SatInstances/pfile18--pfile2.cnf
+
+Saving trace in ./Results/custom/tsp/Stats/pfile18--pfile2.csv
+Calling the SAT solver in a subprocess...
+==============================
+SAT solving done. Processing the output...
+Isomorphism: NOT FOUND
+SAT solving done in 0.1s!
+
+==============================
+Total time: 0.4s
+Saving trace in ./Results/custom/tsp/Stats/pfile18--pfile2.csv
+

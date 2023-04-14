@@ -1,0 +1,65 @@
+==============================
+STRIPS Isomorphism finder
+==============================
+
+Parsing problem 1...
+------------------------------
+Instance ./Benchmarks/custom/blocks/pfile22.pddl
+Calling TouISTPlan to extract STRIPS problem from file...
+Extraction done in 0.1s
+Processing the output...
+Processing done in 0.0s
+
+Done. Found 529 fluents and 968 operators in 0.16s
+
+Parsing problem 2...
+------------------------------
+Instance ./Benchmarks/custom/blocks/pfile7.pddl
+Calling TouISTPlan to extract STRIPS problem from file...
+Extraction done in 0.0s
+Processing the output...
+Processing done in 0.0s
+
+Done. Found 64 fluents and 98 operators in 0.18s
+
+Translating the STRIPS-sub-isomorphism instance to SAT...
+==============================
+Maximum number of variables: 128720
+Maximum number of clauses: < 143321380
+
+Performing pruning steps ...
+------------------------------
+Step 1/2: Done                               
+Step 2/2: Done                               
+Pruning done. Associations removed:
+Fluents: 12840 (37.93%)
+Operators: 55748 (58.77%)
+
+Generating SAT instance
+------------------------------
+Step 1/8: Done (4940021 clauses, 3998027 simplified)
+Step 2/8: Done (8948576 clauses, 36918266 simplified)
+Step 3/8: Done (292908 clauses, 398244 simplified)
+Step 4/8: Done (292908 clauses, 412104 simplified)
+Step 5/8: Done (435043 clauses, 631421 simplified)
+Step 6/8: Done (796488 clauses, 3804416 simplified)
+Step 7/8: Done (60 clauses, 0 simplified)    
+Step 8/8: Done (27 clauses, 0 simplified)    
+------------------------------
+Number of variables: 128720 (6652454 simplified)
+Number of clauses: 15706031 (46162478 simplified)
+Translation done in 124.1s!
+
+Saved result in file ./Results/custom/blocks/SatInstances/pfile22--pfile7.cnf
+
+Saving trace in ./Results/custom/blocks/Stats/pfile22--pfile7.csv
+Calling the SAT solver in a subprocess...
+==============================
+SAT solving done. Processing the output...
+Isomorphism: NOT FOUND
+SAT solving done in 140.6s!
+
+==============================
+Total time: 264.9s
+Saving trace in ./Results/custom/blocks/Stats/pfile22--pfile7.csv
+

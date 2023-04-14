@@ -1,0 +1,65 @@
+==============================
+STRIPS Isomorphism finder
+==============================
+
+Parsing problem 1...
+------------------------------
+Instance ./Benchmarks/custom/visitall-grid-complete/pfile10.pddl
+Calling TouISTPlan to extract STRIPS problem from file...
+Extraction done in 0.1s
+Processing the output...
+Processing done in 0.0s
+
+Done. Found 200 fluents and 360 operators in 0.06s
+
+Parsing problem 2...
+------------------------------
+Instance ./Benchmarks/custom/visitall-grid-complete/pfile8.pddl
+Calling TouISTPlan to extract STRIPS problem from file...
+Extraction done in 0.0s
+Processing the output...
+Processing done in 0.0s
+
+Done. Found 128 fluents and 224 operators in 0.10s
+
+Translating the STRIPS-sub-isomorphism instance to SAT...
+==============================
+Maximum number of variables: 106240
+Maximum number of clauses: < 93502448
+
+Performing pruning steps ...
+------------------------------
+Step 1/2: Done                               
+Step 2/2: Done                               
+Pruning done. Associations removed:
+Fluents: 6400 (25.00%)
+Operators: 0 (0.00%)
+
+Generating SAT instance
+------------------------------
+Step 1/8: Done (1590528 clauses, 956800 simplified)
+Step 2/8: Done (14475104 clauses, 0 simplified)
+Step 3/8: Done (322560 clauses, 0 simplified)
+Step 4/8: Done (322560 clauses, 0 simplified)
+Step 5/8: Done (1014400 clauses, 611200 simplified)
+Step 6/8: Done (8991360 clauses, 0 simplified)
+Step 7/8: Done (4 clauses, 0 simplified)     
+Step 8/8: Done (164 clauses, 0 simplified)   
+------------------------------
+Number of variables: 106240 (5248002 simplified)
+Number of clauses: 26716680 (1568000 simplified)
+Translation done in 116.8s!
+
+Saved result in file ./Results/custom/visitall-grid-complete/SatInstances/pfile10--pfile8.cnf
+
+Saving trace in ./Results/custom/visitall-grid-complete/Stats/pfile10--pfile8.csv
+Calling the SAT solver in a subprocess...
+==============================
+SAT solving done. Processing the output...
+Isomorphism: NOT FOUND
+SAT solving done in 161.9s!
+
+==============================
+Total time: 278.9s
+Saving trace in ./Results/custom/visitall-grid-complete/Stats/pfile10--pfile8.csv
+

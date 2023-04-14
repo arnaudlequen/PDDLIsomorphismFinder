@@ -1,0 +1,65 @@
+==============================
+STRIPS Isomorphism finder
+==============================
+
+Parsing problem 1...
+------------------------------
+Instance ./Benchmarks/custom/satellite/pfile8.pddl
+Calling TouISTPlan to extract STRIPS problem from file...
+Extraction done in 0.1s
+Processing the output...
+Processing done in 0.0s
+
+Done. Found 144 fluents and 1245 operators in 0.09s
+
+Parsing problem 2...
+------------------------------
+Instance ./Benchmarks/custom/satellite/pfile2.pddl
+Calling TouISTPlan to extract STRIPS problem from file...
+Extraction done in 0.0s
+Processing the output...
+Processing done in 0.0s
+
+Done. Found 37 fluents and 110 operators in 0.11s
+
+Translating the STRIPS-sub-isomorphism instance to SAT...
+==============================
+Maximum number of variables: 142278
+Maximum number of clauses: < 206603591
+
+Performing pruning steps ...
+------------------------------
+Step 1/2: Done                               
+Step 2/2: Done                               
+Pruning done. Associations removed:
+Fluents: 3704 (69.52%)
+Operators: 90796 (66.30%)
+
+Generating SAT instance
+------------------------------
+Step 1/8: Done (43933 clauses, 337056 simplified)
+Step 2/8: Done (16331640 clauses, 68851370 simplified)
+Step 3/8: Done (158462 clauses, 354478 simplified)
+Step 4/8: Done (158462 clauses, 322788 simplified)
+Step 5/8: Done (12690 clauses, 83214 simplified)
+Step 6/8: Done (882225 clauses, 6581550 simplified)
+Step 7/8: Done (10 clauses, 0 simplified)    
+Step 8/8: Done (15 clauses, 0 simplified)    
+------------------------------
+Number of variables: 142278 (5035402 simplified)
+Number of clauses: 17587437 (76530456 simplified)
+Translation done in 152.8s!
+
+Saved result in file ./Results/custom/satellite/SatInstances/pfile8--pfile2.cnf
+
+Saving trace in ./Results/custom/satellite/Stats/pfile8--pfile2.csv
+Calling the SAT solver in a subprocess...
+==============================
+SAT solving done. Processing the output...
+Isomorphism: NOT FOUND
+SAT solving done in 5.8s!
+
+==============================
+Total time: 158.6s
+Saving trace in ./Results/custom/satellite/Stats/pfile8--pfile2.csv
+

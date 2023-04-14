@@ -1,0 +1,65 @@
+==============================
+STRIPS Isomorphism finder
+==============================
+
+Parsing problem 1...
+------------------------------
+Instance ./Benchmarks/custom/tsp/pfile11.pddl
+Calling TouISTPlan to extract STRIPS problem from file...
+Extraction done in 0.0s
+Processing the output...
+Processing done in 0.0s
+
+Done. Found 22 fluents and 110 operators in 0.02s
+
+Parsing problem 2...
+------------------------------
+Instance ./Benchmarks/custom/tsp/pfile8.pddl
+Calling TouISTPlan to extract STRIPS problem from file...
+Extraction done in 0.0s
+Processing the output...
+Processing done in 0.0s
+
+Done. Found 16 fluents and 56 operators in 0.03s
+
+Translating the STRIPS-sub-isomorphism instance to SAT...
+==============================
+Maximum number of variables: 6512
+Maximum number of clauses: < 1424692
+
+Performing pruning steps ...
+------------------------------
+Step 1/2: Done                               
+Step 2/2: Done                               
+Pruning done. Associations removed:
+Fluents: 88 (25.00%)
+Operators: 0 (0.00%)
+
+Generating SAT instance
+------------------------------
+Step 1/8: Done (2304 clauses, 1408 simplified)
+Step 2/8: Done (335776 clauses, 0 simplified)
+Step 3/8: Done (24640 clauses, 0 simplified) 
+Step 4/8: Done (24640 clauses, 0 simplified) 
+Step 5/8: Done (1628 clauses, 1012 simplified)
+Step 6/8: Done (169400 clauses, 0 simplified)
+Step 7/8: Done (2 clauses, 0 simplified)     
+Step 8/8: Done (19 clauses, 0 simplified)    
+------------------------------
+Number of variables: 6512 (55528 simplified)
+Number of clauses: 558409 (2420 simplified)
+Translation done in 2.1s!
+
+Saved result in file ./Results/custom/tsp/SatInstances/pfile11--pfile8.cnf
+
+Saving trace in ./Results/custom/tsp/Stats/pfile11--pfile8.csv
+Calling the SAT solver in a subprocess...
+==============================
+SAT solving done. Processing the output...
+Isomorphism: NOT FOUND
+SAT solving done in 9.8s!
+
+==============================
+Total time: 12.0s
+Saving trace in ./Results/custom/tsp/Stats/pfile11--pfile8.csv
+

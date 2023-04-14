@@ -1,0 +1,70 @@
+==============================
+STRIPS Isomorphism finder
+==============================
+
+Parsing problem 1...
+------------------------------
+Instance ./Benchmarks/custom/gripper/pfile5.pddl
+Calling TouISTPlan to extract STRIPS problem from file...
+Extraction done in 0.0s
+Processing the output...
+Processing done in 0.0s
+
+Done. Found 52 fluents and 98 operators in 0.02s
+
+Parsing problem 2...
+------------------------------
+Instance ./Benchmarks/custom/gripper/pfile5.pddl
+Calling TouISTPlan to extract STRIPS problem from file...
+Extraction done in 0.0s
+Processing the output...
+Processing done in 0.0s
+
+Done. Found 52 fluents and 98 operators in 0.04s
+
+Translating the STRIPS-sub-isomorphism instance to SAT...
+==============================
+Maximum number of variables: 12308
+Maximum number of clauses: < 4020982
+
+Performing pruning steps ...
+------------------------------
+Step 1/2: Done                               
+Step 2/2: Done                               
+Pruning done. Associations removed:
+Fluents: 1448 (53.55%)
+Operators: 4992 (51.98%)
+
+Generating SAT instance
+------------------------------
+Step 1/8: Done (15128 clauses, 53876 simplified)
+Step 2/8: Done (108388 clauses, 357504 simplified)
+Step 3/8: Done (25356 clauses, 26976 simplified)
+Step 4/8: Done (25356 clauses, 26976 simplified)
+Step 5/8: Done (15076 clauses, 53876 simplified)
+Step 6/8: Done (108290 clauses, 357504 simplified)
+Step 7/8: Done (30 clauses, 0 simplified)    
+Step 8/8: Done (24 clauses, 0 simplified)    
+------------------------------
+Number of variables: 12308 (804280 simplified)
+Number of clauses: 297648 (876712 simplified)
+Translation done in 3.1s!
+
+Saved result in file ./Results/custom/gripper/SatInstances/pfile5--pfile5.cnf
+
+Saving trace in ./Results/custom/gripper/Stats/pfile5--pfile5.csv
+Calling the SAT solver in a subprocess...
+==============================
+SAT solving done. Processing the output...
+Isomorphism: FOUND
+SAT solving done in 0.3s!
+
+Building the isomorphism...
+==============================
+Isomorphism built
+Saved the result in file ./Results/custom/gripper/Output/pfile5--pfile5.hm
+
+==============================
+Total time: 3.4s
+Saving trace in ./Results/custom/gripper/Stats/pfile5--pfile5.csv
+

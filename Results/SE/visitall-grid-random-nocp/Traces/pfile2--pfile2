@@ -1,0 +1,62 @@
+==============================
+STRIPS Isomorphism finder
+==============================
+
+Parsing problem 1...
+------------------------------
+Instance ./Benchmarks/custom/visitall-grid-random/pfile2.pddl
+Calling TouISTPlan to extract STRIPS problem from file...
+Extraction done in 0.0s
+Processing the output...
+Processing done in 0.0s
+
+Done. Found 22 fluents and 2 operators in 0.01s
+
+Parsing problem 2...
+------------------------------
+Instance ./Benchmarks/custom/visitall-grid-random/pfile2.pddl
+Calling TouISTPlan to extract STRIPS problem from file...
+Extraction done in 0.0s
+Processing the output...
+Processing done in 0.0s
+
+Done. Found 22 fluents and 2 operators in 0.02s
+
+Translating the STRIPS-sub-isomorphism instance to SAT...
+==============================
+Maximum number of variables: 488
+Maximum number of clauses: < 11128
+
+Generating SAT instance
+------------------------------
+Step 1/8: Done (5104 clauses, 0 simplified)  
+Step 2/8: Done (4 clauses, 0 simplified)     
+Step 3/8: Done (16 clauses, 0 simplified)    
+Step 4/8: Done (16 clauses, 0 simplified)    
+Step 5/8: Done (5082 clauses, 0 simplified)  
+Step 6/8: Done (2 clauses, 0 simplified)     
+Step 7/8: Done (4 clauses, 0 simplified)     
+Step 8/8: Done (40 clauses, 0 simplified)    
+------------------------------
+Number of variables: 488 (0 simplified)
+Number of clauses: 10268 (0 simplified)
+Translation done in 0.0s!
+
+Saved result in file ./Results/custom/visitall-grid-random-nocp/SatInstances/pfile2--pfile2.cnf
+
+Saving trace in ./Results/custom/visitall-grid-random-nocp/Stats/pfile2--pfile2.csv
+Calling the SAT solver in a subprocess...
+==============================
+SAT solving done. Processing the output...
+Isomorphism: FOUND
+SAT solving done in 0.0s!
+
+Building the isomorphism...
+==============================
+Isomorphism built
+Saved the result in file ./Results/custom/visitall-grid-random-nocp/Output/pfile2--pfile2.hm
+
+==============================
+Total time: 0.1s
+Saving trace in ./Results/custom/visitall-grid-random-nocp/Stats/pfile2--pfile2.csv
+

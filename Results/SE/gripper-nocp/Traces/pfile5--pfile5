@@ -1,0 +1,62 @@
+==============================
+STRIPS Isomorphism finder
+==============================
+
+Parsing problem 1...
+------------------------------
+Instance ./Benchmarks/custom/gripper/pfile5.pddl
+Calling TouISTPlan to extract STRIPS problem from file...
+Extraction done in 0.0s
+Processing the output...
+Processing done in 0.0s
+
+Done. Found 52 fluents and 98 operators in 0.03s
+
+Parsing problem 2...
+------------------------------
+Instance ./Benchmarks/custom/gripper/pfile5.pddl
+Calling TouISTPlan to extract STRIPS problem from file...
+Extraction done in 0.0s
+Processing the output...
+Processing done in 0.0s
+
+Done. Found 52 fluents and 98 operators in 0.05s
+
+Translating the STRIPS-sub-isomorphism instance to SAT...
+==============================
+Maximum number of variables: 12308
+Maximum number of clauses: < 4020982
+
+Generating SAT instance
+------------------------------
+Step 1/8: Done (69004 clauses, 0 simplified) 
+Step 2/8: Done (465892 clauses, 0 simplified)
+Step 3/8: Done (52332 clauses, 0 simplified) 
+Step 4/8: Done (52332 clauses, 0 simplified) 
+Step 5/8: Done (68952 clauses, 0 simplified) 
+Step 6/8: Done (465794 clauses, 0 simplified)
+Step 7/8: Done (30 clauses, 0 simplified)    
+Step 8/8: Done (24 clauses, 0 simplified)    
+------------------------------
+Number of variables: 12308 (0 simplified)
+Number of clauses: 1174360 (0 simplified)
+Translation done in 5.5s!
+
+Saved result in file ./Results/custom/gripper-nocp/SatInstances/pfile5--pfile5.cnf
+
+Saving trace in ./Results/custom/gripper-nocp/Stats/pfile5--pfile5.csv
+Calling the SAT solver in a subprocess...
+==============================
+SAT solving done. Processing the output...
+Isomorphism: FOUND
+SAT solving done in 4.9s!
+
+Building the isomorphism...
+==============================
+Isomorphism built
+Saved the result in file ./Results/custom/gripper-nocp/Output/pfile5--pfile5.hm
+
+==============================
+Total time: 10.4s
+Saving trace in ./Results/custom/gripper-nocp/Stats/pfile5--pfile5.csv
+

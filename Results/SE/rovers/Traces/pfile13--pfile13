@@ -1,0 +1,70 @@
+==============================
+STRIPS Isomorphism finder
+==============================
+
+Parsing problem 1...
+------------------------------
+Instance ./Benchmarks/custom/rovers/pfile13.pddl
+Calling TouISTPlan to extract STRIPS problem from file...
+Extraction done in 0.0s
+Processing the output...
+Processing done in 0.0s
+
+Done. Found 115 fluents and 161 operators in 0.04s
+
+Parsing problem 2...
+------------------------------
+Instance ./Benchmarks/custom/rovers/pfile13.pddl
+Calling TouISTPlan to extract STRIPS problem from file...
+Extraction done in 0.0s
+Processing the output...
+Processing done in 0.0s
+
+Done. Found 115 fluents and 161 operators in 0.08s
+
+Translating the STRIPS-sub-isomorphism instance to SAT...
+==============================
+Maximum number of variables: 39146
+Maximum number of clauses: < 21791833
+
+Performing pruning steps ...
+------------------------------
+Step 1/2: Done                               
+Step 2/2: Done                               
+Pruning done. Associations removed:
+Fluents: 9160 (69.26%)
+Operators: 25480 (98.30%)
+
+Generating SAT instance
+------------------------------
+Step 1/8: Done (216861 clauses, 537079 simplified)
+Step 2/8: Done (729 clauses, 2073112 simplified)
+Step 3/8: Done (2992 clauses, 169117 simplified)
+Step 4/8: Done (2992 clauses, 169117 simplified)
+Step 5/8: Done (70596 clauses, 683229 simplified)
+Step 6/8: Done (722 clauses, 2072958 simplified)
+Step 7/8: Done (96 clauses, 0 simplified)    
+Step 8/8: Done (28 clauses, 0 simplified)    
+------------------------------
+Number of variables: 39146 (247584 simplified)
+Number of clauses: 295016 (5704612 simplified)
+Translation done in 12.1s!
+
+Saved result in file ./Results/custom/rovers/SatInstances/pfile13--pfile13.cnf
+
+Saving trace in ./Results/custom/rovers/Stats/pfile13--pfile13.csv
+Calling the SAT solver in a subprocess...
+==============================
+SAT solving done. Processing the output...
+Isomorphism: FOUND
+SAT solving done in 0.2s!
+
+Building the isomorphism...
+==============================
+Isomorphism built
+Saved the result in file ./Results/custom/rovers/Output/pfile13--pfile13.hm
+
+==============================
+Total time: 12.3s
+Saving trace in ./Results/custom/rovers/Stats/pfile13--pfile13.csv
+

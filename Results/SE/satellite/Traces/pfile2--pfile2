@@ -1,0 +1,70 @@
+==============================
+STRIPS Isomorphism finder
+==============================
+
+Parsing problem 1...
+------------------------------
+Instance ./Benchmarks/custom/satellite/pfile2.pddl
+Calling TouISTPlan to extract STRIPS problem from file...
+Extraction done in 0.0s
+Processing the output...
+Processing done in 0.0s
+
+Done. Found 37 fluents and 110 operators in 0.02s
+
+Parsing problem 2...
+------------------------------
+Instance ./Benchmarks/custom/satellite/pfile2.pddl
+Calling TouISTPlan to extract STRIPS problem from file...
+Extraction done in 0.0s
+Processing the output...
+Processing done in 0.0s
+
+Done. Found 37 fluents and 110 operators in 0.04s
+
+Translating the STRIPS-sub-isomorphism instance to SAT...
+==============================
+Maximum number of variables: 13469
+Maximum number of clauses: < 4503748
+
+Performing pruning steps ...
+------------------------------
+Step 1/2: Done                               
+Step 2/2: Done                               
+Pruning done. Associations removed:
+Fluents: 840 (61.36%)
+Operators: 8084 (66.81%)
+
+Generating SAT instance
+------------------------------
+Step 1/8: Done (5269 clauses, 19410 simplified)
+Step 2/8: Done (99446 clauses, 560114 simplified)
+Step 3/8: Done (14652 clauses, 30668 simplified)
+Step 4/8: Done (14652 clauses, 30668 simplified)
+Step 5/8: Done (4560 clauses, 20082 simplified)
+Step 6/8: Done (78672 clauses, 580778 simplified)
+Step 7/8: Done (4 clauses, 0 simplified)     
+Step 8/8: Done (10 clauses, 0 simplified)    
+------------------------------
+Number of variables: 13469 (468112 simplified)
+Number of clauses: 217265 (1241720 simplified)
+Translation done in 2.7s!
+
+Saved result in file ./Results/custom/satellite/SatInstances/pfile2--pfile2.cnf
+
+Saving trace in ./Results/custom/satellite/Stats/pfile2--pfile2.csv
+Calling the SAT solver in a subprocess...
+==============================
+SAT solving done. Processing the output...
+Isomorphism: FOUND
+SAT solving done in 0.2s!
+
+Building the isomorphism...
+==============================
+Isomorphism built
+Saved the result in file ./Results/custom/satellite/Output/pfile2--pfile2.hm
+
+==============================
+Total time: 2.9s
+Saving trace in ./Results/custom/satellite/Stats/pfile2--pfile2.csv
+

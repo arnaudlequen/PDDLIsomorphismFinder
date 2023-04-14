@@ -1,0 +1,57 @@
+==============================
+STRIPS Isomorphism finder
+==============================
+
+Parsing problem 1...
+------------------------------
+Instance ./Benchmarks/custom/gripper/pfile11.pddl
+Calling TouISTPlan to extract STRIPS problem from file...
+Extraction done in 0.0s
+Processing the output...
+Processing done in 0.0s
+
+Done. Found 100 fluents and 194 operators in 0.03s
+
+Parsing problem 2...
+------------------------------
+Instance ./Benchmarks/custom/gripper/pfile2.pddl
+Calling TouISTPlan to extract STRIPS problem from file...
+Extraction done in 0.0s
+Processing the output...
+Processing done in 0.0s
+
+Done. Found 28 fluents and 50 operators in 0.05s
+
+Translating the STRIPS-sub-isomorphism instance to SAT...
+==============================
+Maximum number of variables: 12500
+Maximum number of clauses: < 3733534
+
+Generating SAT instance
+------------------------------
+Step 1/8: Done (138628 clauses, 0 simplified)
+Step 2/8: Done (936100 clauses, 0 simplified)
+Step 3/8: Done (52380 clauses, 0 simplified) 
+Step 4/8: Done (53100 clauses, 0 simplified) 
+Step 5/8: Done (37800 clauses, 0 simplified) 
+Step 6/8: Done (237650 clauses, 0 simplified)
+Step 7/8: Done (36 clauses, 0 simplified)    
+Step 8/8: Done (30 clauses, 0 simplified)    
+------------------------------
+Number of variables: 12500 (0 simplified)
+Number of clauses: 1455724 (0 simplified)
+Translation done in 6.0s!
+
+Saved result in file ./Results/custom/gripper-nocp/SatInstances/pfile11--pfile2.cnf
+
+Saving trace in ./Results/custom/gripper-nocp/Stats/pfile11--pfile2.csv
+Calling the SAT solver in a subprocess...
+==============================
+SAT solving done. Processing the output...
+Isomorphism: NOT FOUND
+SAT solving done in 7.1s!
+
+==============================
+Total time: 13.2s
+Saving trace in ./Results/custom/gripper-nocp/Stats/pfile11--pfile2.csv
+

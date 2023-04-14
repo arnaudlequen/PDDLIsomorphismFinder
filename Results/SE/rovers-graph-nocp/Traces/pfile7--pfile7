@@ -1,0 +1,62 @@
+==============================
+STRIPS Isomorphism finder
+==============================
+
+Parsing problem 1...
+------------------------------
+Instance ./Benchmarks/custom/rovers-graph/pfile7.pddl
+Calling TouISTPlan to extract STRIPS problem from file...
+Extraction done in 0.1s
+Processing the output...
+Processing done in 0.0s
+
+Done. Found 138 fluents and 226 operators in 0.06s
+
+Parsing problem 2...
+------------------------------
+Instance ./Benchmarks/custom/rovers-graph/pfile7.pddl
+Calling TouISTPlan to extract STRIPS problem from file...
+Extraction done in 0.0s
+Processing the output...
+Processing done in 0.0s
+
+Done. Found 138 fluents and 226 operators in 0.10s
+
+Translating the STRIPS-sub-isomorphism instance to SAT...
+==============================
+Maximum number of variables: 70120
+Maximum number of clauses: < 53909292
+
+Generating SAT instance
+------------------------------
+Step 1/8: Done (1304652 clauses, 0 simplified)
+Step 2/8: Done (5746276 clauses, 0 simplified)
+Step 3/8: Done (205434 clauses, 0 simplified)
+Step 4/8: Done (205434 clauses, 0 simplified)
+Step 5/8: Done (1304514 clauses, 0 simplified)
+Step 6/8: Done (5746050 clauses, 0 simplified)
+Step 7/8: Done (92 clauses, 0 simplified)    
+Step 8/8: Done (32 clauses, 0 simplified)    
+------------------------------
+Number of variables: 70120 (0 simplified)
+Number of clauses: 14512484 (0 simplified)
+Translation done in 64.7s!
+
+Saved result in file ./Results/custom/rovers-graph-nocp/SatInstances/pfile7--pfile7.cnf
+
+Saving trace in ./Results/custom/rovers-graph-nocp/Stats/pfile7--pfile7.csv
+Calling the SAT solver in a subprocess...
+==============================
+SAT solving done. Processing the output...
+Isomorphism: FOUND
+SAT solving done in 162.9s!
+
+Building the isomorphism...
+==============================
+Isomorphism built
+Saved the result in file ./Results/custom/rovers-graph-nocp/Output/pfile7--pfile7.hm
+
+==============================
+Total time: 227.7s
+Saving trace in ./Results/custom/rovers-graph-nocp/Stats/pfile7--pfile7.csv
+

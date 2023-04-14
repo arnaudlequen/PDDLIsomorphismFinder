@@ -1,0 +1,65 @@
+==============================
+STRIPS Isomorphism finder
+==============================
+
+Parsing problem 1...
+------------------------------
+Instance ./Benchmarks/custom/blocks/pfile17.pddl
+Calling TouISTPlan to extract STRIPS problem from file...
+Extraction done in 0.1s
+Processing the output...
+Processing done in 0.0s
+
+Done. Found 324 fluents and 578 operators in 0.09s
+
+Parsing problem 2...
+------------------------------
+Instance ./Benchmarks/custom/blocks/pfile8.pddl
+Calling TouISTPlan to extract STRIPS problem from file...
+Extraction done in 0.0s
+Processing the output...
+Processing done in 0.0s
+
+Done. Found 81 fluents and 128 operators in 0.12s
+
+Translating the STRIPS-sub-isomorphism instance to SAT...
+==============================
+Maximum number of variables: 100228
+Maximum number of clauses: < 84707595
+
+Performing pruning steps ...
+------------------------------
+Step 1/2: Done                               
+Step 2/2: Done                               
+Pruning done. Associations removed:
+Fluents: 9434 (35.95%)
+Operators: 43248 (58.46%)
+
+Generating SAT instance
+------------------------------
+Step 1/8: Done (2353850 clauses, 1884637 simplified)
+Step 2/8: Done (4130176 clauses, 17214336 simplified)
+Step 3/8: Done (230112 clauses, 310896 simplified)
+Step 4/8: Done (230112 clauses, 318240 simplified)
+Step 5/8: Done (466588 clauses, 583172 simplified)
+Step 6/8: Done (838712 clauses, 3859272 simplified)
+Step 7/8: Done (52 clauses, 0 simplified)    
+Step 8/8: Done (23 clauses, 0 simplified)    
+------------------------------
+Number of variables: 100228 (6292548 simplified)
+Number of clauses: 8249625 (24170553 simplified)
+Translation done in 71.5s!
+
+Saved result in file ./Results/custom/blocks/SatInstances/pfile17--pfile8.cnf
+
+Saving trace in ./Results/custom/blocks/Stats/pfile17--pfile8.csv
+Calling the SAT solver in a subprocess...
+==============================
+SAT solving done. Processing the output...
+Isomorphism: NOT FOUND
+SAT solving done in 106.0s!
+
+==============================
+Total time: 177.6s
+Saving trace in ./Results/custom/blocks/Stats/pfile17--pfile8.csv
+

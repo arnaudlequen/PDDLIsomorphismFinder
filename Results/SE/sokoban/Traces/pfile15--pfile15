@@ -1,0 +1,70 @@
+==============================
+STRIPS Isomorphism finder
+==============================
+
+Parsing problem 1...
+------------------------------
+Instance ./Benchmarks/custom/sokoban/pfile15.pddl
+Calling TouISTPlan to extract STRIPS problem from file...
+Extraction done in 0.1s
+Processing the output...
+Processing done in 0.0s
+
+Done. Found 285 fluents and 418 operators in 0.11s
+
+Parsing problem 2...
+------------------------------
+Instance ./Benchmarks/custom/sokoban/pfile15.pddl
+Calling TouISTPlan to extract STRIPS problem from file...
+Extraction done in 0.1s
+Processing the output...
+Processing done in 0.0s
+
+Done. Found 285 fluents and 418 operators in 0.22s
+
+Translating the STRIPS-sub-isomorphism instance to SAT...
+==============================
+Maximum number of variables: 255949
+Maximum number of clauses: < 368405592
+
+Performing pruning steps ...
+------------------------------
+Step 1/2: Done                               
+Step 2/2: Done                               
+Pruning done. Associations removed:
+Fluents: 73900 (90.98%)
+Operators: 173158 (99.10%)
+
+Generating SAT instance
+------------------------------
+Step 1/8: Done (893189 clauses, 10641046 simplified)
+Step 2/8: Done (3366 clauses, 36427006 simplified)
+Step 3/8: Done (14908 clauses, 1511628 simplified)
+Step 4/8: Done (14908 clauses, 1511628 simplified)
+Step 5/8: Done (92468 clauses, 11441482 simplified)
+Step 6/8: Done (5844 clauses, 36424110 simplified)
+Step 7/8: Done (142 clauses, 0 simplified)   
+Step 8/8: Done (8 clauses, 0 simplified)     
+------------------------------
+Number of variables: 255949 (4117049 simplified)
+Number of clauses: 1024833 (97956900 simplified)
+Translation done in 189.2s!
+
+Saved result in file ./Results/custom/sokoban/SatInstances/pfile15--pfile15.cnf
+
+Saving trace in ./Results/custom/sokoban/Stats/pfile15--pfile15.csv
+Calling the SAT solver in a subprocess...
+==============================
+SAT solving done. Processing the output...
+Isomorphism: FOUND
+SAT solving done in 1.1s!
+
+Building the isomorphism...
+==============================
+Isomorphism built
+Saved the result in file ./Results/custom/sokoban/Output/pfile15--pfile15.hm
+
+==============================
+Total time: 190.5s
+Saving trace in ./Results/custom/sokoban/Stats/pfile15--pfile15.csv
+
